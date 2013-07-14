@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{2EF32000-30A4-49E5-84E1-C1ED38931E36}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>libtinyswf</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)..\..\lib\$(Configuration)</OutDir>
+    <TargetName>$(ProjectName)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)..\..\lib</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>SWF_DEBUG;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ProgramDataBaseFileName>$(SolutionDir)..\..\lib\$(ProjectName).pdb</ProgramDataBaseFileName>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\tinyswf.h" />
+    <ClInclude Include="..\..\include\tsHeader.h" />
+    <ClInclude Include="..\..\include\tsMovieClip.h" />
+    <ClInclude Include="..\..\include\tsReader.h" />
+    <ClInclude Include="..\..\include\tsSWF.h" />
+    <ClInclude Include="..\..\include\tsTag.h" />
+    <ClInclude Include="..\..\include\tsTypes.h" />
+    <ClInclude Include="..\..\libtess2\bucketalloc.h" />
+    <ClInclude Include="..\..\libtess2\dict.h" />
+    <ClInclude Include="..\..\libtess2\geom.h" />
+    <ClInclude Include="..\..\libtess2\mesh.h" />
+    <ClInclude Include="..\..\libtess2\priorityq.h" />
+    <ClInclude Include="..\..\libtess2\sweep.h" />
+    <ClInclude Include="..\..\libtess2\tess.h" />
+    <ClInclude Include="..\..\libtess2\tesselator.h" />
+    <ClInclude Include="..\..\src\tags\DefineButton.h" />
+    <ClInclude Include="..\..\src\tags\DefineShape.h" />
+    <ClInclude Include="..\..\src\tags\DefineSound.h" />
+    <ClInclude Include="..\..\src\tags\DefineSprite.h" />
+    <ClInclude Include="..\..\src\tags\DoAction.h" />
+    <ClInclude Include="..\..\src\tags\ExportAssets.h" />
+    <ClInclude Include="..\..\src\tags\FrameLabel.h" />
+    <ClInclude Include="..\..\src\tags\ImportAssets2.h" />
+    <ClInclude Include="..\..\src\tags\PlaceObject.h" />
+    <ClInclude Include="..\..\src\tags\RemoveObject.h" />
+    <ClInclude Include="..\..\src\tags\SetBackgroundColor.h" />
+    <ClInclude Include="..\..\src\tags\ShowFrame.h" />
+    <ClInclude Include="..\..\src\tags\VectorEngine.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\libtess2\bucketalloc.c" />
+    <ClCompile Include="..\..\libtess2\dict.c" />
+    <ClCompile Include="..\..\libtess2\geom.c" />
+    <ClCompile Include="..\..\libtess2\mesh.c" />
+    <ClCompile Include="..\..\libtess2\priorityq.c" />
+    <ClCompile Include="..\..\libtess2\sweep.c" />
+    <ClCompile Include="..\..\libtess2\tess.c" />
+    <ClCompile Include="..\..\src\tags\DefineButton.cpp" />
+    <ClCompile Include="..\..\src\tags\DefineShape.cpp" />
+    <ClCompile Include="..\..\src\tags\DefineSprite.cpp" />
+    <ClCompile Include="..\..\src\tags\DoAction.cpp" />
+    <ClCompile Include="..\..\src\tags\PlaceObject.cpp" />
+    <ClCompile Include="..\..\src\tags\VectorEngine.cpp" />
+    <ClCompile Include="..\..\src\tsHeader.cpp" />
+    <ClCompile Include="..\..\src\tsMovieClip.cpp" />
+    <ClCompile Include="..\..\src\tsReader.cpp" />
+    <ClCompile Include="..\..\src\tsSWF.cpp" />
+    <ClCompile Include="..\..\src\tsTag.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
