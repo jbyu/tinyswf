@@ -8,6 +8,7 @@ Copyright (c) 2013 jbyu. All rights reserved.
 #include "tags/DefineSprite.h"
 #include "tags/DefineShape.h"
 #include "tags/DefineButton.h"
+#include "tags/DefineText.h"
 
 using namespace tinyswf;
 
@@ -76,6 +77,7 @@ bool MovieClip::createFrames( Reader& reader, SWF& swf, MovieFrames &data )
 
         // create a new frame
         if ( TAG_SHOW_FRAME == code ) {
+			SWF_TRACE("[%d]\n", data._frames.size());
 			data._frames.push_back( frame_tags );
 			frame_tags = new TagList;
 			sbCalculateRectangle = false;
@@ -99,37 +101,17 @@ MovieClip::MovieClip( SWF* swf,  const MovieFrames& data )
 
 MovieClip::~MovieClip()
 {
-	SWF_TRACE("delete MovieClip\n");
+	SWF_TRACE("delete MovieClip[%x]\n",this);
 	delete _transform;
 	_transform = NULL;
 
 	// clean up
-	MovieClipArray::iterator mit = _movies.begin();
-	while ( _movies.end() != mit ) {
-		delete (*mit);
-		++mit;
+	CharacterArray::iterator it = _characters.begin();
+	while ( _characters.end() != it ) {
+		delete (*it);
+		++it;
 	}
-	ButtonArray::iterator bit = _buttons.begin();
-	while ( _buttons.end() != bit ) {
-		delete (*bit);
-		++bit;
-	}
-
-	_characters.clear();
-}
-
-Button *MovieClip::createButton(DefineButton2Tag &tag)
-{
-	Button *btn = new Button( *this, tag );
-	_buttons.push_back(btn);
-	return btn;
-}
-
-MovieClip *MovieClip::createMovieClip(const DefineSpriteTag &sprite)
-{
-	MovieClip *movie = new MovieClip( _owner, sprite.getMovieFrames() );
-	_movies.push_back(movie);
-	return movie;
+	_cache.clear();
 }
 
 class nullCharacter : public ICharacter {
@@ -144,32 +126,45 @@ public:
 
 static nullCharacter soDefaultNullCharacter;
 
-ICharacter *MovieClip::getInstance(const PlaceObjectTag* placeTag) 
-{
-	// find cache
-	CharacterCache::iterator it = _characters.find(placeTag);
-	if (it != _characters.end())
+ICharacter *MovieClip::createCharacter(const ITag* tag) {
+	ICharacter *character = NULL;
+	switch ( tag->code() ) {
+	case TAG_DEFINE_SPRITE:
+		character = new MovieClip(_owner, ((DefineSpriteTag*)tag)->getMovieFrames());
+		_characters.push_back(character);
+		break;
+	case TAG_DEFINE_BUTTON2:
+		character = new Button(*this, *(DefineButton2Tag*)tag);
+		_characters.push_back(character);
+		break;
+	case TAG_DEFINE_EDIT_TEXT:
+		character = new Text(*(DefineEditTextTag*)tag);
+		_characters.push_back(character);
+		break;
+	default:
+		character = (DefineShapeTag*)tag;
+		break;
+	}
+	return character;
+}
+
+ICharacter *MovieClip::getInstance(const PlaceObjectTag* placeTag) {
+	// find cache from this instance
+	CharacterCache::iterator it = _cache.find(placeTag);
+	if (it != _cache.end())
 		return it->second;
 
+	// find character tag from swf library
 	ICharacter *character = &soDefaultNullCharacter;
 	uint16_t character_id = placeTag->characterID();
 	ITag *tag = _owner->getCharacter( character_id );
 	if (! tag)
 		return character;
 
-	switch ( tag->code() ) {
-	case TAG_DEFINE_SPRITE:
-		character = createMovieClip( *(DefineSpriteTag*) tag);
-		_characters[placeTag] = character;
-		break;
-	case TAG_DEFINE_BUTTON2:
-		character = createButton( *(DefineButton2Tag*) tag);
-		_characters[placeTag] = character;
-		break;
-	default:
-        character = (DefineShapeTag*)tag;
-		break;
-	}
+	character = createCharacter(tag);
+	SWF_ASSERT(character);
+	_cache[placeTag] = character;
+
 	return character;
 }
 

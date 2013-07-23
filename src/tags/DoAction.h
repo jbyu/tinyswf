@@ -9,7 +9,7 @@ Copyright (c) 2013 jbyu. All rights reserved.
 
 namespace tinyswf {
 
-//=========================================================================
+//-----------------------------------------------------------------------------
 class DoActionTag : public ITag
 {
     struct ACTION {

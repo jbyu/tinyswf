@@ -103,6 +103,7 @@ void PlaceObjectTag::print() {
 #ifdef SWF_DEBUG
 	const char *mode[] = {"N/A","PLACE","MOVE","REPLACE"};
 	SWF_TRACE("character=%d, depth=%d, clip=%d, mode=%s, name=%s\n", _character_id, _depth, _clip_depth, mode[_placeMode], _name.c_str() );
+	//SWF_TRACE("mtx:%3.2f,%3.2f,%3.2f,%3.2f,%3.2f,%3.2f\n", _transform.m_[0][0], _transform.m_[0][1], _transform.m_[0][2],	_transform.m_[1][0], _transform.m_[1][1], _transform.m_[1][2]);
     //SWF_TRACE("\tCXFORM-Mult:%1.2f,%1.2f,%1.2f,%1.2f\n", _cxform.mult.r, _cxform.mult.g, _cxform.mult.b, _cxform.mult.a );
     //SWF_TRACE("\tCXFORM-Add: %1.2f,%1.2f,%1.2f,%1.2f\n", _cxform.add.r, _cxform.add.g, _cxform.add.b, _cxform.add.a );
 #endif

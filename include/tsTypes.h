@@ -98,7 +98,9 @@ struct COLOR4f {
 		return ret;
 	}
 };
-    	
+  
+const COLOR4f kBLACK = {0,0,0,1};
+
 struct YUV {
 	uint8_t	y,u,v;
 };

@@ -20,7 +20,7 @@ namespace tinyswf {
 		
         virtual bool read( Reader& reader, SWF&, MovieFrames& ) { return false; } //delete tag
 
-		virtual void print() { SWF_TRACE("SHOW_FRAME\n"); }
+		virtual void print() { SWF_TRACE("SHOW_FRAME"); }
 
 		static ITag* create( TagHeader& header ) {
 			return new ShowFrameTag( header );

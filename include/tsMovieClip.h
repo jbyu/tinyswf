@@ -56,7 +56,7 @@ public:
 
 //-----------------------------------------------------------------------------
 class MovieClip : public ICharacter {
-    friend class SWF;
+	friend class SWF;
 
 protected:
 	void setupFrame(const TagList& tags, bool skipAction);
@@ -68,8 +68,7 @@ protected:
         *_transform = kMatrixIdentity;
     }
 
-    Button* createButton(DefineButton2Tag &tag);
-    MovieClip* createMovieClip(const DefineSpriteTag &tag);
+	ICharacter *createCharacter(const ITag*);
 
 public:
 	typedef std::map<uint16_t, MovieObject>	DisplayList;
@@ -111,12 +110,10 @@ public:
 
 protected:
 	typedef std::map<const ITag*, ICharacter*>	CharacterCache;
-	typedef std::vector< MovieClip* >			MovieClipArray;
-	typedef std::vector< Button* >				ButtonArray;
+	typedef std::vector<ICharacter*>			CharacterArray;
 
-	CharacterCache		_characters;
-	MovieClipArray		_movies;
-	ButtonArray			_buttons;
+	CharacterCache		_cache;			// cache for character by tag
+	CharacterArray		_characters;	// store character intances
 
 	const MovieFrames   &_data;
     SWF                 *_owner;

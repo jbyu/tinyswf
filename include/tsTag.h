@@ -183,6 +183,8 @@ public:
 	virtual void update(void) = 0;
 	virtual ICharacter* getTopMost(float localX, float localY, bool polygonTest) = 0;
 	virtual void onEvent(Event::Code) = 0;
+
+	virtual ~ICharacter() { SWF_TRACE("delete ICharacter[%x]\n",this); }
 };
 
 //-----------------------------------------------------------------------------
@@ -257,7 +259,28 @@ private:
 	Gradient	_gradient;
 #endif
 };
+
+//-----------------------------------------------------------------------------
 	
+struct TextStyle {
+	enum ALIGNMENT {
+		ALIGN_LEFT		= 0,
+		ALIGN_RIGHT		= 1,
+		ALIGN_CENTER	= 2,
+		ALIGN_JUSTIFY	= 3
+	};
+
+	COLOR4f		color;
+	ALIGNMENT	alignment;
+	bool		multiline;
+	float		left_margin;
+	float		right_margin;
+	float		indent;
+	float		leading;
+	float		font_height;
+	std::string font_name;
+};
+
 //-----------------------------------------------------------------------------
 
 class TagHeader {

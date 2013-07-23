@@ -16,6 +16,9 @@ Copyright (c) 2013 jbyu. All rights reserved.
 #include "tags/FrameLabel.h"
 #include "tags/DefineButton.h"
 #include "tags/VectorEngine.h"
+#include "tags/DefineScalingGrid.h"
+#include "tags/DefineText.h"
+#include "tags/DefineFont.h"
 
 using namespace tinyswf;
 	
@@ -46,17 +49,6 @@ SWF::~SWF()
     MovieClip::destroyFrames(_swf_data);
 }
 
-#if 0
-MovieClip *SWF::createMovieClip(const ITag &tag)
-{
-	SWF_ASSERT( tag.code() == TAG_DEFINE_SPRITE );
-	const DefineSpriteTag& spriteImpl = (const DefineSpriteTag&) tag;
-    MovieClip *movie = new MovieClip( this, spriteImpl.getMovieFrames() );
-	_movie_list.push_back(movie);
-	return movie;
-}
-#endif
-
 //static function
 bool SWF::initialize(LoadAssetCallback func, int memory_pool_size) {
     _asset_loader = func;
@@ -86,6 +78,14 @@ bool SWF::initialize(LoadAssetCallback func, int memory_pool_size) {
     addFactory( TAG_FRAME_LABEL,    FrameLabelTag::create );
 
 	addFactory( TAG_SET_BACKGROUND_COLOR, SetBackgroundColorTag::create );
+	addFactory( TAG_DEFINE_SCALING_GRID, DefineScalingGridTag::create );
+
+	//addFactory( TAG_DEFINE_TEXT, DefineTextTag::create );
+	//addFactory( TAG_DEFINE_TEXT2, DefineTextTag::create );
+	addFactory( TAG_DEFINE_EDIT_TEXT, DefineEditTextTag::create );
+
+	addFactory( TAG_DEFINE_FONT3, DefineFontTag::create );
+	addFactory( TAG_DEFINE_FONT_NAME, DefineFontNameTag::create );
 
 	triangulation::create_memory_pool(memory_pool_size);
 	return true;
@@ -128,41 +128,27 @@ bool SWF::addAsset(uint16_t id, const char *name, bool import)
     return false;
 }
 
-MovieClip *SWF::duplicate(const char *name)
-{
+MovieClip *SWF::duplicate(const char *name) {
     MovieClip *movie = NULL;
     SymbolDictionary::const_iterator it = _library.find(name);
-    if (_library.end() != it)
-    {
+    if (_library.end() != it) {
         ITag *tag = _dictionary[it->second];
-        switch ( tag->code() ) {
-		case TAG_DEFINE_SPRITE:
-            // create a new instance for playback
-			movie = createMovieClip( *(DefineSpriteTag*)tag );
-            movie->createTransform();
-            _duplicates.push_back(movie);
-			break;
-		case TAG_DEFINE_BUTTON2:
-            // create a new instance for playback
-			movie = createButton( *(DefineButton2Tag*)tag );
-            movie->createTransform();
-            _duplicates.push_back(movie);
-			break;
-		default:
-			break;
-        }
+		SWF_ASSERT(TAG_DEFINE_SPRITE == tag->code() || TAG_DEFINE_BUTTON2 == tag->code());
+        // create a new instance
+		movie = (MovieClip*)createCharacter(tag);
+		movie->createTransform();
+		_duplicates.push_back(movie);
     }
     return movie;
 }
 
-void SWF::updateDuplicate( float delta )
-{
+void SWF::updateDuplicate( float delta ) {
     _elapsedAccumulatorDuplicate += delta;
     const float secondPerFrame = getFrameRate();
     while (secondPerFrame <= _elapsedAccumulatorDuplicate)
     {
         _elapsedAccumulatorDuplicate -= secondPerFrame;
-		MovieClipArray::iterator it = _duplicates.begin();
+		CharacterArray::iterator it = _duplicates.begin();
 		while (_duplicates.end() != it)
         {
             (*it)->update();
@@ -171,21 +157,18 @@ void SWF::updateDuplicate( float delta )
     }
 }
 
-void SWF::drawDuplicate(void)
-{
+void SWF::drawDuplicate(void) {
     Renderer::getRenderer()->drawBegin();
-	MovieClipArray::iterator it = _duplicates.begin();
-	while (_duplicates.end() != it)
-    {
-        MATRIX *xform = (*it)->getTransform();
+	CharacterArray::iterator it = _duplicates.begin();
+	while (_duplicates.end() != it) {
+		MovieClip *movie = (MovieClip*)(*it);
+        MATRIX *xform = movie->getTransform();
         SWF_ASSERT(xform);
 		MATRIX3f origMTX = _sCurrentMatrix, mtx;
         MATRIX3fSet(mtx, *xform); // convert matrix format
         MATRIX3fMultiply(_sCurrentMatrix, mtx, _sCurrentMatrix);
-
-        (*it)->draw();
+        movie->draw();
         ++it;
-
     	// restore old matrix
         _sCurrentMatrix = origMTX;
     }
@@ -275,15 +258,15 @@ void SWF::notifyMouse(int button, int x, int y) {
 
 void SWF::notifyDuplicate(int button, int x, int y) {
 	ICharacter* pTopMost = NULL;
-	MovieClipArray::reverse_iterator rit = _duplicates.rbegin();
+	CharacterArray::reverse_iterator rit = _duplicates.rbegin();
 	while( rit != _duplicates.rend() ) {
-		MovieClip* pCharacter = *rit;
-		if (pCharacter) {
+		MovieClip *movie = (MovieClip*)(*rit);
+		if (movie) {
 			MATRIX m;
 			POINT local, world = {float(x),float(y)};
-			m.setInverse( *pCharacter->getTransform() );
+			m.setInverse( *movie->getTransform() );
 			m.transform(local, world);
-			pTopMost = pCharacter->getTopMost(local.x, local.y, false);
+			pTopMost = movie->getTopMost(local.x, local.y, false);
 			if (pTopMost)
 				break;
 		}

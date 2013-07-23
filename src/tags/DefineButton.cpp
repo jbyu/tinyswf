@@ -173,7 +173,7 @@ Button::Button( MovieClip& parent,  DefineButton2Tag& data )
 
 Button::~Button()
 {
-	SWF_TRACE("delete Button\n");
+	SWF_TRACE("delete Button[%x]\n", this);
 	StateArray::const_iterator it = _buttonStates.begin();
 	while( _buttonStates.end() != it) {
 		delete it->_object;

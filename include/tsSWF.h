@@ -15,7 +15,7 @@ namespace tinyswf {
 //-----------------------------------------------------------------------------
 
 class Renderer {
-    static Renderer     *spRenderer;
+    static Renderer *spRenderer;
 
 public:
     virtual ~Renderer() { clear(); }
@@ -24,14 +24,14 @@ public:
 
 	virtual void drawTriangles(const VertexArray& vertices, const CXFORM& cxform, const FillStyle& style, const Asset& asset) = 0;
 	virtual void drawLineStrip(const VertexArray& vertices, const CXFORM& cxform, const LineStyle& style) = 0;
-
     virtual void drawImportAsset(const RECT& rect, const CXFORM& cxform, const Asset& asset) = 0;
+
+    virtual void formatText(VertexArray& vertices, const RECT& rect, const TextStyle& style, const std::wstring& text) = 0;
+    virtual void drawText(const VertexArray& vertices, const RECT& rect, const TextStyle& style, const std::wstring& text) = 0;
 
     virtual void drawBegin(void) = 0;
     virtual void drawEnd(void) = 0;
 
-    virtual void createTempTexAssets(void) = 0;
-    virtual void destroyTempTexAssets(void) = 0;
     virtual void maskBegin(void) = 0;
     virtual void maskEnd(void) = 0;
     virtual void maskOffBegin(void) = 0;
@@ -164,7 +164,7 @@ private:
 	float               _elapsedAccumulatorDuplicate;
 	MovieFrames 	    _swf_data;
 
-	MovieClipArray      _duplicates;
+	CharacterArray      _duplicates;
 	Header				_header;
     CharacterDictionary	_dictionary;
     SymbolDictionary    _library;

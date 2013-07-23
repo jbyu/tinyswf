@@ -46,7 +46,7 @@ bool DoActionTag::read( Reader& reader, SWF& swf, MovieFrames&)
             uint16_t read = 0;
 			switch(code) {
 			case ACTION_GOTO_FRAME:
-                action.data = reader.get<uint16_t>();
+                action.data = reader.get<uint16_t>() - 1;
                 read = 2;
 				break;
 			case ACTION_GOTO_LABEL:

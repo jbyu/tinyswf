@@ -40,7 +40,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)..\..\lib\$(Configuration)</OutDir>
+    <OutDir>$(SolutionDir)..\..\lib\$(Configuration)\</OutDir>
     <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -96,6 +96,9 @@
     <ClInclude Include="..\..\libtess2\tess.h" />
     <ClInclude Include="..\..\libtess2\tesselator.h" />
     <ClInclude Include="..\..\src\tags\DefineButton.h" />
+    <ClInclude Include="..\..\src\tags\DefineFont.h" />
+    <ClInclude Include="..\..\src\tags\DefineText.h" />
+    <ClInclude Include="..\..\src\tags\DefineScalingGrid.h" />
     <ClInclude Include="..\..\src\tags\DefineShape.h" />
     <ClInclude Include="..\..\src\tags\DefineSound.h" />
     <ClInclude Include="..\..\src\tags\DefineSprite.h" />
@@ -118,6 +121,8 @@
     <ClCompile Include="..\..\libtess2\sweep.c" />
     <ClCompile Include="..\..\libtess2\tess.c" />
     <ClCompile Include="..\..\src\tags\DefineButton.cpp" />
+    <ClCompile Include="..\..\src\tags\DefineFont.cpp" />
+    <ClCompile Include="..\..\src\tags\DefineText.cpp" />
     <ClCompile Include="..\..\src\tags\DefineShape.cpp" />
     <ClCompile Include="..\..\src\tags\DefineSprite.cpp" />
     <ClCompile Include="..\..\src\tags\DoAction.cpp" />

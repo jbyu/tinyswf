@@ -1,49 +1,45 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="原始程式檔">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="標頭檔">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="資源檔">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="libtess2">
       <UniqueIdentifier>{e5b3dc34-182f-4a25-a172-dae705b01da0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="標頭檔\tags">
+    <Filter Include="source">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="header">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="header\tags">
       <UniqueIdentifier>{5682f1c0-ebd6-4b6f-b309-920de2309944}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\tinyswf.h">
-      <Filter>標頭檔</Filter>
+      <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\tsHeader.h">
-      <Filter>標頭檔</Filter>
+      <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\tsMovieClip.h">
-      <Filter>標頭檔</Filter>
+      <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\tsReader.h">
-      <Filter>標頭檔</Filter>
+      <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\tsSWF.h">
-      <Filter>標頭檔</Filter>
+      <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\tsTag.h">
-      <Filter>標頭檔</Filter>
+      <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\tsTypes.h">
-      <Filter>標頭檔</Filter>
+      <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\tags\VectorEngine.h">
-      <Filter>標頭檔</Filter>
+      <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="..\..\libtess2\bucketalloc.h">
       <Filter>libtess2</Filter>
@@ -70,75 +66,84 @@
       <Filter>libtess2</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\tags\DefineButton.h">
-      <Filter>標頭檔\tags</Filter>
+      <Filter>header\tags</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\tags\DefineShape.h">
-      <Filter>標頭檔\tags</Filter>
+      <Filter>header\tags</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\tags\DefineSound.h">
-      <Filter>標頭檔\tags</Filter>
+      <Filter>header\tags</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\tags\DefineSprite.h">
-      <Filter>標頭檔\tags</Filter>
+      <Filter>header\tags</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\tags\DoAction.h">
-      <Filter>標頭檔\tags</Filter>
+      <Filter>header\tags</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\tags\ExportAssets.h">
-      <Filter>標頭檔\tags</Filter>
+      <Filter>header\tags</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\tags\FrameLabel.h">
-      <Filter>標頭檔\tags</Filter>
+      <Filter>header\tags</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\tags\ImportAssets2.h">
-      <Filter>標頭檔\tags</Filter>
+      <Filter>header\tags</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\tags\PlaceObject.h">
-      <Filter>標頭檔\tags</Filter>
+      <Filter>header\tags</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\tags\RemoveObject.h">
-      <Filter>標頭檔\tags</Filter>
+      <Filter>header\tags</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\tags\SetBackgroundColor.h">
-      <Filter>標頭檔\tags</Filter>
+      <Filter>header\tags</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\tags\ShowFrame.h">
-      <Filter>標頭檔\tags</Filter>
+      <Filter>header\tags</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\tags\DefineScalingGrid.h">
+      <Filter>header\tags</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\tags\DefineText.h">
+      <Filter>header\tags</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\tags\DefineFont.h">
+      <Filter>header\tags</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\tsTag.cpp">
-      <Filter>原始程式檔</Filter>
+      <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\tsHeader.cpp">
-      <Filter>原始程式檔</Filter>
+      <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\tsReader.cpp">
-      <Filter>原始程式檔</Filter>
+      <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\tsMovieClip.cpp">
-      <Filter>原始程式檔</Filter>
+      <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\tsSWF.cpp">
-      <Filter>原始程式檔</Filter>
+      <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\tags\DefineButton.cpp">
-      <Filter>原始程式檔</Filter>
+      <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\tags\DefineShape.cpp">
-      <Filter>原始程式檔</Filter>
+      <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\tags\DefineSprite.cpp">
-      <Filter>原始程式檔</Filter>
+      <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\tags\DoAction.cpp">
-      <Filter>原始程式檔</Filter>
+      <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\tags\PlaceObject.cpp">
-      <Filter>原始程式檔</Filter>
+      <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\tags\VectorEngine.cpp">
-      <Filter>原始程式檔</Filter>
+      <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\libtess2\bucketalloc.c">
       <Filter>libtess2</Filter>
@@ -160,6 +165,12 @@
     </ClCompile>
     <ClCompile Include="..\..\libtess2\tess.c">
       <Filter>libtess2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\tags\DefineText.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\tags\DefineFont.cpp">
+      <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
