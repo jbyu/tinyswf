@@ -5,8 +5,9 @@ Copyright (c) 2013 jbyu. All rights reserved.
 #include "VectorEngine.h"
 #include "tsSWF.h"
 #include "DefineShape.h"
-#include "..\libtess2\tesselator.h"
+#include "tesselator.h"
 #include <algorithm>
+#include <math.h>
 
 // Curve subdivision error tolerance.
 float tinyswf::SWF::curve_error_tolerance = 4.0f;
@@ -26,7 +27,7 @@ static POINT			s_last_point;
 const float SWF_EPSILON = 0.1f;
 
 inline bool overlap(const POINT& p, const POINT& q) {
-	if( (fabs( p.x - q.x ) < SWF_EPSILON) && 
+	if( (fabs( p.x - q.x ) < SWF_EPSILON) &&
 		(fabs( p.y - q.y ) < SWF_EPSILON) )
 		return true;
 	return false;

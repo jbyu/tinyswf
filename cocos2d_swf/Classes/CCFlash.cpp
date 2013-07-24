@@ -25,7 +25,7 @@ varying vec2 v_texCoord;			\n\
 void main()							\n\
 {									\n\
     gl_Position = CC_MVPMatrix * a_position;	\n\
-	v_texCoord = CC_TMatrix * a_position;		\n\
+	v_texCoord = (CC_TMatrix * a_position).xy;		\n\
 }									\n\
 ";
 const char textureShader_frag[] = "		\n\
@@ -83,7 +83,7 @@ CCFlashRenderer::CCFlashRenderer()
 {
 	FontCache::createInstance();
 	// flash texture shader
-    mpTextureShader = new CCGLProgram();
+    mpTextureShader = new GLProgram();
 	mpTextureShader->initWithVertexShaderByteArray(textureShader_vert, textureShader_frag);
 	mpTextureShader->addAttribute(kCCAttributeNamePosition, kCCVertexAttrib_Position);
     mpTextureShader->link();
@@ -94,7 +94,7 @@ CCFlashRenderer::CCFlashRenderer()
     CHECK_GL_ERROR_DEBUG();
 
 	// font shader
-    mpFontShader = new CCGLProgram();
+    mpFontShader = new GLProgram();
 	mpFontShader->initWithVertexShaderByteArray(fontShader_vert, fontShader_frag);
 	mpFontShader->addAttribute(kCCAttributeNamePosition, kCCVertexAttrib_Position);
     mpFontShader->addAttribute(kCCAttributeNameTexCoord, kCCVertexAttrib_TexCoords);
@@ -105,7 +105,7 @@ CCFlashRenderer::CCFlashRenderer()
     CHECK_GL_ERROR_DEBUG();
 
 	// default color only shader
-	mpDefaultShader = CCShaderCache::sharedShaderCache()->programForKey(kCCShader_Position_uColor);
+	mpDefaultShader = ShaderCache::getInstance()->programForKey(kCCShader_Position_uColor);
 	mpDefaultShader->retain();
 	miColorLocation = glGetUniformLocation( mpDefaultShader->getProgram(), "u_color");
     CHECK_GL_ERROR_DEBUG();
@@ -118,7 +118,7 @@ CCFlashRenderer::~CCFlashRenderer() {
 	CC_SAFE_RELEASE_NULL(mpFontShader);
 	TextureCache::iterator it = moCache.begin();
 	while(moCache.end() != it) {
-		CCTexture2D* tex = it->second;
+		Texture2D* tex = it->second;
 		CCTextureCache::sharedTextureCache()->removeTexture(tex);
 		++it;
 	}
@@ -184,18 +184,6 @@ void CCFlashRenderer::applyTransform(const tinyswf::MATRIX3f& mtx) {
 	kmGLMultMatrix(&matrix);
 }
 
-void applyPassMult(const tinyswf::CXFORM& cxform) {
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
-    glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, &cxform.mult.r);
-    glColor4f(cxform.add.r, cxform.add.g, cxform.add.b, cxform.mult.a);
-}
-void applyPassAdd(const tinyswf::CXFORM& cxform) {
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    glColor4f(cxform.add.r, cxform.add.g, cxform.add.b, 1);
-}
-
 void CCFlashRenderer::drawLineStrip(const tinyswf::VertexArray& vertices, const tinyswf::CXFORM& cxform, const tinyswf::LineStyle& style) {
 	tinyswf::COLOR4f color = cxform.mult * style.getColor();
 	color += cxform.add;
@@ -238,11 +226,11 @@ void CCFlashRenderer::drawTriangles(const tinyswf::VertexArray& vertices, const 
 	mpTextureShader->setUniformLocationWith4fv(miMultColorLocation, (GLfloat*) &cxform.mult.r, 1);
 	mpTextureShader->setUniformLocationWith4fv(miAddColorLocation, (GLfloat*) &cxform.add.r, 1);
 
-	CCTexture2D *texture = (CCTexture2D *)asset.handle;
+	Texture2D *texture = (Texture2D *)asset.handle;
 	ccGLBindTexture2D( texture->getName() );
 	if (style.type() & 0x1) {
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 	} else {
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
@@ -341,7 +329,7 @@ bool format(FormatText& out, const tinyswf::RECT& rect, const TextStyle& style, 
 }
 
 void CCFlashRenderer::formatText(VertexArray& vertices, const tinyswf::RECT& rect, const TextStyle& style, const std::wstring& text) {
-	CCTexture2D *bitmap = FontCache::sharedGlyphCache()->selectFont(style.font_name.c_str(), style.font_height);
+	Texture2D *bitmap = FontCache::sharedGlyphCache()->selectFont(style.font_name.c_str(), style.font_height);
 
 	FormatText lines;
 	format(lines, rect, style, text);
@@ -388,7 +376,7 @@ void CCFlashRenderer::drawText(const VertexArray& vertices, const tinyswf::RECT&
 	float color[] = {1,1,0,1};
 	const float uv_scale = 1.f / kTEXTURE_SIZE;
 
-	CCTexture2D *bitmap = FontCache::sharedGlyphCache()->selectFont(style.font_name.c_str(), style.font_height);
+	Texture2D *bitmap = FontCache::sharedGlyphCache()->selectFont(style.font_name.c_str(), style.font_height);
 	ccGLBindTexture2D(bitmap->getName());
     mpFontShader->use();
 	mpFontShader->setUniformsForBuiltins();
@@ -423,8 +411,8 @@ void CCFlashRenderer::drawEnd(void) {
 	kmGLPopMatrix();
 }
 
-CCTexture2D* CCFlashRenderer::getTexture( const char *filename , int &width, int&height, int&x, int&y) {
-    CCTexture2D* ret = 0;
+Texture2D* CCFlashRenderer::getTexture( const char *filename , int &width, int&height, int&x, int&y) {
+    Texture2D* ret = 0;
     TextureCache::iterator it = moCache.find(filename);
     if (moCache.end() != it)
         return it->second;

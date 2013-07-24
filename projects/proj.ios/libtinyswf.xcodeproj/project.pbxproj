@@ -1,0 +1,426 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		43D8C14E179FB28900CB2EF9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D8C14D179FB28900CB2EF9 /* Foundation.framework */; };
+		43D8C183179FB36A00CB2EF9 /* DefineButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43D8C166179FB36A00CB2EF9 /* DefineButton.cpp */; };
+		43D8C184179FB36A00CB2EF9 /* DefineFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43D8C168179FB36A00CB2EF9 /* DefineFont.cpp */; };
+		43D8C185179FB36A00CB2EF9 /* DefineShape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43D8C16B179FB36A00CB2EF9 /* DefineShape.cpp */; };
+		43D8C186179FB36A00CB2EF9 /* DefineSprite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43D8C16E179FB36A00CB2EF9 /* DefineSprite.cpp */; };
+		43D8C187179FB36A00CB2EF9 /* DefineText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43D8C170179FB36A00CB2EF9 /* DefineText.cpp */; };
+		43D8C188179FB36A00CB2EF9 /* DoAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43D8C172179FB36A00CB2EF9 /* DoAction.cpp */; };
+		43D8C189179FB36A00CB2EF9 /* PlaceObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43D8C177179FB36A00CB2EF9 /* PlaceObject.cpp */; };
+		43D8C18A179FB36A00CB2EF9 /* VectorEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43D8C17C179FB36A00CB2EF9 /* VectorEngine.cpp */; };
+		43D8C18B179FB36A00CB2EF9 /* tsHeader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43D8C17E179FB36A00CB2EF9 /* tsHeader.cpp */; };
+		43D8C18C179FB36A00CB2EF9 /* tsMovieClip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43D8C17F179FB36A00CB2EF9 /* tsMovieClip.cpp */; };
+		43D8C18D179FB36A00CB2EF9 /* tsReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43D8C180179FB36A00CB2EF9 /* tsReader.cpp */; };
+		43D8C18E179FB36A00CB2EF9 /* tsSWF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43D8C181179FB36A00CB2EF9 /* tsSWF.cpp */; };
+		43D8C18F179FB36A00CB2EF9 /* tsTag.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43D8C182179FB36A00CB2EF9 /* tsTag.cpp */; };
+		43D8C1A2179FB37500CB2EF9 /* bucketalloc.c in Sources */ = {isa = PBXBuildFile; fileRef = 43D8C191179FB37500CB2EF9 /* bucketalloc.c */; };
+		43D8C1A3179FB37500CB2EF9 /* dict.c in Sources */ = {isa = PBXBuildFile; fileRef = 43D8C193179FB37500CB2EF9 /* dict.c */; };
+		43D8C1A4179FB37500CB2EF9 /* geom.c in Sources */ = {isa = PBXBuildFile; fileRef = 43D8C195179FB37500CB2EF9 /* geom.c */; };
+		43D8C1A5179FB37500CB2EF9 /* mesh.c in Sources */ = {isa = PBXBuildFile; fileRef = 43D8C198179FB37500CB2EF9 /* mesh.c */; };
+		43D8C1A6179FB37500CB2EF9 /* priorityq.c in Sources */ = {isa = PBXBuildFile; fileRef = 43D8C19A179FB37500CB2EF9 /* priorityq.c */; };
+		43D8C1A7179FB37500CB2EF9 /* sweep.c in Sources */ = {isa = PBXBuildFile; fileRef = 43D8C19D179FB37500CB2EF9 /* sweep.c */; };
+		43D8C1A8179FB37500CB2EF9 /* tess.c in Sources */ = {isa = PBXBuildFile; fileRef = 43D8C19F179FB37500CB2EF9 /* tess.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		43D8C148179FB28900CB2EF9 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/${PRODUCT_NAME}";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		43D8C14A179FB28900CB2EF9 /* liblibtinyswf.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblibtinyswf.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		43D8C14D179FB28900CB2EF9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		43D8C15B179FB34700CB2EF9 /* libtinyswf-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "libtinyswf-Prefix.pch"; sourceTree = SOURCE_ROOT; };
+		43D8C15D179FB35E00CB2EF9 /* tinyswf.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tinyswf.h; sourceTree = "<group>"; };
+		43D8C15E179FB35E00CB2EF9 /* tsHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tsHeader.h; sourceTree = "<group>"; };
+		43D8C15F179FB35E00CB2EF9 /* tsMovieClip.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tsMovieClip.h; sourceTree = "<group>"; };
+		43D8C160179FB35E00CB2EF9 /* tsReader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tsReader.h; sourceTree = "<group>"; };
+		43D8C161179FB35E00CB2EF9 /* tsSWF.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tsSWF.h; sourceTree = "<group>"; };
+		43D8C162179FB35E00CB2EF9 /* tsTag.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tsTag.h; sourceTree = "<group>"; };
+		43D8C163179FB35E00CB2EF9 /* tsTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tsTypes.h; sourceTree = "<group>"; };
+		43D8C166179FB36A00CB2EF9 /* DefineButton.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DefineButton.cpp; sourceTree = "<group>"; };
+		43D8C167179FB36A00CB2EF9 /* DefineButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefineButton.h; sourceTree = "<group>"; };
+		43D8C168179FB36A00CB2EF9 /* DefineFont.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DefineFont.cpp; sourceTree = "<group>"; };
+		43D8C169179FB36A00CB2EF9 /* DefineFont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefineFont.h; sourceTree = "<group>"; };
+		43D8C16A179FB36A00CB2EF9 /* DefineScalingGrid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefineScalingGrid.h; sourceTree = "<group>"; };
+		43D8C16B179FB36A00CB2EF9 /* DefineShape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DefineShape.cpp; sourceTree = "<group>"; };
+		43D8C16C179FB36A00CB2EF9 /* DefineShape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefineShape.h; sourceTree = "<group>"; };
+		43D8C16D179FB36A00CB2EF9 /* DefineSound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefineSound.h; sourceTree = "<group>"; };
+		43D8C16E179FB36A00CB2EF9 /* DefineSprite.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DefineSprite.cpp; sourceTree = "<group>"; };
+		43D8C16F179FB36A00CB2EF9 /* DefineSprite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefineSprite.h; sourceTree = "<group>"; };
+		43D8C170179FB36A00CB2EF9 /* DefineText.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DefineText.cpp; sourceTree = "<group>"; };
+		43D8C171179FB36A00CB2EF9 /* DefineText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefineText.h; sourceTree = "<group>"; };
+		43D8C172179FB36A00CB2EF9 /* DoAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DoAction.cpp; sourceTree = "<group>"; };
+		43D8C173179FB36A00CB2EF9 /* DoAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DoAction.h; sourceTree = "<group>"; };
+		43D8C174179FB36A00CB2EF9 /* ExportAssets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExportAssets.h; sourceTree = "<group>"; };
+		43D8C175179FB36A00CB2EF9 /* FrameLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FrameLabel.h; sourceTree = "<group>"; };
+		43D8C176179FB36A00CB2EF9 /* ImportAssets2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImportAssets2.h; sourceTree = "<group>"; };
+		43D8C177179FB36A00CB2EF9 /* PlaceObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PlaceObject.cpp; sourceTree = "<group>"; };
+		43D8C178179FB36A00CB2EF9 /* PlaceObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaceObject.h; sourceTree = "<group>"; };
+		43D8C179179FB36A00CB2EF9 /* RemoveObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RemoveObject.h; sourceTree = "<group>"; };
+		43D8C17A179FB36A00CB2EF9 /* SetBackgroundColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SetBackgroundColor.h; sourceTree = "<group>"; };
+		43D8C17B179FB36A00CB2EF9 /* ShowFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShowFrame.h; sourceTree = "<group>"; };
+		43D8C17C179FB36A00CB2EF9 /* VectorEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VectorEngine.cpp; sourceTree = "<group>"; };
+		43D8C17D179FB36A00CB2EF9 /* VectorEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VectorEngine.h; sourceTree = "<group>"; };
+		43D8C17E179FB36A00CB2EF9 /* tsHeader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tsHeader.cpp; sourceTree = "<group>"; };
+		43D8C17F179FB36A00CB2EF9 /* tsMovieClip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tsMovieClip.cpp; sourceTree = "<group>"; };
+		43D8C180179FB36A00CB2EF9 /* tsReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tsReader.cpp; sourceTree = "<group>"; };
+		43D8C181179FB36A00CB2EF9 /* tsSWF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tsSWF.cpp; sourceTree = "<group>"; };
+		43D8C182179FB36A00CB2EF9 /* tsTag.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tsTag.cpp; sourceTree = "<group>"; };
+		43D8C191179FB37500CB2EF9 /* bucketalloc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bucketalloc.c; sourceTree = "<group>"; };
+		43D8C192179FB37500CB2EF9 /* bucketalloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bucketalloc.h; sourceTree = "<group>"; };
+		43D8C193179FB37500CB2EF9 /* dict.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dict.c; sourceTree = "<group>"; };
+		43D8C194179FB37500CB2EF9 /* dict.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dict.h; sourceTree = "<group>"; };
+		43D8C195179FB37500CB2EF9 /* geom.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = geom.c; sourceTree = "<group>"; };
+		43D8C196179FB37500CB2EF9 /* geom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = geom.h; sourceTree = "<group>"; };
+		43D8C197179FB37500CB2EF9 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		43D8C198179FB37500CB2EF9 /* mesh.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mesh.c; sourceTree = "<group>"; };
+		43D8C199179FB37500CB2EF9 /* mesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mesh.h; sourceTree = "<group>"; };
+		43D8C19A179FB37500CB2EF9 /* priorityq.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = priorityq.c; sourceTree = "<group>"; };
+		43D8C19B179FB37500CB2EF9 /* priorityq.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = priorityq.h; sourceTree = "<group>"; };
+		43D8C19C179FB37500CB2EF9 /* readme.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = readme.txt; sourceTree = "<group>"; };
+		43D8C19D179FB37500CB2EF9 /* sweep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sweep.c; sourceTree = "<group>"; };
+		43D8C19E179FB37500CB2EF9 /* sweep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sweep.h; sourceTree = "<group>"; };
+		43D8C19F179FB37500CB2EF9 /* tess.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tess.c; sourceTree = "<group>"; };
+		43D8C1A0179FB37500CB2EF9 /* tess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tess.h; sourceTree = "<group>"; };
+		43D8C1A1179FB37500CB2EF9 /* tesselator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tesselator.h; sourceTree = "<group>"; };
+		43D8C1AA179FB3C400CB2EF9 /* license.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = license.txt; sourceTree = "<group>"; };
+		43D8C1AB179FB3C400CB2EF9 /* manual.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = manual.html; sourceTree = "<group>"; };
+		43D8C1AC179FB3C400CB2EF9 /* rapidxml.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = rapidxml.hpp; sourceTree = "<group>"; };
+		43D8C1AD179FB3C400CB2EF9 /* rapidxml_iterators.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = rapidxml_iterators.hpp; sourceTree = "<group>"; };
+		43D8C1AE179FB3C400CB2EF9 /* rapidxml_print.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = rapidxml_print.hpp; sourceTree = "<group>"; };
+		43D8C1AF179FB3C400CB2EF9 /* rapidxml_utils.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = rapidxml_utils.hpp; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		43D8C147179FB28900CB2EF9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				43D8C14E179FB28900CB2EF9 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		43D8C141179FB28900CB2EF9 = {
+			isa = PBXGroup;
+			children = (
+				43D8C15B179FB34700CB2EF9 /* libtinyswf-Prefix.pch */,
+				43D8C1A9179FB3C400CB2EF9 /* rapidxml */,
+				43D8C190179FB37500CB2EF9 /* libtess2 */,
+				43D8C164179FB36A00CB2EF9 /* src */,
+				43D8C15C179FB35E00CB2EF9 /* include */,
+				43D8C14C179FB28900CB2EF9 /* Frameworks */,
+				43D8C14B179FB28900CB2EF9 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		43D8C14B179FB28900CB2EF9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				43D8C14A179FB28900CB2EF9 /* liblibtinyswf.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		43D8C14C179FB28900CB2EF9 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				43D8C14D179FB28900CB2EF9 /* Foundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		43D8C15C179FB35E00CB2EF9 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				43D8C15D179FB35E00CB2EF9 /* tinyswf.h */,
+				43D8C15E179FB35E00CB2EF9 /* tsHeader.h */,
+				43D8C15F179FB35E00CB2EF9 /* tsMovieClip.h */,
+				43D8C160179FB35E00CB2EF9 /* tsReader.h */,
+				43D8C161179FB35E00CB2EF9 /* tsSWF.h */,
+				43D8C162179FB35E00CB2EF9 /* tsTag.h */,
+				43D8C163179FB35E00CB2EF9 /* tsTypes.h */,
+			);
+			name = include;
+			path = ../../include;
+			sourceTree = "<group>";
+		};
+		43D8C164179FB36A00CB2EF9 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				43D8C165179FB36A00CB2EF9 /* tags */,
+				43D8C17E179FB36A00CB2EF9 /* tsHeader.cpp */,
+				43D8C17F179FB36A00CB2EF9 /* tsMovieClip.cpp */,
+				43D8C180179FB36A00CB2EF9 /* tsReader.cpp */,
+				43D8C181179FB36A00CB2EF9 /* tsSWF.cpp */,
+				43D8C182179FB36A00CB2EF9 /* tsTag.cpp */,
+			);
+			name = src;
+			path = ../../src;
+			sourceTree = "<group>";
+		};
+		43D8C165179FB36A00CB2EF9 /* tags */ = {
+			isa = PBXGroup;
+			children = (
+				43D8C166179FB36A00CB2EF9 /* DefineButton.cpp */,
+				43D8C167179FB36A00CB2EF9 /* DefineButton.h */,
+				43D8C168179FB36A00CB2EF9 /* DefineFont.cpp */,
+				43D8C169179FB36A00CB2EF9 /* DefineFont.h */,
+				43D8C16A179FB36A00CB2EF9 /* DefineScalingGrid.h */,
+				43D8C16B179FB36A00CB2EF9 /* DefineShape.cpp */,
+				43D8C16C179FB36A00CB2EF9 /* DefineShape.h */,
+				43D8C16D179FB36A00CB2EF9 /* DefineSound.h */,
+				43D8C16E179FB36A00CB2EF9 /* DefineSprite.cpp */,
+				43D8C16F179FB36A00CB2EF9 /* DefineSprite.h */,
+				43D8C170179FB36A00CB2EF9 /* DefineText.cpp */,
+				43D8C171179FB36A00CB2EF9 /* DefineText.h */,
+				43D8C172179FB36A00CB2EF9 /* DoAction.cpp */,
+				43D8C173179FB36A00CB2EF9 /* DoAction.h */,
+				43D8C174179FB36A00CB2EF9 /* ExportAssets.h */,
+				43D8C175179FB36A00CB2EF9 /* FrameLabel.h */,
+				43D8C176179FB36A00CB2EF9 /* ImportAssets2.h */,
+				43D8C177179FB36A00CB2EF9 /* PlaceObject.cpp */,
+				43D8C178179FB36A00CB2EF9 /* PlaceObject.h */,
+				43D8C179179FB36A00CB2EF9 /* RemoveObject.h */,
+				43D8C17A179FB36A00CB2EF9 /* SetBackgroundColor.h */,
+				43D8C17B179FB36A00CB2EF9 /* ShowFrame.h */,
+				43D8C17C179FB36A00CB2EF9 /* VectorEngine.cpp */,
+				43D8C17D179FB36A00CB2EF9 /* VectorEngine.h */,
+			);
+			path = tags;
+			sourceTree = "<group>";
+		};
+		43D8C190179FB37500CB2EF9 /* libtess2 */ = {
+			isa = PBXGroup;
+			children = (
+				43D8C191179FB37500CB2EF9 /* bucketalloc.c */,
+				43D8C192179FB37500CB2EF9 /* bucketalloc.h */,
+				43D8C193179FB37500CB2EF9 /* dict.c */,
+				43D8C194179FB37500CB2EF9 /* dict.h */,
+				43D8C195179FB37500CB2EF9 /* geom.c */,
+				43D8C196179FB37500CB2EF9 /* geom.h */,
+				43D8C197179FB37500CB2EF9 /* LICENSE.txt */,
+				43D8C198179FB37500CB2EF9 /* mesh.c */,
+				43D8C199179FB37500CB2EF9 /* mesh.h */,
+				43D8C19A179FB37500CB2EF9 /* priorityq.c */,
+				43D8C19B179FB37500CB2EF9 /* priorityq.h */,
+				43D8C19C179FB37500CB2EF9 /* readme.txt */,
+				43D8C19D179FB37500CB2EF9 /* sweep.c */,
+				43D8C19E179FB37500CB2EF9 /* sweep.h */,
+				43D8C19F179FB37500CB2EF9 /* tess.c */,
+				43D8C1A0179FB37500CB2EF9 /* tess.h */,
+				43D8C1A1179FB37500CB2EF9 /* tesselator.h */,
+			);
+			name = libtess2;
+			path = ../../libtess2;
+			sourceTree = "<group>";
+		};
+		43D8C1A9179FB3C400CB2EF9 /* rapidxml */ = {
+			isa = PBXGroup;
+			children = (
+				43D8C1AA179FB3C400CB2EF9 /* license.txt */,
+				43D8C1AB179FB3C400CB2EF9 /* manual.html */,
+				43D8C1AC179FB3C400CB2EF9 /* rapidxml.hpp */,
+				43D8C1AD179FB3C400CB2EF9 /* rapidxml_iterators.hpp */,
+				43D8C1AE179FB3C400CB2EF9 /* rapidxml_print.hpp */,
+				43D8C1AF179FB3C400CB2EF9 /* rapidxml_utils.hpp */,
+			);
+			name = rapidxml;
+			path = ../../rapidxml;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		43D8C149179FB28900CB2EF9 /* libtinyswf */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 43D8C158179FB28900CB2EF9 /* Build configuration list for PBXNativeTarget "libtinyswf" */;
+			buildPhases = (
+				43D8C146179FB28900CB2EF9 /* Sources */,
+				43D8C147179FB28900CB2EF9 /* Frameworks */,
+				43D8C148179FB28900CB2EF9 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = libtinyswf;
+			productName = tinyswf;
+			productReference = 43D8C14A179FB28900CB2EF9 /* liblibtinyswf.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		43D8C142179FB28900CB2EF9 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0460;
+				ORGANIZATIONNAME = jbyu;
+			};
+			buildConfigurationList = 43D8C145179FB28900CB2EF9 /* Build configuration list for PBXProject "libtinyswf" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 43D8C141179FB28900CB2EF9;
+			productRefGroup = 43D8C14B179FB28900CB2EF9 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				43D8C149179FB28900CB2EF9 /* libtinyswf */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		43D8C146179FB28900CB2EF9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				43D8C183179FB36A00CB2EF9 /* DefineButton.cpp in Sources */,
+				43D8C184179FB36A00CB2EF9 /* DefineFont.cpp in Sources */,
+				43D8C185179FB36A00CB2EF9 /* DefineShape.cpp in Sources */,
+				43D8C186179FB36A00CB2EF9 /* DefineSprite.cpp in Sources */,
+				43D8C187179FB36A00CB2EF9 /* DefineText.cpp in Sources */,
+				43D8C188179FB36A00CB2EF9 /* DoAction.cpp in Sources */,
+				43D8C189179FB36A00CB2EF9 /* PlaceObject.cpp in Sources */,
+				43D8C18A179FB36A00CB2EF9 /* VectorEngine.cpp in Sources */,
+				43D8C18B179FB36A00CB2EF9 /* tsHeader.cpp in Sources */,
+				43D8C18C179FB36A00CB2EF9 /* tsMovieClip.cpp in Sources */,
+				43D8C18D179FB36A00CB2EF9 /* tsReader.cpp in Sources */,
+				43D8C18E179FB36A00CB2EF9 /* tsSWF.cpp in Sources */,
+				43D8C18F179FB36A00CB2EF9 /* tsTag.cpp in Sources */,
+				43D8C1A2179FB37500CB2EF9 /* bucketalloc.c in Sources */,
+				43D8C1A3179FB37500CB2EF9 /* dict.c in Sources */,
+				43D8C1A4179FB37500CB2EF9 /* geom.c in Sources */,
+				43D8C1A5179FB37500CB2EF9 /* mesh.c in Sources */,
+				43D8C1A6179FB37500CB2EF9 /* priorityq.c in Sources */,
+				43D8C1A7179FB37500CB2EF9 /* sweep.c in Sources */,
+				43D8C1A8179FB37500CB2EF9 /* tess.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		43D8C156179FB28900CB2EF9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		43D8C157179FB28900CB2EF9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		43D8C159179FB28900CB2EF9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/tinyswf.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "libtinyswf-Prefix.pch";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = libtinyswf;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		43D8C15A179FB28900CB2EF9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/tinyswf.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "libtinyswf-Prefix.pch";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = libtinyswf;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		43D8C145179FB28900CB2EF9 /* Build configuration list for PBXProject "libtinyswf" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				43D8C156179FB28900CB2EF9 /* Debug */,
+				43D8C157179FB28900CB2EF9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		43D8C158179FB28900CB2EF9 /* Build configuration list for PBXNativeTarget "libtinyswf" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				43D8C159179FB28900CB2EF9 /* Debug */,
+				43D8C15A179FB28900CB2EF9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 43D8C142179FB28900CB2EF9 /* Project object */;
+}

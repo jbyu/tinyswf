@@ -6,8 +6,8 @@ using namespace cocos2d;
 FontData::FontData(const char *font_name, int fontsize) {
 	bool ret = createFont(font_name, fontsize, _font);
 	_cache = new GlyphCache(256);
-	_bitmap = new CCTexture2D;
-	_bitmap->initWithData(0, kCCTexture2DPixelFormat_A8, kTEXTURE_SIZE, kTEXTURE_SIZE, CCSizeMake(kTEXTURE_SIZE, kTEXTURE_SIZE));
+	_bitmap = new Texture2D;
+	_bitmap->initWithData(0, kCCTexture2DPixelFormat_A8, kTEXTURE_SIZE, kTEXTURE_SIZE, Size(kTEXTURE_SIZE, kTEXTURE_SIZE));
     //glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 }
@@ -72,7 +72,7 @@ FontCache::~FontCache() {
 	FontData::terminate();
 }
 
-cocos2d::CCTexture2D* FontCache::selectFont(const char *font_name, int fontsize) {
+cocos2d::Texture2D* FontCache::selectFont(const char *font_name, int fontsize) {
 	CacheData::iterator it = _font_cache.find(font_name);
 	if (it != _font_cache.end()) {
 		_selectedFont = (it->second);

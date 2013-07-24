@@ -5,7 +5,7 @@
 #include "network/HttpResponse.h"
 #include "network/HttpClient.h"
 
-class HelloWorld : public cocos2d::CCLayer
+class HelloWorld : public cocos2d::Layer
 {
 public:
 	virtual ~HelloWorld();
@@ -14,13 +14,13 @@ public:
     virtual bool init();  
 
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
-    static cocos2d::CCScene* scene();
+    static cocos2d::Scene* scene();
     
     // a selector callback
-    void menuCloseCallback(CCObject* pSender);
+    void menuCloseCallback(cocos2d::Object* pSender);
     
     //Http Response Callback
-    void onHttpRequestCompleted(cocos2d::extension::CCHttpClient *sender, cocos2d::extension::CCHttpResponse *response);
+    void onHttpRequestCompleted(cocos2d::extension::HttpClient *sender, cocos2d::extension::HttpResponse *response);
 
     // implement the "static node()" method manually
     CREATE_FUNC(HelloWorld);

@@ -5,7 +5,7 @@ Copyright (c) 2013 jbyu. All rights reserved.
 #include "DefineText.h"
 #include "DefineFont.h"
 #include "tsSWF.h"
-#include "..\rapidxml\rapidxml.hpp"
+#include "rapidxml.hpp"
 
 using namespace tinyswf;
 using namespace rapidxml;

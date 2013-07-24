@@ -12,8 +12,8 @@ const int kNUMBER_GLYPH_PER_ROW	= kTEXTURE_SIZE / kGLYPH_WIDTH;
 // number of glyph per row in the texture
 
 namespace cocos2d {
-	class CCTexture2D;
-	class CCDictionary;
+	class Texture2D;
+	class Dictionary;
 }
 
 struct GlyphInfo {
@@ -32,6 +32,7 @@ class FontData {
 	typedef const void* Handle;
 	typedef LRUCache<wchar_t, GlyphInfo> GlyphCache;
 
+	// platform-depend
 	static bool initialize(void);
 	static bool createFont(const char *font_name, int fontsize, Handle& font);
 	static void destroyFont(const Handle& font);
@@ -39,7 +40,7 @@ class FontData {
 	static void* getBitmap();
 	static void terminate(void);
 
-	cocos2d::CCTexture2D *_bitmap;
+	cocos2d::Texture2D *_bitmap;
 	GlyphCache *_cache;
 	Handle _font;
 
@@ -65,7 +66,7 @@ public:
 	CacheData _font_cache;
 	FontData* _selectedFont;
 
-	cocos2d::CCTexture2D* selectFont(const char *font_name, int fontsize);
+	cocos2d::Texture2D* selectFont(const char *font_name, int fontsize);
 	GlyphInfo* getGlyph(wchar_t code);
 
 	static FontCache* sharedGlyphCache() { return _instance; }

@@ -9,13 +9,13 @@ Copyright (c) 2013 jbyu. All rights reserved.
 #include "base_nodes/CCNode.h"
 
 namespace cocos2d {
-	class CCTexture2D;
-	class CCGLProgram;
+	class Texture2D;
+	class GLProgram;
 }
 
 tinyswf::Asset myLoadAssetCallback( const char *name, bool import );
 
-class CCFlash : public cocos2d::CCNode {
+class CCFlash : public cocos2d::Node {
 	tinyswf::SWF *mpSWF;
 
 public:
@@ -33,11 +33,11 @@ public:
 };
 
 class CCFlashRenderer : public tinyswf::Renderer {
-    typedef std::map<std::string, cocos2d::CCTexture2D*> TextureCache;
+    typedef std::map<std::string, cocos2d::Texture2D*> TextureCache;
     TextureCache moCache;
-	cocos2d::CCGLProgram *mpFontShader;
-	cocos2d::CCGLProgram *mpDefaultShader;
-	cocos2d::CCGLProgram *mpTextureShader;
+	cocos2d::GLProgram *mpFontShader;
+	cocos2d::GLProgram *mpDefaultShader;
+	cocos2d::GLProgram *mpTextureShader;
 	int miFontUVScaleLocation;
 	int miFontColorLocation;
 	int miColorLocation;
@@ -70,7 +70,7 @@ public:
     void drawBegin(void);
     void drawEnd(void);
 
-    cocos2d::CCTexture2D* getTexture(const char *filename , int &width, int&height, int&x, int&y);
+    cocos2d::Texture2D* getTexture(const char *filename , int &width, int&height, int&x, int&y);
 };
 
 
