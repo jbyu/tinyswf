@@ -22,10 +22,13 @@ public:
 	virtual ~CCFlash();
 
     virtual void draw();
+
     virtual void update(float delta);
 
 	virtual bool initWithFile(const char* filename);
-	    
+
+	bool setString(const char* name, const char *text);
+
     static CCFlash* create(const char* filename);
 };
 

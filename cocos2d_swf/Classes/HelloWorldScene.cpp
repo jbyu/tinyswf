@@ -151,7 +151,9 @@ bool HelloWorld::init()
     CCFlash* pFlash = CCFlash::create("test2.swf");
 	pFlash->scheduleUpdate();
 	this->addChild(pFlash,1);
-	
+
+	pFlash->setString("t2","12345");
+
 #if 0
 	CCHttpRequest* request = new CCHttpRequest();
 	request->setUrl("https://localhost/codeigniter/user/login");

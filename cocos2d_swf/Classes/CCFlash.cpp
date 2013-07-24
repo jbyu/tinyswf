@@ -498,3 +498,6 @@ void CCFlash::update(float delta) {
 	mpSWF->update(delta);
 }
 
+bool CCFlash::setString(const char* name, const char *text) {
+	return mpSWF->setString(name, text);
+}

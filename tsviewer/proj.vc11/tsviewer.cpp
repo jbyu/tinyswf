@@ -363,7 +363,12 @@ public:
             glVertex2f(rect.xmin, rect.ymax);
 	    glEnd();
     }
-    
+
+	void formatText(tinyswf::VertexArray& vertices, const tinyswf::RECT& rect, const tinyswf::TextStyle& style, const std::wstring& text)  {
+	}
+	void drawText(const tinyswf::VertexArray& vertices, const tinyswf::RECT& rect, const tinyswf::TextStyle& style, const std::wstring& text) {
+	}
+
     void drawBegin(void)
     {
 	glMatrixMode(GL_MODELVIEW);

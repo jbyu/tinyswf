@@ -51,6 +51,7 @@ public:
 	uint16_t depth()        const { return _depth; }
     uint16_t clipDepth()    const { return _clip_depth; }
 	uint16_t characterID()  const { return _character_id; }
+	const std::string& name() const { return _name; }
 
 	void copyAttributes(MovieObject&);
 

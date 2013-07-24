@@ -57,8 +57,12 @@ public:
 //-----------------------------------------------------------------------------
 class MovieClip : public ICharacter {
 	friend class SWF;
+	friend class PlaceObjectTag;
+	friend class RemoveObjectTag;
 
 protected:
+	typedef std::map<uint16_t, MovieObject>	DisplayList;
+
 	void setupFrame(const TagList& tags, bool skipAction);
 
     void clearDisplayList(void);
@@ -69,14 +73,19 @@ protected:
     }
 
 	ICharacter *createCharacter(const ITag*);
+	ICharacter* getInstance(const PlaceObjectTag*);
+    DisplayList& getDisplayList(void) { return _display_list; }
+
+	static bool sbCalculateRectangle;
 
 public:
-	typedef std::map<uint16_t, MovieObject>	DisplayList;
 
 	MovieClip( SWF* swf,  const MovieFrames& data );
     virtual ~MovieClip();
 
-	ICharacter* getInstance(const PlaceObjectTag*);
+	ICharacter* getInstance(const char *name);
+
+	bool setString(const char *name, const char* text);
 
     MATRIX* getTransform(void) { return _transform; }
 
@@ -100,13 +109,10 @@ public:
 
     bool isPlay(void) const { return _play; }
 
-    DisplayList& getDisplayList(void) { return _display_list; }
-
     SWF* getSWF(void) { return _owner; }
 
     static bool createFrames( Reader& reader, SWF& swf, MovieFrames& );
     static void destroyFrames( MovieFrames& );
-	static bool sbCalculateRectangle;
 
 protected:
 	typedef std::map<const ITag*, ICharacter*>	CharacterCache;

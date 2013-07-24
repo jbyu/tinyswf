@@ -168,6 +168,36 @@ ICharacter *MovieClip::getInstance(const PlaceObjectTag* placeTag) {
 	return character;
 }
 
+ICharacter *MovieClip::getInstance(const char* name) {
+	FrameList::const_iterator fit = _data._frames.begin();
+	while (fit != _data._frames.end()) {
+		const TagList *tags = (*fit);
+		TagList::const_iterator it = tags->begin();
+		while (it != tags->end()) {
+			const ITag* tag = (*it);
+			if (tag->code() == TAG_PLACE_OBJECT2) {
+				PlaceObjectTag* placeTag = (PlaceObjectTag*)tag;
+				if (placeTag->name() == name) {
+					return getInstance(placeTag);
+				}
+			}
+			++it;
+		}
+		++fit;
+	}
+	return NULL;
+}
+
+bool MovieClip::setString(const char* name, const char *text) {
+	ICharacter *ch = getInstance(name);
+	if (!ch)
+		return false;
+	tinyswf::Text* instance = (tinyswf::Text*)ch;
+	instance->setString(text);
+
+	return true;
+}
+
 void MovieClip::clearDisplayList(void)
 {
 #if 0

@@ -133,7 +133,7 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
     <ClCompile Include="..\Classes\AppDelegate.cpp" />
     <ClCompile Include="..\Classes\CCFlash.cpp" />
     <ClCompile Include="..\Classes\FontCache.cpp" />
-    <ClCompile Include="..\Classes\GlyphCache_win32.cpp" />
+    <ClCompile Include="..\Classes\FontCache_win32.cpp" />
     <ClCompile Include="..\Classes\HelloWorldScene.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>

@@ -21,10 +21,10 @@
     <ClCompile Include="..\Classes\CCFlash.cpp">
       <Filter>Classes</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\GlyphCache_win32.cpp">
+    <ClCompile Include="..\Classes\FontCache.cpp">
       <Filter>Classes</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\FontCache.cpp">
+    <ClCompile Include="..\Classes\FontCache_win32.cpp">
       <Filter>Classes</Filter>
     </ClCompile>
   </ItemGroup>
