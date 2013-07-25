@@ -78,7 +78,7 @@ public:
 
     virtual void setup(MovieClip&, bool skipAction)
     {
-        Speaker *speaker = tinyswf::Speaker::getSpeaker();
+		Speaker *speaker = tinyswf::Speaker::getInstance();
         if (NULL==speaker) return;
         speaker->playSound(_asset.handle, _syncStop, _noMultiple, _loop);
     }

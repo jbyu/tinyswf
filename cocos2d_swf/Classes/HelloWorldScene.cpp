@@ -1,9 +1,16 @@
 #include "HelloWorldScene.h"
 #include "AppMacros.h"
 #include <string>
+
+#if _DEBUG
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
 //#include <vld.h>
+#endif//_DEBUG
 
 #include "CCFlash.h"
+#include "FontCache.h"
 
 #ifdef USE_HTTP
 #include "network/HttpRequest.h"
@@ -88,7 +95,8 @@ Scene* HelloWorld::scene()
 }
 
 HelloWorld::~HelloWorld() {
-    delete tinyswf::Renderer::getRenderer();
+    delete tinyswf::Renderer::getInstance();
+	delete tinyswf::FontHandler::getInstance();
 	tinyswf::SWF::terminate();
 #ifdef USE_HTTP
     HttpClient::getInstance()->destroyInstance();
@@ -152,7 +160,8 @@ bool HelloWorld::init()
 
 	// initialize flash
     tinyswf::SWF::initialize(myLoadAssetCallback, 256*1024); // 256kB buffer for libtess2
-    tinyswf::Renderer::setRenderer(new CCFlashRenderer);
+	tinyswf::Renderer::setInstance(new CCFlashRenderer);
+	tinyswf::FontHandler::setInstance(new CCFlashFontHandler);
     CCFlash* pFlash = CCFlash::create("test2.swf");
 	pFlash->scheduleUpdate();
 	this->addChild(pFlash,1);

@@ -2,6 +2,13 @@
 #include "../Classes/AppDelegate.h"
 #include "CCEGLView.h"
 
+#if _DEBUG
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+//#include <vld.h>
+#endif//_DEBUG
+
 USING_NS_CC;
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,

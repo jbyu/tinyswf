@@ -410,13 +410,13 @@ void ShapeWithStyle::draw() {
 		const Shape& shape = *i;
 		for (MeshArray::const_iterator j = shape._meshes.begin(); j != shape._meshes.end(); ++j) {
 			if (j->_asset.import) {
-				Renderer::getRenderer()->drawImportAsset(j->_bound, SWF::getCurrentCXForm(), j->_asset);
+				Renderer::getInstance()->drawImportAsset(j->_bound, SWF::getCurrentCXForm(), j->_asset);
 			} else {
-				Renderer::getRenderer()->drawTriangles( j->_vertices, SWF::getCurrentCXForm(), *(j->_style), j->_asset);
+				Renderer::getInstance()->drawTriangles( j->_vertices, SWF::getCurrentCXForm(), *(j->_style), j->_asset);
 			}
 		}
 		for (LineArray::const_iterator j = shape._lines.begin(); j != shape._lines.end(); ++j) {
-			Renderer::getRenderer()->drawLineStrip( j->_vertices, SWF::getCurrentCXForm(), *(j->_style));
+			Renderer::getInstance()->drawLineStrip( j->_vertices, SWF::getCurrentCXForm(), *(j->_style));
 		}
 	}
 }
@@ -493,7 +493,7 @@ void DefineShapeTag::print() {
 	
 void DefineShapeTag::draw(void) {
 	_shape_with_style.draw();
-    //Renderer::getRenderer()->drawQuad(_bound, SWF::getCurrentCXForm(), _asset.handle);
+    //Renderer::getInstance()->drawQuad(_bound, SWF::getCurrentCXForm(), _asset.handle);
 }
 	
 ITag* DefineShapeTag::create( TagHeader& header ) {

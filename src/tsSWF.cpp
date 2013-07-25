@@ -24,8 +24,11 @@ using namespace tinyswf;
 	
 Speaker *Speaker::spSpeaker = NULL;
 Renderer *Renderer::spRenderer = NULL;
+FontHandler *FontHandler::spHandler = NULL;
+
 SWF::LoadAssetCallback SWF::_asset_loader = NULL;
 SWF::TagFactoryMap SWF::_tag_factories;
+
 MATRIX3f SWF::_sCurrentMatrix = kMatrix3fIdentity;
 CXFORM SWF::_sCurrentCXForm = kCXFormIdentity;
 
@@ -158,7 +161,7 @@ void SWF::updateDuplicate( float delta ) {
 }
 
 void SWF::drawDuplicate(void) {
-    Renderer::getRenderer()->drawBegin();
+    Renderer::getInstance()->drawBegin();
 	CharacterArray::iterator it = _duplicates.begin();
 	while (_duplicates.end() != it) {
 		MovieClip *movie = (MovieClip*)(*it);
@@ -172,7 +175,7 @@ void SWF::drawDuplicate(void) {
     	// restore old matrix
         _sCurrentMatrix = origMTX;
     }
-    Renderer::getRenderer()->drawEnd();
+    Renderer::getInstance()->drawEnd();
 }
 
 void SWF::drawMovieClip(MovieClip *movie, float alpha)
@@ -188,9 +191,9 @@ void SWF::drawMovieClip(MovieClip *movie, float alpha)
     float origAlpha = _sCurrentCXForm.mult.a;
     _sCurrentCXForm.mult.a = alpha;
 
-	Renderer::getRenderer()->drawBegin();
+	Renderer::getInstance()->drawBegin();
     movie->draw();
-    Renderer::getRenderer()->drawEnd();
+    Renderer::getInstance()->drawEnd();
 
     // restore old matrix
     _sCurrentMatrix = origMTX;
@@ -209,9 +212,9 @@ void SWF::update( float delta )
 }
     
 void SWF::draw(void) {
-    Renderer::getRenderer()->drawBegin();
+    Renderer::getInstance()->drawBegin();
 	MovieClip::draw();
-    Renderer::getRenderer()->drawEnd();
+    Renderer::getInstance()->drawEnd();
 }
 
 RECT SWF::calculateRectangle(uint16_t character, const MATRIX* xf) {

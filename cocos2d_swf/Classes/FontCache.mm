@@ -38,6 +38,7 @@ struct SYSFONT {
 	CTFontRef hFont;
 	float ascent;
 	float descent;
+	float line_height;
 };
 
 bool FontData::initialize(void) {
@@ -65,8 +66,9 @@ bool FontData::createFont(const char *font_name, int size, Handle& handle) {
     if (hFont) {
 		SYSFONT *font = new SYSFONT;
 		font->hFont = hFont;
-	    font->ascent = CTFontGetAscent (hFont);
-		font->descent = CTFontGetDescent (hFont);
+	    font->ascent = CTFontGetAscent(hFont);
+		font->descent = CTFontGetDescent(hFont);
+		font->line_height = font->ascent + font->descent + CTFontGetLeading(hFont);
         handle = font;
         return true;
     }
@@ -130,9 +132,12 @@ bool FontData::getGlyph(const Handle& handle, wchar_t codepoint, GlyphInfo& entr
     return true;
 }
 
+float FontData::getLineHeight(const Handle& handle) {
+    SYSFONT *sysfont = (SYSFONT*)handle;
+	return sysfont->line_height;
+}
+
 void* FontData::getBitmap() {
     return spBitmapBuffer;
 }
-
-
 

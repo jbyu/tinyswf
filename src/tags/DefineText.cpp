@@ -133,9 +133,6 @@ bool DefineEditTextTag::read( Reader& reader, SWF& swf, MovieFrames& ) {
 	}
 	if (flag1 & INFO_HAS_FONT) {
 		_style.font_height = reader.get<uint16_t>() * SWF_INV_TWIPS;
-#ifdef WIN32
-		_style.font_height *= 1.1f;
-#endif
 	}
 	if (flag1 & INFO_HAS_COLOR) {
 		_style.color.r = reader.get<uint8_t>()*SWF_INV_COLOR;
@@ -163,7 +160,9 @@ bool DefineEditTextTag::read( Reader& reader, SWF& swf, MovieFrames& ) {
 		_initial_text.assign( reader.getString() );
 	}
 	
-	swf.addCharacter( this, _character_id );
+	if ( FontHandler::getInstance() )
+		swf.addCharacter( this, _character_id );
+
     return true; // keep tag
 }
 
@@ -253,6 +252,7 @@ bool utf8_to_utf16(std::wstring& utf16, const std::string& utf8) {
 
 Text::Text(const DefineEditTextTag &tag) 
 	:_reference(tag)
+	,_glyphs(0)
 {
 	_style = tag._style;
 	_bound = tag._bound;
@@ -268,20 +268,21 @@ Text::Text(const DefineEditTextTag &tag)
 	} else {
 		setString(tag._initial_text.c_str());
 	}
-
 }
 
 void Text::draw(void) {
-	Renderer::getRenderer()->drawText(_vertices, _glyphs, _bound, _style, _text);
+	SWF_ASSERT( FontHandler::getInstance() );
+	FontHandler::getInstance()->drawText(_vertices, _glyphs, _style);
 }
-
-const int kSIZE_PER_GLYPH = 12; // (xy,uv) * 6 per glyph
 
 bool Text::setString(const char* str) {
 	bool ret = utf8_to_utf16(_text, str);
-	_vertices.resize(_text.size()*kSIZE_PER_GLYPH);
-	_glyphs = Renderer::getRenderer()->formatText(_vertices, _bound, _style, _text);
-	return ret;
+	FontHandler *handler = FontHandler::getInstance();
+	if (handler && ret) {
+		_glyphs = handler->formatText(_vertices, _bound, _style, _text);
+		return true;
+	}
+	return false;
 }
 
 // HTML content

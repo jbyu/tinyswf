@@ -111,10 +111,10 @@ public:
 	
 protected:
 	const DefineEditTextTag& _reference;
+	uint32_t	_glyphs;
 	RECT		_bound;
 	TextStyle	_style;
 	VertexArray _vertices;
-	uint32_t	_glyphs;
 	std::wstring _text;
 };
 	

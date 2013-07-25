@@ -26,9 +26,6 @@ public:
 	virtual void drawLineStrip(const VertexArray& vertices, const CXFORM& cxform, const LineStyle& style) = 0;
     virtual void drawImportAsset(const RECT& rect, const CXFORM& cxform, const Asset& asset) = 0;
 
-    virtual uint32_t formatText(VertexArray& vertices, const RECT& rect, const TextStyle& style, const std::wstring& text) = 0;
-    virtual void drawText(const VertexArray& vertices, uint32_t glyphs, const RECT& rect, const TextStyle& style, const std::wstring& text) = 0;
-
     virtual void drawBegin(void) = 0;
     virtual void drawEnd(void) = 0;
 
@@ -39,8 +36,8 @@ public:
 
     virtual void clear( void ) {}
 
-    static Renderer* getRenderer(void) { return spRenderer; }
-    static void setRenderer(Renderer *r) { spRenderer = r; }
+    static Renderer* getInstance(void) { return spRenderer; }
+    static void setInstance(Renderer *r) { spRenderer = r; }
 };
 
 //-----------------------------------------------------------------------------
@@ -54,8 +51,25 @@ public:
     virtual unsigned int getSound( const char *filename ) = 0;
     virtual void playSound( unsigned int sound, bool stop, bool noMultiple, bool loop ) = 0;
 
-    static Speaker* getSpeaker(void) { return spSpeaker; }
-    static void setSpeaker(Speaker *r) { spSpeaker = r; }
+    static Speaker* getInstance(void) { return spSpeaker; }
+    static void setInstance(Speaker *r) { spSpeaker = r; }
+};
+
+//-----------------------------------------------------------------------------
+
+class FontHandler {
+public:
+	virtual ~FontHandler() {}
+
+	virtual void drawText(const VertexArray& vertices, uint32_t glyphs, const TextStyle& style) = 0;
+
+    virtual uint32_t formatText(VertexArray& vertices, const RECT& rect, const TextStyle& style, const std::wstring& text) = 0;
+
+    static FontHandler* getInstance(void) { return spHandler; }
+    static void setInstance(FontHandler *r) { spHandler = r; }
+
+protected:
+	static FontHandler *spHandler;
 };
 
 //-----------------------------------------------------------------------------

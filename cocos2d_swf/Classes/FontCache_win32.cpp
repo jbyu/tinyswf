@@ -9,22 +9,24 @@
 #include "stb_truetype.h"
 
 using namespace cocos2d;
+using namespace tinyswf;
+
+static HDC ghDC;
 
 static unsigned char *spSTBTT_BITMAP = NULL;
 
 struct SYSFONT {
     stbtt_fontinfo  info;
-    uint32_t  mmapSize;
-    int  descent;
+	float ascent;
+    float descent;
+	float line_height;
 	float scale;
-	float height;
-	TEXTMETRIC metric;
-	HFONT	hFont;
+	//TEXTMETRIC metric;
+	//HFONT	hFont;
 };
 
-HDC ghDC;
 
-bool FontData::initialize(void) {
+bool OSFont::initialize(void) {
     spSTBTT_BITMAP = new unsigned char[kGLYPH_WIDTH * kGLYPH_WIDTH];
     HDC hdc = GetDC(NULL);
     ghDC   = CreateCompatibleDC(hdc);
@@ -32,27 +34,27 @@ bool FontData::initialize(void) {
 	return true;
 }
 
-bool FontData::createFont(const char *fontname, int fontsize, Handle& handle) {
+OSFont::Handle OSFont::create(const char *fontname, int fontsize) {
 	SYSFONT *font = new SYSFONT;
 
 	//int nHeight = -MulDiv(fontsize, GetDeviceCaps(ghDC, LOGPIXELSY), 72);
-	font->hFont = CreateFont(fontsize, 0, 0, 0,
+	HFONT hFont = CreateFont(fontsize, 0, 0, 0,
 		FW_DONTCARE, FALSE, FALSE, FALSE, 
 		DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH,
 		fontname);
-	SelectObject(ghDC, font->hFont);
-	GetTextMetrics(ghDC, &font->metric);
+	SelectObject(ghDC, hFont);
+	//GetTextMetrics(ghDC, &font->metric);
 
 	DWORD tag = 0x66637474;//ttcf
-	font->mmapSize = GetFontData(ghDC, tag, 0, NULL, 0);
-	if (-1 == font->mmapSize) {
+	int size = GetFontData(ghDC, tag, 0, NULL, 0);
+	if (-1 == size) {
 		tag = 0;
-		font->mmapSize = GetFontData(ghDC, tag, 0, NULL, 0);
+		size = GetFontData(ghDC, tag, 0, NULL, 0);
 	}
-	void *pData = new char[font->mmapSize];
-	GetFontData(ghDC, tag, 0, pData, font->mmapSize);
+	void *pData = new char[size];
+	GetFontData(ghDC, tag, 0, pData, size);
+	DeleteObject(hFont);
 
-	font->height = fontsize;
     int start = stbtt_GetFontOffsetForIndex( (const unsigned char *)pData, 0);
     if (stbtt_InitFont(&font->info, (const unsigned char *)pData, start)) {
 	    // Store normalized line height. The real line height is got by multiplying the lineh by font size.
@@ -62,33 +64,39 @@ bool FontData::createFont(const char *fontname, int fontsize, Handle& handle) {
 	    //fnt->ascender = (float)ascent / (float)fh;
 	    //fnt->descender = (float)descent / (float)fh;
 	    //fnt->lineh = (float)(fh + lineGap) / (float)fh;
-       	float scale = stbtt_ScaleForPixelHeight(&font->info, font->height);
-        font->descent = (int)ceilf(descent*scale);
+       	float scale = stbtt_ScaleForPixelHeight(&font->info, fontsize) * 1.1f;
+		font->ascent = ascent * scale;
+        font->descent = descent * scale;
+		font->line_height = (ascent - descent + lineGap) * scale;
         font->scale = scale;
-        handle = font;
-        return true;
+        return font;
     }
-    return false;
+	delete font;
+    return NULL;
 }
 
-void FontData::destroyFont(const Handle& handle) {
+void OSFont::destroy(const Handle& handle) {
     SYSFONT *font = (SYSFONT*)handle;
-	DeleteObject(font->hFont);
 	delete [] font->info.data;
     delete font;
 	font = NULL;
 }
 
-void FontData::terminate(void) { 
+void OSFont::terminate(void) { 
 	delete [] spSTBTT_BITMAP; 
 	spSTBTT_BITMAP = NULL;
 	//DeleteObject(ghBitmap);
 	DeleteDC(ghDC);
 }
 
-void* FontData::getBitmap() { return spSTBTT_BITMAP; }
+void* OSFont::getGlyphBitmap() { return spSTBTT_BITMAP; }
 
-bool FontData::getGlyph(const Handle& handle, wchar_t codepoint, GlyphInfo& entry) {
+float OSFont::getLineHeight(const Handle& handle) {
+    SYSFONT *sysfont = (SYSFONT*)handle;
+	return sysfont->line_height;
+}
+
+bool OSFont::makeGlyph(const Handle& handle, wchar_t codepoint, GlyphInfo& entry) {
     SYSFONT *sysfont = (SYSFONT*)handle;
     stbtt_fontinfo *font = &sysfont->info;
 	int advance, lsb, x0, y0, x1, y1;
@@ -97,28 +105,28 @@ bool FontData::getGlyph(const Handle& handle, wchar_t codepoint, GlyphInfo& entr
         return false;
 
     float scale = sysfont->scale;
-    int descent = sysfont->descent;
-    //if (128 > codepoint) descent /= 2;
-
+    
 	stbtt_GetGlyphHMetrics(font, glyph, &advance, &lsb);
 	stbtt_GetGlyphBitmapBox(font, glyph, scale, scale, &x0,&y0,&x1,&y1);
 
-    int width = x1 - x0;
-	int height = y1 - y0;
-    entry.advance = ceilf(advance*scale);
+    int width = x1 - x0 +1;
+	int height = y1 - y0+1;
+    entry.advance = advance * scale;
     entry.offsetX = x0;
-	entry.offsetY = sysfont->height + y0 + descent;
-    entry.width = width;
+	entry.offsetY = sysfont->ascent + y0;
+	entry.width = width;
     entry.height = height;
 
     memset(spSTBTT_BITMAP, 0, kGLYPH_WIDTH * kGLYPH_WIDTH);
     stbtt_MakeGlyphBitmap(font, spSTBTT_BITMAP, kGLYPH_WIDTH, kGLYPH_WIDTH, kGLYPH_WIDTH, scale, scale, glyph);
-    /*
-    spSTBTT_BITMAP[0]=255;
-    spSTBTT_BITMAP[1]=255;
-    spSTBTT_BITMAP[2]=255;
-    spSTBTT_BITMAP[3]=255;
-    */
+
+#if 0
+	const int offset = kGLYPH_WIDTH * (kGLYPH_WIDTH - 1);
+	for(int i = 0; i < kGLYPH_WIDTH; ++i) {
+		spSTBTT_BITMAP[i]=255;
+	    spSTBTT_BITMAP[i+offset]=255;
+	}
+#endif    
     return true;
 }
 

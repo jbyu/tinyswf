@@ -269,7 +269,7 @@ void MovieObject::draw() {
     CXFORM origCXF = currCXF;
     CXFORMMultiply(currCXF, _cxform, currCXF);
 
-    Renderer::getRenderer()->applyTransform(currMTX);
+    Renderer::getInstance()->applyTransform(currMTX);
 
     // C' = C * Mult + Add
     // in opengl, use blend mode and multi-pass to achieve that
@@ -299,16 +299,16 @@ void MovieClip::draw(void)
 		const uint16_t depth = iter->first;
 		if (mask && depth > highest_masked_layer) {
             // restore stencil
-            Renderer::getRenderer()->maskOffBegin();
+            Renderer::getInstance()->maskOffBegin();
             mask->draw(); 
-            Renderer::getRenderer()->maskOffEnd();
+            Renderer::getInstance()->maskOffEnd();
     		mask = NULL;
 		}
 		if (0 < clip) {
             // draw mask
-    		Renderer::getRenderer()->maskBegin();
+    		Renderer::getInstance()->maskBegin();
             object.draw(); 
-    		Renderer::getRenderer()->maskEnd();
+    		Renderer::getInstance()->maskEnd();
 	    	highest_masked_layer = clip;
 			mask = &object;
 		} else {
@@ -319,9 +319,9 @@ void MovieClip::draw(void)
 	if (mask) {
 		// If a mask masks the scene all the way up to the highest layer, 
         // it will not be disabled at the end of drawing the display list, so disable it manually.
-        Renderer::getRenderer()->maskOffBegin();
+        Renderer::getInstance()->maskOffBegin();
         mask->draw(); 
-        Renderer::getRenderer()->maskOffEnd();
+        Renderer::getInstance()->maskOffEnd();
     	mask = NULL;
 	}
 }

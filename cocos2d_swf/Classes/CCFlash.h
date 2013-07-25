@@ -35,11 +35,8 @@ public:
 class CCFlashRenderer : public tinyswf::Renderer {
     typedef std::map<std::string, cocos2d::Texture2D*> FlashTextureCache;
     FlashTextureCache moCache;
-	cocos2d::GLProgram *mpFontShader;
 	cocos2d::GLProgram *mpDefaultShader;
 	cocos2d::GLProgram *mpTextureShader;
-	int miFontUVScaleLocation;
-	int miFontColorLocation;
 	int miColorLocation;
 	int miAddColorLocation;
 	int miMultColorLocation;
@@ -64,9 +61,6 @@ public:
 
     void drawImportAsset( const tinyswf::RECT& rect, const tinyswf::CXFORM& cxform, const tinyswf::Asset& asset );
     
-    uint32_t formatText(tinyswf::VertexArray& vertices, const tinyswf::RECT& rect, const tinyswf::TextStyle& style, const std::wstring& text);
-	void drawText(const tinyswf::VertexArray& vertices, uint32_t glyphs, const tinyswf::RECT& rect, const tinyswf::TextStyle& style, const std::wstring& text);
-
     void drawBegin(void);
     void drawEnd(void);
 

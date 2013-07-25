@@ -4,16 +4,14 @@ Copyright (c) 2013 jbyu. All rights reserved.
 #ifndef __FONT_CACHE_H__
 #define __FONT_CACHE_H__
 
+#include "tinyswf.h"
 #include "lru_cache.h"
 
 const int kGLYPH_WIDTH  = 32;
-const int kTEXTURE_SIZE = 1024;
-const int kNUMBER_GLYPH_PER_ROW	= kTEXTURE_SIZE / kGLYPH_WIDTH; 
-// number of glyph per row in the texture
 
 namespace cocos2d {
 	class Texture2D;
-	class Dictionary;
+	class GLProgram;
 }
 
 struct GlyphInfo {
@@ -25,52 +23,66 @@ struct GlyphInfo {
 	unsigned short index;
 };
 
-class FontData {
-	friend class FontCache;
+class OSFont {
+	friend class CCFlashFontHandler;
 
 	typedef const void* Handle;
 	typedef LRUCache<wchar_t, GlyphInfo> GlyphCache;
 
-	// platform-depend
-	static bool initialize(void);
-	static bool createFont(const char *font_name, int fontsize, Handle& font);
-	static void destroyFont(const Handle& font);
-	static bool getGlyph(const Handle& font, wchar_t codepoint, GlyphInfo& entry);
-	static void* getBitmap();
-	static void terminate(void);
-
-	cocos2d::Texture2D *_bitmap;
 	GlyphCache *_cache;
+	cocos2d::Texture2D *_bitmap;
 	Handle _font;
 
-	void updateTexture();
-
 public:
-	FontData(const char *font_name, int fontsize);
-	~FontData();
+	OSFont(const char *font_name, int fontsize);
+	~OSFont();
 
 	GlyphInfo* getGlyph(wchar_t code);
+	float getLineHeight(void) { return getLineHeight(_font); }
+
+protected:
+	// platform-dependent
+	static bool initialize(void);
+	static void terminate(void);
+	static Handle create(const char *font_name, int fontsize);
+	static void destroy(const Handle& font);
+	static bool makeGlyph(const Handle& font, wchar_t codepoint, GlyphInfo& entry);
+	static float getLineHeight(const Handle& font);
+	static void* getGlyphBitmap();
 }; 
 
-class FontCache {
-private:
+//-----------------------------------------------------------------------------
+
+class CCFlashFontHandler : public tinyswf::FontHandler {
+	typedef std::map<std::string, OSFont*> CacheData;
+
+	CacheData _font_cache;
+	OSFont* _selectedFont;
+
+	cocos2d::GLProgram *mpFontShader;
+	int miFontUVScaleLocation;
+	int miFontColorLocation;
+
+	OSFont* selectFont(const char *font_name, int fontsize);
 
 public:
-	FontCache();
-	virtual ~FontCache();
+	CCFlashFontHandler();
 
-	static FontCache* _instance;
-	
-	typedef std::map<std::string, FontData*> CacheData;
-	CacheData _font_cache;
-	FontData* _selectedFont;
+	virtual ~CCFlashFontHandler();
 
-	cocos2d::Texture2D* selectFont(const char *font_name, int fontsize);
-	GlyphInfo* getGlyph(wchar_t code);
+	void drawText(const tinyswf::VertexArray& vertices, uint32_t glyphs, const tinyswf::TextStyle& style);
 
-	static FontCache* sharedGlyphCache() { return _instance; }
-	static FontCache* createInstance() { _instance = new FontCache; return _instance; }
-	static void destroyInstance() { delete _instance; _instance = NULL; }
+	uint32_t formatText(tinyswf::VertexArray& vertices, const tinyswf::RECT& rect, 
+		const tinyswf::TextStyle& style, const std::wstring& text);
+
+	GlyphInfo* getGlyph(wchar_t codepoint) {
+		return _selectedFont->getGlyph(codepoint);
+	}
+
+	float getLineHeight(void) {
+		return _selectedFont->getLineHeight();
+	}
 };
+
 
 #endif//__FONT_CACHE_H__
