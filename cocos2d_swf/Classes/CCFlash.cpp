@@ -116,10 +116,10 @@ CCFlashRenderer::~CCFlashRenderer() {
 	CC_SAFE_RELEASE_NULL(mpDefaultShader);
 	CC_SAFE_RELEASE_NULL(mpTextureShader);
 	CC_SAFE_RELEASE_NULL(mpFontShader);
-	TextureCache::iterator it = moCache.begin();
+	FlashTextureCache::iterator it = moCache.begin();
 	while(moCache.end() != it) {
 		Texture2D* tex = it->second;
-		CCTextureCache::sharedTextureCache()->removeTexture(tex);
+		TextureCache::getInstance()->removeTexture(tex);
 		++it;
 	}
 }
@@ -413,11 +413,11 @@ void CCFlashRenderer::drawEnd(void) {
 
 Texture2D* CCFlashRenderer::getTexture( const char *filename , int &width, int&height, int&x, int&y) {
     Texture2D* ret = 0;
-    TextureCache::iterator it = moCache.find(filename);
+    FlashTextureCache::iterator it = moCache.find(filename);
     if (moCache.end() != it)
         return it->second;
 
-	ret = CCTextureCache::sharedTextureCache()->addImage(filename);
+	ret = TextureCache::getInstance()->addImage(filename);
 	width = ret->getPixelsWide();
 	height = ret->getPixelsHigh();
 	x = y = 0;
@@ -459,11 +459,19 @@ CCFlash::~CCFlash() {
 
 bool CCFlash::initWithFile(const char* filename) {
     unsigned long size = 0;
-    unsigned char* pBuffer = CCFileUtils::sharedFileUtils()->getFileData(filename, "rb", &size);
+    unsigned char* pBuffer = FileUtils::getInstance()->getFileData(filename, "rb", &size);
     tinyswf::Reader reader((char*)pBuffer, size);
     mpSWF = new tinyswf::SWF;
     bool ret = mpSWF->read(reader);
     CC_SAFE_DELETE_ARRAY(pBuffer);
+#if 0
+	MATRIX3f& mtx = mpSWF->getCurrentMatrix();
+	//float scale = Director::getInstance()->getContentScaleFactor();
+	float scale = EGLView::getInstance()->getFrameZoomFactor();
+	mtx.f[0] = scale;
+	mtx.f[4] = scale;
+	mtx.f[8] = scale;
+#endif
 	return true;
 }
 

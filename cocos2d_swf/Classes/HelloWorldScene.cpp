@@ -1,9 +1,14 @@
 #include "HelloWorldScene.h"
-#include "network/HttpRequest.h"
+#include "AppMacros.h"
 #include <string>
 //#include <vld.h>
 
 #include "CCFlash.h"
+
+#ifdef USE_HTTP
+#include "network/HttpRequest.h"
+USING_NS_CC_EXT;
+#endif
 
 #ifdef WIN32
 #include <windows.h>
@@ -66,7 +71,6 @@ bool getUUID(std::string& uuid) {
 #endif//WIN32
 
 USING_NS_CC;
-USING_NS_CC_EXT;
 
 Scene* HelloWorld::scene()
 {
@@ -86,7 +90,9 @@ Scene* HelloWorld::scene()
 HelloWorld::~HelloWorld() {
     delete tinyswf::Renderer::getRenderer();
 	tinyswf::SWF::terminate();
+#ifdef USE_HTTP
     HttpClient::getInstance()->destroyInstance();
+#endif
 }
 
 // on "init" you need to initialize your instance
@@ -94,7 +100,7 @@ bool HelloWorld::init()
 {
     //////////////////////////////
     // 1. super init first
-    if ( !CCLayer::init() )
+    if ( !Layer::init() )
     {
         return false;
     }
@@ -107,17 +113,16 @@ bool HelloWorld::init()
     //    you may modify it.
 
     // add a "close" icon to exit the progress. it's an autorelease object
-    MenuItemImage *pCloseItem = MenuItemImage::create(
+    MenuItemImage *closeItem = MenuItemImage::create(
                                         "CloseNormal.png",
                                         "CloseSelected.png",
-                                        this,
-                                        menu_selector(HelloWorld::menuCloseCallback));
+                                        CC_CALLBACK_1(HelloWorld::menuCloseCallback,this));
     
-	pCloseItem->setPosition(Point(origin.x + visibleSize.width - pCloseItem->getContentSize().width/2 ,
-                                origin.y + pCloseItem->getContentSize().height/2));
+	closeItem->setPosition(Point(origin.x + visibleSize.width - closeItem->getContentSize().width/2 ,
+                                origin.y + closeItem->getContentSize().height/2));
 
     // create menu, it's an autorelease object
-    Menu* pMenu = Menu::create(pCloseItem, NULL);
+    Menu* pMenu = Menu::create(closeItem, NULL);
     pMenu->setPosition(Point::ZERO);
     this->addChild(pMenu, 1);
 
@@ -127,7 +132,7 @@ bool HelloWorld::init()
     // add a label shows "Hello World"
     // create and initialize a label
     
-    LabelTTF* pLabel = LabelTTF::create("Hello World", "Arial", 24);
+    LabelTTF* pLabel = LabelTTF::create("Hello World", "Arial", TITLE_FONT_SIZE);
     
     // position the label on the center of the screen
     pLabel->setPosition(Point(origin.x + visibleSize.width/2,
@@ -154,7 +159,7 @@ bool HelloWorld::init()
 
 	pFlash->setString("t2","12345");
 
-#if 0
+#ifdef USE_HTTP
 	CCHttpRequest* request = new CCHttpRequest();
 	request->setUrl("https://localhost/codeigniter/user/login");
 	request->setRequestType(CCHttpRequest::kHttpPost);
@@ -181,7 +186,7 @@ void HelloWorld::menuCloseCallback(Object* pSender)
 #endif
 }
 
-
+#ifdef USE_HTTP
 void HelloWorld::onHttpRequestCompleted(HttpClient *sender, HttpResponse *response)
 {
     if (!response)
@@ -211,3 +216,4 @@ void HelloWorld::onHttpRequestCompleted(HttpClient *sender, HttpResponse *respon
     //CCLog("Http Test, dump data: %s\n", response->getResponseData()->c_str());
 }
 
+#endif

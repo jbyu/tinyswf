@@ -33,8 +33,8 @@ public:
 };
 
 class CCFlashRenderer : public tinyswf::Renderer {
-    typedef std::map<std::string, cocos2d::Texture2D*> TextureCache;
-    TextureCache moCache;
+    typedef std::map<std::string, cocos2d::Texture2D*> FlashTextureCache;
+    FlashTextureCache moCache;
 	cocos2d::GLProgram *mpFontShader;
 	cocos2d::GLProgram *mpDefaultShader;
 	cocos2d::GLProgram *mpTextureShader;
