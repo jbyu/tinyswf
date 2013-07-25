@@ -104,7 +104,7 @@ bool HelloWorld::init()
     {
         return false;
     }
-    
+
     Size visibleSize = Director::getInstance()->getVisibleSize();
     Point origin = Director::getInstance()->getVisibleOrigin();
 
@@ -157,7 +157,7 @@ bool HelloWorld::init()
 	pFlash->scheduleUpdate();
 	this->addChild(pFlash,1);
 
-	pFlash->setString("t2","12345");
+	//pFlash->setString("t2","12345");
 
 #ifdef USE_HTTP
 	CCHttpRequest* request = new CCHttpRequest();

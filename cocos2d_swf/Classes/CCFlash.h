@@ -64,8 +64,8 @@ public:
 
     void drawImportAsset( const tinyswf::RECT& rect, const tinyswf::CXFORM& cxform, const tinyswf::Asset& asset );
     
-    void formatText(tinyswf::VertexArray& vertices, const tinyswf::RECT& rect, const tinyswf::TextStyle& style, const std::wstring& text);
-	void drawText(const tinyswf::VertexArray& vertices, const tinyswf::RECT& rect, const tinyswf::TextStyle& style, const std::wstring& text);
+    uint32_t formatText(tinyswf::VertexArray& vertices, const tinyswf::RECT& rect, const tinyswf::TextStyle& style, const std::wstring& text);
+	void drawText(const tinyswf::VertexArray& vertices, uint32_t glyphs, const tinyswf::RECT& rect, const tinyswf::TextStyle& style, const std::wstring& text);
 
     void drawBegin(void);
     void drawEnd(void);

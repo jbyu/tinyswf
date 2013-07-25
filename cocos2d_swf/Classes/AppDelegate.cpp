@@ -32,12 +32,11 @@ bool AppDelegate::applicationDidFinishLaunching() {
 	Size frameSize = glView->getFrameSize();
     
     vector<string> searchPath;
-
+#if 0
     // In this demo, we select resource according to the frame's height.
     // If the resource size is different from design resolution size, you need to set contentScaleFactor.
     // We use the ratio of resource's height to the height of design resolution,
     // this can make sure that the resource's height could fit for the height of design resolution.
-
     // if the frame's height is larger than the height of medium resource size, select large resource.
 	if (frameSize.height > mediumResource.size.height)
 	{
@@ -54,6 +53,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     }
     // if the frame's height is smaller than the height of medium resource size, select small resource.
 	else
+#endif
     {
         searchPath.push_back(smallResource.directory);
 

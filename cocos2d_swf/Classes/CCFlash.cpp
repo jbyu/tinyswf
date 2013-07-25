@@ -30,7 +30,7 @@ void main()							\n\
 ";
 const char textureShader_frag[] = "		\n\
 #ifdef GL_ES							\n\
-precision lowp float;					\n\
+precision highp float;					\n\
 #endif									\n\
 										\n\
 uniform sampler2D CC_Texture0;			\n\
@@ -63,20 +63,19 @@ void main()							\n\
 ";
 const char fontShader_frag[] =		"   \n\
 #ifdef GL_ES							\n\
-precision lowp float;					\n\
+precision highp float;					\n\
 #endif									\n\
 										\n\
-uniform	vec4 u_color;					\n\
 varying vec2 v_texCoord;				\n\
 uniform sampler2D CC_Texture0;			\n\
+uniform	vec4 u_color;					\n\
 										\n\
 void main()								\n\
 {										\n\
-	vec4 sample = vec4(1,1,1, texture2D(CC_Texture0, v_texCoord).a); \n\
-	gl_FragColor = sample * u_color;	\n\
+	float a = texture2D(CC_Texture0, v_texCoord).a; \n\
+	gl_FragColor = vec4(1.0,1.0,1.0,a) * u_color;	\n\
 }										\n\
 ";
-
 
 CCFlashRenderer::CCFlashRenderer()
 	:miMaskLevel(0)
@@ -85,7 +84,7 @@ CCFlashRenderer::CCFlashRenderer()
 	// flash texture shader
     mpTextureShader = new GLProgram();
 	mpTextureShader->initWithVertexShaderByteArray(textureShader_vert, textureShader_frag);
-	mpTextureShader->addAttribute(kCCAttributeNamePosition, kCCVertexAttrib_Position);
+	mpTextureShader->addAttribute(kAttributeNamePosition, kVertexAttrib_Position);
     mpTextureShader->link();
     mpTextureShader->updateUniforms();
 	miAddColorLocation = glGetUniformLocation( mpTextureShader->getProgram(), "u_AddColor");
@@ -96,8 +95,8 @@ CCFlashRenderer::CCFlashRenderer()
 	// font shader
     mpFontShader = new GLProgram();
 	mpFontShader->initWithVertexShaderByteArray(fontShader_vert, fontShader_frag);
-	mpFontShader->addAttribute(kCCAttributeNamePosition, kCCVertexAttrib_Position);
-    mpFontShader->addAttribute(kCCAttributeNameTexCoord, kCCVertexAttrib_TexCoords);
+	mpFontShader->addAttribute(kAttributeNamePosition, kVertexAttrib_Position);
+    mpFontShader->addAttribute(kAttributeNameTexCoord, kVertexAttrib_TexCoords);
     mpFontShader->link();
     mpFontShader->updateUniforms();
 	miFontUVScaleLocation = glGetUniformLocation( mpFontShader->getProgram(), "u_uvScale");
@@ -105,7 +104,7 @@ CCFlashRenderer::CCFlashRenderer()
     CHECK_GL_ERROR_DEBUG();
 
 	// default color only shader
-	mpDefaultShader = ShaderCache::getInstance()->programForKey(kCCShader_Position_uColor);
+	mpDefaultShader = ShaderCache::getInstance()->programForKey(kShader_Position_uColor);
 	mpDefaultShader->retain();
 	miColorLocation = glGetUniformLocation( mpDefaultShader->getProgram(), "u_color");
     CHECK_GL_ERROR_DEBUG();
@@ -189,11 +188,11 @@ void CCFlashRenderer::drawLineStrip(const tinyswf::VertexArray& vertices, const 
 	color += cxform.add;
 	glLineWidth(style.getWidth());
 
-	ccGLEnableVertexAttribs( kCCVertexAttribFlag_Position );
+	ccGLEnableVertexAttribs( kVertexAttribFlag_Position );
     mpDefaultShader->use();
 	mpDefaultShader->setUniformsForBuiltins();
 	mpDefaultShader->setUniformLocationWith4fv(miColorLocation, (GLfloat*) &color.r, 1);
-	glVertexAttribPointer(kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, 0, &vertices.front().x);
+	glVertexAttribPointer(kVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, 0, &vertices.front().x);
 	glDrawArrays(GL_LINE_STRIP, 0, vertices.size());
     CC_INCREMENT_GL_DRAWS(1);
 }
@@ -202,7 +201,7 @@ void CCFlashRenderer::drawTriangles(const tinyswf::VertexArray& vertices, const 
 #define PRIMITIVE_MODE	GL_TRIANGLES
 //#define PRIMITIVE_MODE	GL_POINTS
 
-	ccGLEnableVertexAttribs( kCCVertexAttribFlag_Position );
+	ccGLEnableVertexAttribs( kVertexAttribFlag_Position );
 	if (0 == asset.handle) {
 		tinyswf::COLOR4f color = cxform.mult * style.getColor();
 		color += cxform.add;
@@ -211,7 +210,7 @@ void CCFlashRenderer::drawTriangles(const tinyswf::VertexArray& vertices, const 
 		mpDefaultShader->setUniformsForBuiltins();
 		mpDefaultShader->setUniformLocationWith4fv(miColorLocation, (GLfloat*) &color.r, 1);
 
-		glVertexAttribPointer(kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, 0, &vertices.front().x);
+		glVertexAttribPointer(kVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, 0, &vertices.front().x);
 		glDrawArrays(PRIMITIVE_MODE, 0, vertices.size());
 	    CC_INCREMENT_GL_DRAWS(1);
 		return;
@@ -236,7 +235,7 @@ void CCFlashRenderer::drawTriangles(const tinyswf::VertexArray& vertices, const 
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
 	}
 
-	glVertexAttribPointer(kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, 0, &vertices.front().x);
+	glVertexAttribPointer(kVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, 0, &vertices.front().x);
 	glDrawArrays(PRIMITIVE_MODE, 0, vertices.size());
     CC_INCREMENT_GL_DRAWS(1);
 }
@@ -297,15 +296,16 @@ void align(FormatText& out, const TextStyle& style, const AlignData& data) {
 	out.back().line_gap = data.line_gap;
 }
 
-bool format(FormatText& out, const tinyswf::RECT& rect, const TextStyle& style, const std::wstring& text) {
+uint32_t format(FormatText& out, const tinyswf::RECT& rect, const TextStyle& style, const std::wstring& text) {
 	const float width = rect.xmax - rect.xmin - style.right_margin - style.left_margin;
-	const float height = rect.ymax - rect.ymin;
+	//const float height = rect.ymax - rect.ymin;
 
 	std::wstring::const_iterator start = text.begin();
 	std::wstring::const_iterator it;
 
+	uint32_t numGlyphs = 0;
 	AlignData data = {rect.ymin, rect.xmin + style.left_margin, width, style.indent};
-	for(it = start; it != text.end(); ++it) {
+	for (it = start; it != text.end(); ++it) {
 		GlyphInfo *glyph = FontCache::sharedGlyphCache()->getGlyph(*it);
 		if (! glyph) continue;
 		//wchar_t ch = *it;
@@ -315,6 +315,7 @@ bool format(FormatText& out, const tinyswf::RECT& rect, const TextStyle& style, 
 
 			align(out, style, data);
 			out.back().text.assign(start, it);
+			numGlyphs += out.back().text.size();
 
 			data.line_gap += style.font_height + style.leading;
 			data.length = glyph->advance;
@@ -325,14 +326,17 @@ bool format(FormatText& out, const tinyswf::RECT& rect, const TextStyle& style, 
 	}
 	align(out, style, data);
 	out.back().text.assign(start, it);
-	return true;
+	numGlyphs += out.back().text.size();
+
+	return numGlyphs;
 }
 
-void CCFlashRenderer::formatText(VertexArray& vertices, const tinyswf::RECT& rect, const TextStyle& style, const std::wstring& text) {
-	Texture2D *bitmap = FontCache::sharedGlyphCache()->selectFont(style.font_name.c_str(), style.font_height);
+uint32_t CCFlashRenderer::formatText(VertexArray& vertices, const tinyswf::RECT& rect, const TextStyle& style, const std::wstring& text) {
+	//select font to get glyph
+	FontCache::sharedGlyphCache()->selectFont(style.font_name.c_str(), style.font_height);
 
 	FormatText lines;
-	format(lines, rect, style, text);
+	uint32_t numGlyphs = format(lines, rect, style, text);
 
 	VertexArray::iterator it = vertices.begin();
 	for (FormatText::iterator line = lines.begin(); line != lines.end(); ++line) {
@@ -370,25 +374,25 @@ void CCFlashRenderer::formatText(VertexArray& vertices, const tinyswf::RECT& rec
 			lx += glyph->advance;
 		}
 	}
+	return numGlyphs;
 }
 
-void CCFlashRenderer::drawText(const VertexArray& vertices, const tinyswf::RECT& rect, const TextStyle& style, const std::wstring& text) {
-	float color[] = {1,1,0,1};
+void CCFlashRenderer::drawText(const VertexArray& vertices, uint32_t glyphs, const tinyswf::RECT& rect, const TextStyle& style, const std::wstring& text) {
 	const float uv_scale = 1.f / kTEXTURE_SIZE;
+	ccGLEnableVertexAttribs(kVertexAttribFlag_Position | kVertexAttribFlag_TexCoords);
 
-	Texture2D *bitmap = FontCache::sharedGlyphCache()->selectFont(style.font_name.c_str(), style.font_height);
-	ccGLBindTexture2D(bitmap->getName());
     mpFontShader->use();
 	mpFontShader->setUniformsForBuiltins();
 	mpFontShader->setUniformLocationWith1f(miFontUVScaleLocation, uv_scale);
-	//mpFontShader->setUniformLocationWith4fv(miFontColorLocation, color, 1);
-	mpFontShader->setUniformLocationWith4fv(miColorLocation, (GLfloat*) &style.color.r, 1);
-    glEnableVertexAttribArray(kCCVertexAttrib_Position);
-    glEnableVertexAttribArray(kCCVertexAttrib_TexCoords);
-	float *data = (float*)&vertices.front();
-	glVertexAttribPointer(kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, sizeof(float)*4, data);
-	glVertexAttribPointer(kCCVertexAttrib_TexCoords, 2, GL_FLOAT, GL_FALSE, sizeof(float)*4, data+2);
-	glDrawArrays(GL_TRIANGLES, 0, 6*text.size());
+	mpFontShader->setUniformLocationWith4fv(miFontColorLocation, (GLfloat*) &style.color.r, 1);
+
+	Texture2D *bitmap = FontCache::sharedGlyphCache()->selectFont(style.font_name.c_str(), style.font_height);
+	ccGLBindTexture2D(bitmap->getName());
+	
+	float *data = (float*)&(vertices.front().x);
+	glVertexAttribPointer(kVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, sizeof(float)*4, data);
+	glVertexAttribPointer(kVertexAttrib_TexCoords, 2, GL_FLOAT, GL_FALSE, sizeof(float)*4, data+2);
+	glDrawArrays(GL_TRIANGLES, 0, 6 * glyphs);
     CC_INCREMENT_GL_DRAWS(1);
 }
     
@@ -402,6 +406,8 @@ void CCFlashRenderer::drawBegin(void) {
 	kmGLMatrixMode(KM_GL_MODELVIEW);
 	kmGLPushMatrix();
 	kmGLGetMatrix(KM_GL_MODELVIEW, &matrixMV);
+	
+	ccGLBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void CCFlashRenderer::drawEnd(void) {

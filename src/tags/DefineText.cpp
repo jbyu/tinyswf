@@ -272,7 +272,7 @@ Text::Text(const DefineEditTextTag &tag)
 }
 
 void Text::draw(void) {
-	Renderer::getRenderer()->drawText(_vertices, _bound, _style, _text);
+	Renderer::getRenderer()->drawText(_vertices, _glyphs, _bound, _style, _text);
 }
 
 const int kSIZE_PER_GLYPH = 12; // (xy,uv) * 6 per glyph
@@ -280,7 +280,7 @@ const int kSIZE_PER_GLYPH = 12; // (xy,uv) * 6 per glyph
 bool Text::setString(const char* str) {
 	bool ret = utf8_to_utf16(_text, str);
 	_vertices.resize(_text.size()*kSIZE_PER_GLYPH);
-	Renderer::getRenderer()->formatText(_vertices, _bound, _style, _text);
+	_glyphs = Renderer::getRenderer()->formatText(_vertices, _bound, _style, _text);
 	return ret;
 }
 

@@ -9,7 +9,7 @@ FontData::FontData(const char *font_name, int fontsize) {
 	_bitmap = new Texture2D;
 	_bitmap->initWithData(0, kCCTexture2DPixelFormat_A8, kTEXTURE_SIZE, kTEXTURE_SIZE, Size(kTEXTURE_SIZE, kTEXTURE_SIZE));
     //glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+    //glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 }
 
 FontData::~FontData() {
@@ -30,7 +30,7 @@ GlyphInfo* FontData::getGlyph(wchar_t code) {
 	const int count = _cache->size();
 	const bool bFull = _cache->full();
 	//if (bFull) nIndex = -1;
-	GlyphInfo lru = {0,0,0,0,0,0,0};
+	GlyphInfo lru = {0,0,0,0,0,0};
 	if (bFull) {
 		lru = _cache->getLRU();
 	}

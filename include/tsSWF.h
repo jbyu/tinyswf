@@ -26,8 +26,8 @@ public:
 	virtual void drawLineStrip(const VertexArray& vertices, const CXFORM& cxform, const LineStyle& style) = 0;
     virtual void drawImportAsset(const RECT& rect, const CXFORM& cxform, const Asset& asset) = 0;
 
-    virtual void formatText(VertexArray& vertices, const RECT& rect, const TextStyle& style, const std::wstring& text) = 0;
-    virtual void drawText(const VertexArray& vertices, const RECT& rect, const TextStyle& style, const std::wstring& text) = 0;
+    virtual uint32_t formatText(VertexArray& vertices, const RECT& rect, const TextStyle& style, const std::wstring& text) = 0;
+    virtual void drawText(const VertexArray& vertices, uint32_t glyphs, const RECT& rect, const TextStyle& style, const std::wstring& text) = 0;
 
     virtual void drawBegin(void) = 0;
     virtual void drawEnd(void) = 0;

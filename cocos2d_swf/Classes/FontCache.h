@@ -17,12 +17,11 @@ namespace cocos2d {
 }
 
 struct GlyphInfo {
-	char	advance;
+	float	advance;
+	float	offsetX;
+	float	offsetY;
 	char	width;
 	char	height;
-	char	offsetX;
-	char	offsetY;
-	char padding;
 	unsigned short index;
 };
 

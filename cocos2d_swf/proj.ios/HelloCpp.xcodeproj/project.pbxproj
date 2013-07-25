@@ -20,8 +20,6 @@
 		288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
 		43A28A9F179FD0E2001033A8 /* CCFlash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43A28A9D179FD0E2001033A8 /* CCFlash.cpp */; };
 		43A28AA0179FD0E2001033A8 /* FontCache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43A28A9E179FD0E2001033A8 /* FontCache.cpp */; };
-		43A28AA9179FD933001033A8 /* libcocos2dx iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 43A28AA8179FD933001033A8 /* libcocos2dx iOS.a */; };
-		43A28AAB179FDA0E001033A8 /* libcocos2dx-extensions iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 43A28AAA179FDA0E001033A8 /* libcocos2dx-extensions iOS.a */; };
 		43A28AAE17A019F8001033A8 /* liblibtinyswf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 43A28AA6179FD1F5001033A8 /* liblibtinyswf.a */; };
 		43A28AB017A01B31001033A8 /* FontCache.mm in Sources */ = {isa = PBXBuildFile; fileRef = 43A28AAF17A01B31001033A8 /* FontCache.mm */; };
 		43A28AB217A01DA1001033A8 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43A28AB117A01DA1001033A8 /* CoreText.framework */; };
@@ -129,8 +127,6 @@
 				D44C620C132DFF330009C878 /* OpenAL.framework in Frameworks */,
 				D44C620E132DFF430009C878 /* AVFoundation.framework in Frameworks */,
 				D44C6210132DFF4E0009C878 /* AudioToolbox.framework in Frameworks */,
-				43A28AA9179FD933001033A8 /* libcocos2dx iOS.a in Frameworks */,
-				43A28AAB179FDA0E001033A8 /* libcocos2dx-extensions iOS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -155,13 +151,13 @@
 		15AA9C4015B7EC450033D6C2 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				43A28AAF17A01B31001033A8 /* FontCache.mm */,
 				43A28AA7179FD610001033A8 /* AppMacros.h */,
+				43A28A9D179FD0E2001033A8 /* CCFlash.cpp */,
 				43A28A99179FD0E2001033A8 /* CCFlash.h */,
 				43A28A9A179FD0E2001033A8 /* FontCache.h */,
 				43A28A9C179FD0E2001033A8 /* lru_cache.h */,
-				43A28A9D179FD0E2001033A8 /* CCFlash.cpp */,
 				43A28A9E179FD0E2001033A8 /* FontCache.cpp */,
+				43A28AAF17A01B31001033A8 /* FontCache.mm */,
 				1AFAF8B316D35DE700DB1158 /* AppDelegate.cpp */,
 				1AFAF8B416D35DE700DB1158 /* AppDelegate.h */,
 				1AFAF8B516D35DE700DB1158 /* HelloWorldScene.cpp */,
@@ -376,7 +372,6 @@
 					CC_ENABLE_CHIPMUNK_INTEGRATION,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
 					../../include,
 					"$(SRCROOT)/../../../cocos2d-x/CocosDenshion/include",
@@ -396,21 +391,20 @@
 					"\"$(SRCROOT)/../../../cocos2d-x/cocos2dx/platform/third_party/ios/libraries\"",
 					"\"$(SRCROOT)/../../../cocos2d-x/external/libwebsockets/ios/lib\"",
 					"$(SRCROOT)/../../../cocos2d-x/lib/",
-					"\"$(SRCROOT)/../../../cocos2d-x/lib/Debug-iphonesimulator\"",
-				);
-				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = (
-					"\"$(SRCROOT)/../../../cocos2d-x/cocos2dx/platform/third_party/ios/libraries\"",
-					"\"$(SRCROOT)/../../../cocos2d-x/external/libwebsockets/ios/lib\"",
-					"$(SRCROOT)/../../../cocos2d-x/lib/Debug-iphonesimulator",
 				);
 				OTHER_CFLAGS = "-O2";
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
+					"\"$(SRCROOT)/../../../cocos2d-x/lib/Debug-iphoneos/libcocos2dx iOS.a\"",
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
+					"\"$(SRCROOT)/../../../cocos2d-x/lib/Debug-iphonesimulator/libcocos2dx iOS.a\"",
+				);
 				PRODUCT_NAME = HelloCpp;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "";
-				VALID_ARCHS = "armv6 armv7 i386";
 			};
 			name = Debug;
 		};
@@ -431,7 +425,6 @@
 					CC_ENABLE_CHIPMUNK_INTEGRATION,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
 					../../include,
 					"$(SRCROOT)/../../../cocos2d-x/CocosDenshion/include",
@@ -451,7 +444,12 @@
 					"\"$(SRCROOT)/../../../cocos2d-x/cocos2dx/platform/third_party/ios/libraries\"",
 					"\"$(SRCROOT)/../../../cocos2d-x/external/libwebsockets/ios/lib\"",
 					"$(SRCROOT)/../../../cocos2d-x/lib/",
-					"\"$(SRCROOT)/../../../cocos2d-x/lib/Debug-iphonesimulator\"",
+				);
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
+					"\"$(SRCROOT)/../../../cocos2d-x/lib/Release-iphoneos/libcocos2dx iOS.a\"",
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
+					"\"$(SRCROOT)/../../../cocos2d-x/lib/Release-iphonesimulator/libcocos2dx iOS.a\"",
 				);
 				PRODUCT_NAME = HelloCpp;
 				PROVISIONING_PROFILE = "";
@@ -473,7 +471,6 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "armv6 armv7 i386";
 			};
 			name = Debug;
 		};
@@ -488,7 +485,6 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "armv6 armv7 i386";
 			};
 			name = Release;
 		};
