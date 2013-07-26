@@ -104,12 +104,21 @@ public:
     virtual const RECT& getRectangle(void) const { return _bound; }
 	virtual void draw(void);
 	virtual void update(void) {}
-	virtual ICharacter* getTopMost(float localX, float localY, bool polygonTest) { return NULL; }
+	virtual ICharacter* getTopMost(float localX, float localY, bool polygonTest) { 
+		SWF_UNUSED_PARAM(localX);
+		SWF_UNUSED_PARAM(localY);
+		SWF_UNUSED_PARAM(polygonTest);
+		return NULL;
+	}
 	virtual void onEvent(Event::Code) {}
 
 	bool setString(const char* str);
 	
 protected:
+	// no copy constructor and assignment operator
+	Text& operator=(const Text&);
+	Text(const Text&);
+
 	const DefineEditTextTag& _reference;
 	uint32_t	_glyphs;
 	RECT		_bound;

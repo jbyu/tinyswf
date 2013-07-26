@@ -46,9 +46,9 @@ public:
 		return v;
 	}
 		
-	inline uint32_t getbits( uint8_t nbits ) {
+	inline uint32_t getbits( uint32_t nbits ) {
 		uint32_t val = 0;
-		for( int t = 0; t < nbits; t++ )
+		for( uint32_t t = 0; t < nbits; t++ )
 		{
 			val <<= 1;
 			val |= getbit();
@@ -56,7 +56,7 @@ public:
 		return val;
 	}
 		
-	inline int32_t getsignedbits( uint8_t nbits ) {
+	inline int32_t getsignedbits( uint32_t nbits ) {
 		uint32_t res = getbits( nbits );
 		if ( res & ( 1 << ( nbits - 1 ) ) ) 
 			res |= (0xffffffff << nbits);
@@ -65,7 +65,7 @@ public:
 	}
 		
 	inline void getRectangle( RECT& rect ) {
-		const int32_t nbits = (int32_t) getbits( 5 );
+		const uint32_t nbits =  getbits( 5 );
 		rect.xmin = getsignedbits( nbits ) * SWF_INV_TWIPS;
 		rect.xmax = getsignedbits( nbits ) * SWF_INV_TWIPS;
 		rect.ymin = getsignedbits( nbits ) * SWF_INV_TWIPS;
@@ -95,7 +95,7 @@ public:
 		m.ty = getsignedbits( nbits ) * SWF_INV_TWIPS;
 	}
 
-    inline void getColor( COLOR4f& color, uint8_t nbits ) {
+    inline void getColor( COLOR4f& color, uint32_t nbits ) {
 		color.r = getsignedbits( nbits ) * SWF_INV_CXFORM;
 		color.g = getsignedbits( nbits ) * SWF_INV_CXFORM;
 		color.b = getsignedbits( nbits ) * SWF_INV_CXFORM;
@@ -110,9 +110,9 @@ public:
     }
 
 	inline void getCXForm( CXFORM& cx ) {
-		const uint8_t has_add_terms = getbits( 1 );
-		const uint8_t has_mult_terms = getbits( 1 );
-		const uint8_t nbits = getbits( 4 );
+		const uint32_t has_add_terms = getbits( 1 );
+		const uint32_t has_mult_terms = getbits( 1 );
+		const uint32_t nbits = getbits( 4 );
 		if( has_mult_terms ) {
             getColor( cx.mult, nbits);
 		} else {

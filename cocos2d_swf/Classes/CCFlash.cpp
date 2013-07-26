@@ -278,6 +278,10 @@ tinyswf::Asset myLoadAssetCallback( const char *name, bool import ) {
 }
 
 //-----------------------------------------------------------------------------
+void myURLCallback( tinyswf::MovieClip&, bool isFSCommand, const char *url, const char *target )
+{
+	CCLOG("fs:%d, url:%s, targt:%s\n", isFSCommand, url, target);
+}
 
 CCFlash::~CCFlash() {
 	delete mpSWF;
@@ -290,6 +294,10 @@ bool CCFlash::initWithFile(const char* filename) {
     mpSWF = new tinyswf::SWF;
     bool ret = mpSWF->read(reader);
     CC_SAFE_DELETE_ARRAY(pBuffer);
+
+	this->setTouchEnabled(true);
+
+	mpSWF->setGetURL( myURLCallback );
 
 #if 1
 	MATRIX3f& mtx = mpSWF->getCurrentMatrix();
@@ -321,4 +329,49 @@ void CCFlash::update(float delta) {
 
 bool CCFlash::setString(const char* name, const char *text) {
 	return mpSWF->setString(name, text);
+}
+
+void CCFlash::setColor(const Color3B &color)
+{
+    LayerRGBA::setColor(color);
+    //updateColor();
+}
+
+void CCFlash::setOpacity(GLubyte opacity)
+{
+    LayerRGBA::setOpacity(opacity);
+    //updateColor();
+}
+
+void CCFlash::registerWithTouchDispatcher()
+{
+    Director* pDirector = Director::getInstance();
+    pDirector->getTouchDispatcher()->addTargetedDelegate(this, this->getTouchPriority(), true);
+}
+
+bool CCFlash::ccTouchBegan(Touch* touch, cocos2d::Event* event)
+{
+    CC_UNUSED_PARAM(event);
+	Point pt = touch->getLocationInView();
+	mpSWF->notifyMouse(1, pt.x, pt.y, true); 
+    return true;
+}
+
+void CCFlash::ccTouchEnded(Touch *touch, cocos2d::Event* event)
+{
+    CC_UNUSED_PARAM(event);
+	Point pt = touch->getLocationInView();
+	mpSWF->notifyMouse(0, pt.x, pt.y, true); 
+}
+
+void CCFlash::ccTouchCancelled(Touch *touch, cocos2d::Event* event)
+{
+	ccTouchEnded(touch, event);
+}
+
+void CCFlash::ccTouchMoved(Touch* touch, cocos2d::Event* event)
+{
+    CC_UNUSED_PARAM(event);
+	Point pt = touch->getLocationInView();
+	mpSWF->notifyMouse(1, pt.x, pt.y, true); 
 }

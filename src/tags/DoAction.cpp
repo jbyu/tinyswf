@@ -34,7 +34,7 @@ DoActionTag::~DoActionTag() {
 	}
 }
 
-bool DoActionTag::read( Reader& reader, SWF& swf, MovieFrames&)
+bool DoActionTag::read( Reader& reader, SWF& , MovieFrames& )
 {
     uint8_t code;
     do {
@@ -43,7 +43,7 @@ bool DoActionTag::read( Reader& reader, SWF& swf, MovieFrames&)
     	if (code & 0x80) {
 			// Action contains extra data.
 			uint16_t length = reader.get<uint16_t>();
-            uint16_t read = 0;
+            int read = 0;
 			switch(code) {
 			case ACTION_GOTO_FRAME:
                 action.data = reader.get<uint16_t>() - 1;

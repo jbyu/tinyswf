@@ -32,7 +32,7 @@ public:
 	float   getFrameWidth() const { return _frame_size.xmax; }
 	float   getFrameHeight()const { return _frame_size.ymax; }
     float   getFrameRate()  const { return _frame_rate; }
-	int     getFrameCount() const { return _frame_count; }
+	uint16_t getFrameCount() const { return _frame_count; }
 	
 private:
 	uint8_t		_signature[3];

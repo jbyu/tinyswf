@@ -18,7 +18,7 @@ bool Gradient::read( Reader* reader, bool support_32bit_color  ) {
 	_interpolation_mode = reader->getbits( 2 );
 	_num_gradients = reader->getbits( 4 );
 		
-	for ( int i = 0; i < _num_gradients; i++ ) {
+	for ( uint32_t i = 0; i < _num_gradients; i++ ) {
         Gradient::Record record;
 		record._ratio = reader->get<uint8_t>();
 		record._color.r = reader->get<uint8_t>(); 
@@ -280,10 +280,10 @@ bool ShapeWithStyle::readShapeRecords( Reader* reader, bool lineStyle2, bool sup
 
 	while ( !end ) {
 		// go through the shape records...
-		uint8_t type_flag = reader->getbits( 1 );
+		uint32_t type_flag = reader->getbits( 1 );
 		if ( 0 == type_flag ) {	
 			// change or end record
-			uint8_t flags = reader->getbits( 5 );
+			uint32_t flags = reader->getbits( 5 );
 			// add path
 			if (! current.isEmpty()) {
 				_paths.push_back(current);
@@ -293,7 +293,7 @@ bool ShapeWithStyle::readShapeRecords( Reader* reader, bool lineStyle2, bool sup
 			}
 			if ( flags ) { // style change record
 				if( flags & SF_MOVETO ) {
-					uint8_t nbits = reader->getbits( 5 );
+					uint32_t nbits = reader->getbits( 5 );
 					start.x = reader->getsignedbits( nbits ) *SWF_INV_TWIPS;
 					start.y = reader->getsignedbits( nbits ) *SWF_INV_TWIPS;
 					current.getStart() = start;
@@ -458,7 +458,7 @@ bool ShapeWithStyle::isInside(float x, float y) const {
 
 //-----------------------------------------------------------------------------
 
-bool DefineShapeTag::read( Reader& reader, SWF& swf, MovieFrames& data )
+bool DefineShapeTag::read( Reader& reader, SWF& swf, MovieFrames&  )
 {
     int32_t start = reader.getCurrentPos();
 	_shape_id = reader.get<uint16_t>();

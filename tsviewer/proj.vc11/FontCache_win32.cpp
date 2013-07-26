@@ -1,14 +1,14 @@
-#ifdef WIN32
+#include "stdafx.h"
+#include <Windows.h>
 
+#ifdef WIN32
 #include "FontCache.h"
-#include "cocos2d.h"
 
 #define STBTT_malloc(x,u)  malloc(x)
 #define STBTT_free(x,u)    free(x)
 #define STB_TRUETYPE_IMPLEMENTATION
 #include "stb_truetype.h"
 
-using namespace cocos2d;
 using namespace tinyswf;
 
 static HDC ghDC;
@@ -64,7 +64,7 @@ OSFont::Handle OSFont::create(const char *fontname, float fontsize) {
 	    //fnt->ascender = (float)ascent / (float)fh;
 	    //fnt->descender = (float)descent / (float)fh;
 	    //fnt->lineh = (float)(fh + lineGap) / (float)fh;
-       	float scale = stbtt_ScaleForPixelHeight(&font->info, fontsize*1.1f);
+       	float scale = stbtt_ScaleForPixelHeight(&font->info, fontsize * 1.1f);
 		font->ascent = ascent * scale;
         font->descent = descent * scale;
 		font->line_height = (ascent - descent + lineGap) * scale;

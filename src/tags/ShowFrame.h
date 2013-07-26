@@ -18,7 +18,7 @@ namespace tinyswf {
 		virtual ~ShowFrameTag()
         {}
 		
-        virtual bool read( Reader& reader, SWF&, MovieFrames& ) { return false; } //delete tag
+        virtual bool read( Reader& , SWF&, MovieFrames& ) { return false; } //delete tag
 
 		virtual void print() { SWF_TRACE("SHOW_FRAME"); }
 

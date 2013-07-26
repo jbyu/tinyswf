@@ -322,6 +322,7 @@ void* stdAlloc(void* userData, unsigned int size) {
 	return malloc(size);
 }
 void stdFree(void* userData, void* ptr) {
+	SWF_UNUSED_PARAM(userData);
 	free(ptr);
 }
 
@@ -357,6 +358,8 @@ void* poolAlloc( void* userData, unsigned int size ) {
 
 void poolFree( void* userData, void* ptr ) {
 	// empty
+	SWF_UNUSED_PARAM(userData);
+	SWF_UNUSED_PARAM(ptr);
 }
 
 void reset_memory_pool(void) {
@@ -434,8 +437,8 @@ bool create_mesh( tinyswf::ShapeWithStyle& shape, const CollectorArray& contours
 		return false;
 
 	const float* verts = tessGetVertices(tess);
-	const int* vinds = tessGetVertexIndices(tess);
-	const int nverts = tessGetVertexCount(tess);
+	//const int* vinds = tessGetVertexIndices(tess);
+	//const int nverts = tessGetVertexCount(tess);
 	const int* elems = tessGetElements(tess);
 	const int nelems = tessGetElementCount(tess);
 	

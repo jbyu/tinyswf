@@ -21,7 +21,7 @@ namespace tinyswf
 		virtual ~DefineScalingGridTag()
         {}
 		
-		virtual bool read( Reader& reader, SWF&, MovieFrames& data )
+		virtual bool read( Reader& reader, SWF&, MovieFrames&  )
         {
 			_character_id = reader.get<uint16_t>();
 			reader.getRectangle(_center);

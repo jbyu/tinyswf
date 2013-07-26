@@ -33,6 +33,7 @@ public:
 
     virtual void setup(MovieClip &movie, bool skipAction )
     {
+		SWF_UNUSED_PARAM(skipAction);
         MovieClip::DisplayList& _display_list = movie.getDisplayList();
 		const uint16_t depth = this->depth();
 		MovieClip::DisplayList::iterator it = _display_list.find(depth);

@@ -21,7 +21,7 @@ class DefineButton2Tag;
 class MovieObject {
 public:
 	ICharacter      *_character;
-	int				_clip_depth;
+	uint16_t		_clip_depth;
 	MATRIX          _transform;
     CXFORM          _cxform;		
 	//std::string   _name;
@@ -78,8 +78,11 @@ protected:
 
 	static bool sbCalculateRectangle;
 
-public:
+	// no copy constructor and assignment operator
+	MovieClip& operator=(const MovieClip&);
+	MovieClip(const MovieClip&);
 
+public:
 	MovieClip( SWF* swf,  const MovieFrames& data );
     virtual ~MovieClip();
 

@@ -21,7 +21,7 @@ public:
 	virtual ~DefineSoundTag()
     {}
 
-	virtual bool read( Reader& reader, SWF& swf, MovieFrames& ) {
+	virtual bool read( Reader& reader, SWF& , MovieFrames& ) {
 		_soundId = reader.get<uint16_t>();
         reader.skip( length()-2 );
 		return false;//delete tag
@@ -78,6 +78,7 @@ public:
 
     virtual void setup(MovieClip&, bool skipAction)
     {
+		SWF_UNUSED_PARAM(skipAction);
 		Speaker *speaker = tinyswf::Speaker::getInstance();
         if (NULL==speaker) return;
         speaker->playSound(_asset.handle, _syncStop, _noMultiple, _loop);

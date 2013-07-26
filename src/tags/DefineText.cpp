@@ -79,7 +79,7 @@ bool TextRecord::read(Reader& reader, int tag_type, int flag, int glyph_bits, in
 
 //-----------------------------------------------------------------------------
 
-bool DefineTextTag::read( Reader& reader, SWF& swf, MovieFrames& ) {
+bool DefineTextTag::read( Reader& reader, SWF& , MovieFrames& ) {
 	_character_id = reader.get<uint16_t>();
 	reader.getRectangle(_bound);
 	reader.align();
@@ -201,8 +201,7 @@ bool utf8_to_utf16(std::wstring& utf16, const std::string& utf8) {
     while (i < utf8.size()) {
         unsigned long uni;
         size_t todo;
-        bool error = false;
-        unsigned char ch = utf8[i++];
+		unsigned char ch = utf8[i++];
         if (ch <= 0x7F) {
             uni = ch;
             todo = 0;

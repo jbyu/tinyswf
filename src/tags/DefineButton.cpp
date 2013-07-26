@@ -11,7 +11,7 @@ using namespace tinyswf;
 //-----------------------------------------------------------------------------
 	
 // Return true if we read a record; false if this is a null record.
-bool ButtonRecord::read( Reader& reader, SWF& swf, int tag_type ) {
+bool ButtonRecord::read( Reader& reader, SWF& , int tag_type ) {
 	uint8_t	flags = reader.get<uint8_t>();
 	if (0 == flags)
 		return false;
@@ -118,7 +118,7 @@ bool DefineButton2Tag::read( Reader& reader, SWF& swf, MovieFrames& frames)
 	reader.skip(skip);
 	
 	while (1) {
-		int curr = reader.getCurrentPos();
+		//int curr = reader.getCurrentPos();
 		int	actionSize = reader.get<uint16_t>();
 
 		ButtonAction *action = new ButtonAction;
@@ -191,6 +191,7 @@ void Button::update(void) {
 }
 
 ICharacter* Button::getTopMost(float x, float y, bool polygonTest) {
+	SWF_UNUSED_PARAM(polygonTest);
 	DisplayList::reverse_iterator rit = _buttonHitTests.rbegin();
 	while( rit != _buttonHitTests.rend() ) {
 		MovieObject &object = rit->second;

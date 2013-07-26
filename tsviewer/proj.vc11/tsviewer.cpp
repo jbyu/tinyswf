@@ -16,6 +16,7 @@ Copyright (c) 2013 jbyu. All rights reserved.
 #include <GL/freeglut.h>
 #include "SOIL.h"
 #include "tinyswf.h"
+#include "FontCache.h"
 
 #pragma comment(lib, "SOIL.lib")
 #pragma comment(lib, "libtinyswf.lib")
@@ -212,6 +213,7 @@ public:
         glColor4f(cxform.add.r, cxform.add.g, cxform.add.b, 1);
     }
 #endif
+
     void drawQuad( const tinyswf::RECT& rect, const tinyswf::CXFORM& cxform, unsigned int texture )
     {
         if (0 != texture)
@@ -308,7 +310,6 @@ public:
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
 		}
 		glMatrixMode(GL_TEXTURE);
-		glLoadIdentity();
 		applyTransform( style.getBitmapMatrix() );
 		glMatrixMode(GL_MODELVIEW);
 
@@ -363,12 +364,7 @@ public:
             glVertex2f(rect.xmin, rect.ymax);
 	    glEnd();
     }
-
-	void formatText(tinyswf::VertexArray& vertices, const tinyswf::RECT& rect, const tinyswf::TextStyle& style, const std::wstring& text)  {
-	}
-	void drawText(const tinyswf::VertexArray& vertices, const tinyswf::RECT& rect, const tinyswf::TextStyle& style, const std::wstring& text) {
-	}
-
+	
     void drawBegin(void)
     {
 	glMatrixMode(GL_MODELVIEW);
@@ -433,7 +429,7 @@ tinyswf::Asset myLoadAssetCallback( const char *name, bool import )
 
     if (strstr(name,".png")) {
 		int x,y,w,h;
-		glRenderer *renderer = (glRenderer*) tinyswf::Renderer::getRenderer();
+		glRenderer *renderer = (glRenderer*) tinyswf::Renderer::getInstance();
 		asset.handle = renderer->getTexture(name, w,h,x,y);
 		const float invW = 1.f / w;
 		const float invH = 1.f / h;
@@ -442,7 +438,7 @@ tinyswf::Asset myLoadAssetCallback( const char *name, bool import )
 		asset.param[2] = x * invW;
 		asset.param[3] = y * invH;
     } else if (strstr(name,".wav"))  {
-        asset.handle = tinyswf::Speaker::getSpeaker()->getSound(name);
+        asset.handle = tinyswf::Speaker::getInstance()->getSound(name);
     }
     return asset;
 }
@@ -452,7 +448,7 @@ tinyswf::Asset myLoadAssetCallback( const char *name, bool import )
 void _terminate_(void)
 {
 #ifdef  USE_FMOD
-    delete tinyswf::Speaker::getSpeaker();
+    delete tinyswf::Speaker::getInstance();
     FMOD_RESULT result;
     result = gpFMOD->close();
     ERRCHECK(result);
@@ -460,7 +456,8 @@ void _terminate_(void)
     ERRCHECK(result);
 #endif
     glDeleteTextures(1, &suDefaultTexture);
-    delete tinyswf::Renderer::getRenderer();
+    delete tinyswf::Renderer::getInstance();
+	delete tinyswf::FontHandler::getInstance();
 	delete gpSWF;
     gpSWF = NULL;
 	tinyswf::SWF::terminate();
@@ -579,7 +576,7 @@ void keyboard(unsigned char key, int x, int y)
 
 void motionCB( int x, int y) {
 	if (gpSWF) {
-		gpSWF->notifyMouse(siLastButtonStatus, x, y);
+		gpSWF->notifyMouse(siLastButtonStatus, float(x), float(y));
 		//gpSWF->notifyMouse(siLastButtonStatus, 100, 100);
 	}
 }
@@ -677,11 +674,12 @@ int _tmain(int argc, char* argv[])
     ERRCHECK(result);
     result = gpFMOD->init(32, FMOD_INIT_NORMAL, 0);
     ERRCHECK(result);
-    tinyswf::Speaker::setSpeaker(new fmodSpeaker);
+	tinyswf::Speaker::setInstance(new fmodSpeaker);
 #endif
 
 #if 1
-    tinyswf::Renderer::setRenderer(new glRenderer);
+	tinyswf::Renderer::setInstance(new glRenderer);
+	tinyswf::FontHandler::setInstance(new GLFontHandler);
 	gpSWF->setGetURL( myURLCallback );
 	clock_t tick = clock();
     bool ret = gpSWF->read(reader);

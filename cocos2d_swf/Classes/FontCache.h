@@ -34,7 +34,7 @@ class OSFont {
 	Handle _font;
 
 public:
-	OSFont(const char *font_name, int fontsize);
+	OSFont(const char *font_name, float fontsize);
 	~OSFont();
 
 	GlyphInfo* getGlyph(wchar_t code);
@@ -44,7 +44,7 @@ protected:
 	// platform-dependent
 	static bool initialize(void);
 	static void terminate(void);
-	static Handle create(const char *font_name, int fontsize);
+	static Handle create(const char *font_name, float fontsize);
 	static void destroy(const Handle& font);
 	static bool makeGlyph(const Handle& font, wchar_t codepoint, GlyphInfo& entry);
 	static float getLineHeight(const Handle& font);
@@ -63,7 +63,7 @@ class CCFlashFontHandler : public tinyswf::FontHandler {
 	int miFontUVScaleLocation;
 	int miFontColorLocation;
 
-	OSFont* selectFont(const char *font_name, int fontsize);
+	OSFont* selectFont(const char *font_name, float fontsize);
 
 public:
 	CCFlashFontHandler();

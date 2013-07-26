@@ -5,17 +5,11 @@ Copyright (c) 2013 jbyu. All rights reserved.
 #define __CCFLASH_H__
 
 #include "tinyswf.h"
-#include "kazmath/mat4.h"
-#include "base_nodes/CCNode.h"
-
-namespace cocos2d {
-	class Texture2D;
-	class GLProgram;
-}
+#include "cocos2d.h"
 
 tinyswf::Asset myLoadAssetCallback( const char *name, bool import );
 
-class CCFlash : public cocos2d::Node {
+class CCFlash : public cocos2d::LayerRGBA {
 	tinyswf::SWF *mpSWF;
 
 public:
@@ -28,6 +22,16 @@ public:
 	virtual bool initWithFile(const char* filename);
 
 	bool setString(const char* name, const char *text);
+
+    virtual void registerWithTouchDispatcher();
+
+    virtual bool ccTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event) override;
+    virtual void ccTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event) override;
+    virtual void ccTouchCancelled(cocos2d::Touch *touch, cocos2d::Event* event) override;
+    virtual void ccTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event) override;
+
+    virtual void setColor(const cocos2d::Color3B &color) override;
+    virtual void setOpacity(GLubyte opacity) override;
 
     static CCFlash* create(const char* filename);
 };

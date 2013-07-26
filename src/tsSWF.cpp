@@ -254,12 +254,12 @@ RECT SWF::calculateRectangle(uint16_t character, const MATRIX* xf) {
 	return rect;
 }
 
-void SWF::notifyMouse(int button, int x, int y) {
-	ICharacter *pTopMost = this->getTopMost(float(x), float(y), false);
-	notifyEvent(button,  x,  y, pTopMost);
+void SWF::notifyMouse(int button, float x, float y, bool touchScreen) {
+	ICharacter *pTopMost = this->getTopMost( x, y, false);
+	notifyEvent(button,  x,  y, pTopMost, touchScreen);
 }
 
-void SWF::notifyDuplicate(int button, int x, int y) {
+void SWF::notifyDuplicate(int button, float x, float y, bool touchScreen) {
 	ICharacter* pTopMost = NULL;
 	CharacterArray::reverse_iterator rit = _duplicates.rbegin();
 	while( rit != _duplicates.rend() ) {
@@ -275,10 +275,10 @@ void SWF::notifyDuplicate(int button, int x, int y) {
 		}
         ++rit;
 	}
-	notifyEvent(button,  x,  y, pTopMost);
+	notifyEvent(button,  x,  y, pTopMost, touchScreen);
 }
 
-void SWF::notifyEvent(int button, int x, int y, ICharacter *pTopMost) {
+void SWF::notifyEvent(int button, float x, float y, ICharacter *pTopMost, bool touchScreen) {
 	_mouseX = x;
 	_mouseY = y;
 	_mouseButtonStateCurr = button;
@@ -367,6 +367,10 @@ void SWF::notifyEvent(int button, int x, int y, ICharacter *pTopMost) {
 				}
 			}
 #endif
+			if (touchScreen) {
+				_pActiveEntity = pTopMost;
+				_mouseInsideEntityLast = true;
+			}
 			// onPress
 			if (_pActiveEntity && _mouseInsideEntityLast) {
 				_pActiveEntity->onEvent(Event::PRESS);
@@ -378,8 +382,6 @@ void SWF::notifyEvent(int button, int x, int y, ICharacter *pTopMost) {
 
 #ifdef WIN32
 bool SWF::trimSkippedTags( const char* output, Reader& reader ) {
-	ITag* tag = NULL;
-
 	FILE* fp = NULL;
 	errno_t error = fopen_s(&fp, output, "wb");
 	if (0 != error)

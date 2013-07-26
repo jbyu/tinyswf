@@ -30,8 +30,8 @@ struct ButtonRecord {
 	ButtonStateUp			UB[1] Present in up state
 	*/
 	int		_state;
-	int		_character_id;
-	int		_depth;
+	uint16_t	_character_id;
+	uint16_t	_depth;
 	MATRIX	_matrix;
 	CXFORM	_cxform;
 	int		_blend_mode;
@@ -77,7 +77,7 @@ public:
 	virtual ~DefineButtonTag()
     {}
 
-	virtual bool read( Reader& reader, SWF& swf, MovieFrames& ) {
+	virtual bool read( Reader& reader, SWF& , MovieFrames& ) {
 		_buttonId = reader.get<uint16_t>();
         reader.skip( length()-2 );
 		return false;//delete tag
@@ -148,6 +148,10 @@ public:
 	virtual void onEvent(Event::Code);
 
 private:
+	// no copy constructor and assignment operator
+	Button& operator=(const Button&);
+	Button(const Button&);
+
 	DefineButton2Tag& getDefinition(void) { return _definition; }
 
 	void setupFrame(void);

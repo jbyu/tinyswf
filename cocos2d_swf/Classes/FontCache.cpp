@@ -8,12 +8,13 @@ const int kTEXTURE_SIZE = 512;
 const int kNUMBER_GLYPH_PER_ROW	= kTEXTURE_SIZE / kGLYPH_WIDTH; 
 // number of glyph per row in the texture
 
-OSFont::OSFont(const char *font_name, int fontsize) {
+OSFont::OSFont(const char *font_name, float fontsize) {
 	_font = create(font_name, fontsize);
 	SWF_ASSERT(_font);
 	_cache = new GlyphCache(kNUMBER_GLYPH_PER_ROW * kNUMBER_GLYPH_PER_ROW);
 	_bitmap = new Texture2D;
-	_bitmap->initWithData(0, kCCTexture2DPixelFormat_A8, kTEXTURE_SIZE, kTEXTURE_SIZE, Size(kTEXTURE_SIZE, kTEXTURE_SIZE));
+	const float tex_width = kTEXTURE_SIZE;
+	_bitmap->initWithData(0, kCCTexture2DPixelFormat_A8, kTEXTURE_SIZE, kTEXTURE_SIZE, Size(tex_width,tex_width));
     //glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
     //glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 }
@@ -119,7 +120,7 @@ CCFlashFontHandler::~CCFlashFontHandler() {
 	CC_SAFE_RELEASE_NULL(mpFontShader);
 }
 
-OSFont* CCFlashFontHandler::selectFont(const char *font_name, int fontsize) {
+OSFont* CCFlashFontHandler::selectFont(const char *font_name, float fontsize) {
 	CacheData::iterator it = _font_cache.find(font_name);
 	if (it != _font_cache.end()) {
 		_selectedFont = (it->second);
@@ -147,7 +148,7 @@ struct AlignData {
 };
 
 void align(FormatText& out, const TextStyle& style, const AlignData& data) {
-	int indent = 0;
+	float indent = 0;
 	switch(style.alignment) {
 	case TextStyle::ALIGN_CENTER:
 		indent = data.positionX + (data.width - data.length) * 0.5f;
@@ -227,8 +228,8 @@ uint32_t CCFlashFontHandler::formatText(VertexArray& vertices,
 
 			int gy = glyph->index / kNUMBER_GLYPH_PER_ROW;			// calculate y index first
 			int gx = glyph->index - (gy * kNUMBER_GLYPH_PER_ROW);	// calculate x index
-			float uvX = gx * kGLYPH_WIDTH;
-			float uvY = gy * kGLYPH_WIDTH;
+			float uvX = float(gx * kGLYPH_WIDTH);
+			float uvY = float(gy * kGLYPH_WIDTH);
 			float x = lx + glyph->offsetX;
 			float y = ly + glyph->offsetY;
 

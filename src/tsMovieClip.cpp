@@ -120,7 +120,12 @@ public:
 	virtual const RECT& getRectangle(void) const { return _bound; }
 	virtual void draw(void) {}
 	virtual void update(void) {}
-	virtual ICharacter* getTopMost(float localX, float localY, bool polygonTest) { return NULL; }
+	virtual ICharacter* getTopMost(float localX, float localY, bool polygonTest) {
+		SWF_UNUSED_PARAM(localX);
+		SWF_UNUSED_PARAM(localY);
+		SWF_UNUSED_PARAM(polygonTest);
+		return NULL;
+	}
 	virtual void onEvent(Event::Code) {}
 };
 
@@ -295,7 +300,7 @@ void MovieClip::draw(void)
 	while ( _display_list.end() != iter )
 	{
 		MovieObject &object = iter->second;
-		const int clip = object._clip_depth;
+		const uint16_t clip = object._clip_depth;
 		const uint16_t depth = iter->first;
 		if (mask && depth > highest_masked_layer) {
             // restore stencil

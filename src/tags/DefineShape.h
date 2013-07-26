@@ -20,9 +20,9 @@ public:
     //void configPaint( VGPaint paint, uint8_t type, MATRIX& m, bool support_32bit_color);
 		
 private:
-	uint8_t		_spread_mode;			// 0 = Pad mode 1 = Reflect mode 2 = Repeat mode
-	uint8_t		_interpolation_mode;	// 0 = Normal RGB mode interpolation 1 = Linear RGB mode interpolation
-	uint8_t		_num_gradients;
+	uint32_t		_spread_mode;			// 0 = Pad mode 1 = Reflect mode 2 = Repeat mode
+	uint32_t		_interpolation_mode;	// 0 = Normal RGB mode interpolation 1 = Linear RGB mode interpolation
+	uint32_t		_num_gradients;
 		
 	struct Record {
 		uint8_t	_ratio;

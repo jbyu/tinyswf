@@ -35,14 +35,14 @@ bool PlaceObjectTag::read( Reader& reader, SWF& swf, MovieFrames& data )
 	if ( reader.getBitPos() )
 		SWF_TRACE("UNALIGNED!!\n");
 
-	uint8_t has_clip_actions = reader.getbits( 1 );
-	_has_clip_depth = reader.getbits( 1 );
-	uint8_t has_name = reader.getbits( 1 );
-	uint8_t has_ratio = reader.getbits( 1 );
+	uint32_t has_clip_actions = reader.getbits( 1 );
+	_has_clip_depth = (uint8_t) reader.getbits( 1 );
+	uint32_t has_name = reader.getbits( 1 );
+	uint32_t has_ratio = reader.getbits( 1 );
 	_has_color_transform = reader.getbits( 1 );
-	_has_matrix = reader.getbits( 1 );
-	uint8_t _has_character = reader.getbits( 1 );
-	uint8_t _has_move = reader.getbits( 1 );
+	_has_matrix = (uint8_t) reader.getbits( 1 );
+	uint32_t _has_character = reader.getbits( 1 );
+	uint32_t _has_move = reader.getbits( 1 );
 		
 	_depth = reader.get<uint16_t>();
 
@@ -124,6 +124,7 @@ void PlaceObjectTag::copyAttributes(MovieObject& object) {
 
 void PlaceObjectTag::setup(MovieClip& movie, bool skipAction) 
 {
+	SWF_UNUSED_PARAM(skipAction);
     MovieClip::DisplayList& _display_list = movie.getDisplayList();
 	const uint16_t depth = this->depth();
 	MovieObject& object = _display_list[ depth ];

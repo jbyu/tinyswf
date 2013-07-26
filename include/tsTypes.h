@@ -325,6 +325,8 @@ const MATRIX3f kMatrix3fIdentity = {
 	0,0,1}
 };
 
+#define SWF_UNUSED_PARAM(unusedparam) (void)unusedparam
+
 void Log(const char* szmsg, ...);
 
 #ifdef SWF_DEBUG

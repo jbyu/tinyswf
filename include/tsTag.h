@@ -312,7 +312,7 @@ public:
     // return true to keep this tag
 	virtual bool read( Reader& reader, SWF& swf, MovieFrames& data ) = 0;
 	virtual void print() = 0;
-	virtual void setup( MovieClip&, bool skipAction ) {};
+	virtual void setup( MovieClip&, bool skipAction ) { SWF_UNUSED_PARAM(skipAction); }
 
 	inline uint32_t code() const { return _header.code(); }
 	inline int32_t length() const { return _header.length(); }
@@ -338,7 +338,10 @@ public:
 		
 	virtual ~EndTag() {}
 		
-	virtual bool read( Reader& reader, SWF& swf, MovieFrames& data ) { return false; }
+	virtual bool read( Reader& , SWF& , MovieFrames& data ) {
+		SWF_UNUSED_PARAM(data);
+		return false;
+	}
 	virtual void print() { SWF_TRACE("END TAG\n"); }
 		
 	static ITag* create( TagHeader& header ) {
