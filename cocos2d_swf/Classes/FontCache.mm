@@ -41,7 +41,7 @@ struct SYSFONT {
 	float line_height;
 };
 
-bool FontData::initialize(void) {
+bool OSFont::initialize(void) {
     spBitmapBuffer = new char[kGLYPH_WIDTH * kGLYPH_WIDTH];
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceGray();
     spContext = CGBitmapContextCreate(spBitmapBuffer, kGLYPH_WIDTH, kGLYPH_WIDTH, 8, kGLYPH_WIDTH, colorSpace, kCGBitmapByteOrderDefault);
@@ -53,14 +53,14 @@ bool FontData::initialize(void) {
     return false;
 }
 
-bool FontData::createFont(const char *font_name, int size, Handle& handle) {
+OSFont::Handle OSFont::create(const char *font_name, float fontsize) {
 	if (! isValidFontName(font_name)) {
 		font_name = "Heiti TC";
 	}
     //CGFontRef cgfont = CGFontCreateWithFontName (CFSTR("Helvetica"));
     //CTFontRef ctFont = CTFontCreateWithGraphicsFont(cgfont, 24,NULL);
     CFStringRef name = CFStringCreateWithCString (NULL, font_name, kCFStringEncodingUTF8);
-    CTFontRef hFont = CTFontCreateWithName(name, size, NULL);
+    CTFontRef hFont = CTFontCreateWithName(name, fontsize, NULL);
     CFRelease(name);
 		
     if (hFont) {
@@ -69,27 +69,26 @@ bool FontData::createFont(const char *font_name, int size, Handle& handle) {
 	    font->ascent = CTFontGetAscent(hFont);
 		font->descent = CTFontGetDescent(hFont);
 		font->line_height = font->ascent + font->descent + CTFontGetLeading(hFont);
-        handle = font;
-        return true;
+        return font;
     }
-    return false;
+    return NULL;
 }
 
-void FontData::destroyFont(const Handle& handle) {
+void OSFont::destroy(const Handle& handle) {
 	SYSFONT *font = (SYSFONT*)handle;
     //CGFontRelease( (CGFontRef) font );
     CFRelease(font->hFont);
 	delete font;
 }
 
-void FontData::terminate(void) {
+void OSFont::terminate(void) {
     CGContextRelease(spContext);
     delete [] spBitmapBuffer;
     spContext = NULL;
     spBitmapBuffer = NULL;
 }
 
-bool FontData::getGlyph(const Handle& handle, wchar_t codepoint, GlyphInfo& entry) {
+bool OSFont::makeGlyph(const Handle& handle, wchar_t codepoint, GlyphInfo& entry) {
 	SYSFONT *font = (SYSFONT*)handle;
     UniChar characters[] = { (UniChar)codepoint };
     CGGlyph glyphs[] = {0};
@@ -132,12 +131,12 @@ bool FontData::getGlyph(const Handle& handle, wchar_t codepoint, GlyphInfo& entr
     return true;
 }
 
-float FontData::getLineHeight(const Handle& handle) {
+float OSFont::getLineHeight(const Handle& handle) {
     SYSFONT *sysfont = (SYSFONT*)handle;
 	return sysfont->line_height;
 }
 
-void* FontData::getBitmap() {
+void* OSFont::getGlyphBitmap() {
     return spBitmapBuffer;
 }
 
