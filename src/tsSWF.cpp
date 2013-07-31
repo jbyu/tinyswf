@@ -116,22 +116,35 @@ void SWF::print()
 	_header.print();
 }
 
-bool SWF::addAsset(uint16_t id, const char *name, bool import)
-{
-    if (_asset_loader)
-    {
-        Asset asset = _asset_loader( name, import );
-        if (0 != asset.handle) {
-            moAssets[id] = asset;
-        } else {
-            _library[name] = id;
-        }
-        return true;
-    }
-    return false;
+ICharacter* SWF::addAsset(uint16_t id, const char *name, const char* url) {
+    if (!_asset_loader)
+		return NULL;
+
+    Asset asset = _asset_loader( name, url );
+	switch(asset.type) {
+	case Asset::TYPE_EXPORT:
+	    if (0 != asset.handle) {
+			// using export-tag to store resource filename instead of using embedded data.
+			// it will help a lot while switching to atlas textures.
+		    moAssets[id] = asset;
+		} else {
+			_library[name] = id; // export symbol
+		}
+		break;
+	case Asset::TYPE_SYMBOL:
+		// import character from other swf.
+		return (ICharacter*)asset.handle;
+		break;
+	default:
+	case Asset::TYPE_IMPORT:
+		// import unknown data from outside.
+	    moAssets[id] = asset;
+		break;
+	}
+    return NULL;
 }
 
-MovieClip *SWF::duplicate(const char *name) {
+MovieClip *SWF::duplicate(const char *name, bool hasMatrix) {
     MovieClip *movie = NULL;
     SymbolDictionary::const_iterator it = _library.find(name);
     if (_library.end() != it) {
@@ -139,7 +152,8 @@ MovieClip *SWF::duplicate(const char *name) {
 		SWF_ASSERT(TAG_DEFINE_SPRITE == tag->code() || TAG_DEFINE_BUTTON2 == tag->code());
         // create a new instance
 		movie = (MovieClip*)createCharacter(tag);
-		movie->createTransform();
+		if (hasMatrix)
+			movie->createTransform();
 		_duplicates.push_back(movie);
     }
     return movie;

@@ -11,35 +11,39 @@ namespace tinyswf
 {
 	class ImportAssets2Tag : public ITag
     {
-        uint16_t count;
+		ICharacter *_character;
 
 	public:
 		ImportAssets2Tag( TagHeader& h ) 
-		: ITag( h )
+			:ITag( h )
+			,_character(NULL)
 		{}
 		
 		virtual ~ImportAssets2Tag()
         {}
 
+		ICharacter *getCharacter() { return _character; }
+
 		virtual bool read( Reader& reader, SWF& swf, MovieFrames&) {
             const char *url = reader.getString();
 			reader.get<uint8_t>();//reserved
 			reader.get<uint8_t>();//reserved
-            count = reader.get<uint16_t>();
-            SWF_TRACE("from %s\n", url);
-            for (uint16_t i = 0; i < count; ++i)
-            {
-			    uint16_t tag = reader.get<uint16_t>();
+            uint16_t count = reader.get<uint16_t>();
+            for (uint16_t i = 0; i < count; ++i) {
+			    uint16_t id = reader.get<uint16_t>();
                 const char *name = reader.getString();
-                swf.addAsset(tag, name, true );
-                SWF_TRACE("import[%d] %s\n", tag, name);
+                _character = swf.addAsset(id, name, url);
+                SWF_TRACE("id=%d, symbol=%s from %s\n", id, name, url);
+				if (_character) {
+					swf.addCharacter( this, id );
+					return true; // keep tag
+				}
             }
 			return false; // delete tag
 		}
 
 		virtual void print() {
     		_header.print();
-			//SWF_TRACE("EXPORT_ASSETS:%d\n", count);
 		}
 
 		static ITag* create( TagHeader& header ) {

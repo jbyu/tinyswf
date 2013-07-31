@@ -112,6 +112,8 @@ public:
 	}
 	virtual void onEvent(Event::Code) {}
 
+	virtual TYPE type() const { return TYPE_TEXT; }
+
 	bool setString(const char* str);
 	
 protected:

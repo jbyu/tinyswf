@@ -27,8 +27,8 @@ namespace tinyswf
             {
 			    uint16_t tag = reader.get<uint16_t>();
                 const char *name = reader.getString();
-                swf.addAsset(tag, name, false );
-                SWF_TRACE("export[%d] %s\n", tag, name);
+                swf.addAsset(tag, name, NULL );
+                SWF_TRACE("id=%d, symbol=%s\n", tag, name);
             }
 			return false; // delete tag
 		}

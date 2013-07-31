@@ -7,10 +7,12 @@ Copyright (c) 2013 jbyu. All rights reserved.
 #include "tinyswf.h"
 #include "cocos2d.h"
 
-tinyswf::Asset myLoadAssetCallback( const char *name, bool import );
+tinyswf::Asset CCFlashLoadAsset( const char *name, const char *url );
 
 class CCFlash : public cocos2d::LayerRGBA {
-	tinyswf::SWF *mpSWF;
+    typedef std::map<std::string, cocos2d::Texture2D*> FlashTextureCache;
+    FlashTextureCache _textureCache;
+	tinyswf::SWF *_swf;
 
 public:
 	virtual ~CCFlash();
@@ -19,9 +21,9 @@ public:
 
     virtual void update(float delta);
 
-	virtual bool initWithFile(const char* filename);
+	virtual bool initWithFile(const char* filename, tinyswf::SWF::GetURLCallback fscommand);
 
-	bool setString(const char* name, const char *text);
+	tinyswf::ICharacter* getCharacter(const char* name);
 
     virtual void registerWithTouchDispatcher();
 
@@ -33,20 +35,23 @@ public:
     virtual void setColor(const cocos2d::Color3B &color) override;
     virtual void setOpacity(GLubyte opacity) override;
 
-    static CCFlash* create(const char* filename);
+    static CCFlash* create(const char* filename, tinyswf::SWF::GetURLCallback fscommand = NULL);
+
+    cocos2d::Texture2D* getTexture(const char *filename , int &width, int&height, int&x, int&y);
 };
 
 class CCFlashRenderer : public tinyswf::Renderer {
-    typedef std::map<std::string, cocos2d::Texture2D*> FlashTextureCache;
-    FlashTextureCache moCache;
-	cocos2d::GLProgram *mpDefaultShader;
-	cocos2d::GLProgram *mpTextureShader;
-	int miColorLocation;
-	int miAddColorLocation;
-	int miMultColorLocation;
-	int miTextureMatrixLocation;
-	int miMaskLevel;
-	kmMat4 matrixMV;
+    typedef std::map<std::string, tinyswf::SWF*> ImoprtSWFCache;
+	ImoprtSWFCache _swfCache;
+
+	cocos2d::GLProgram *_defaultShader;
+	cocos2d::GLProgram *_textureShader;
+	int _defaultColorLocation;
+	int _addColorLocation;
+	int _multColorLocation;
+	int _textureMatrixLocation;
+	int _maskLevel;
+	kmMat4 _matrixMV;
 
 public:
     CCFlashRenderer();
@@ -68,7 +73,7 @@ public:
     void drawBegin(void);
     void drawEnd(void);
 
-    cocos2d::Texture2D* getTexture(const char *filename , int &width, int&height, int&x, int&y);
+	tinyswf::SWF* importSWF(const char* filename);
 };
 
 

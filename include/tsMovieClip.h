@@ -88,8 +88,6 @@ public:
 
 	ICharacter* getInstance(const char *name);
 
-	bool setString(const char *name, const char* text);
-
     MATRIX* getTransform(void) { return _transform; }
 
     void gotoLabel( const char* label );
@@ -101,6 +99,8 @@ public:
 	virtual void update(void);
 	virtual ICharacter* getTopMost(float localX, float localY, bool polygonTest);
 	virtual void onEvent(Event::Code) {}
+
+	virtual TYPE type() const { return TYPE_MOVIE; }
 
     void play( bool enable ) { 	_play = enable; }
 	void gotoFrame( uint32_t frame, bool skipAction );

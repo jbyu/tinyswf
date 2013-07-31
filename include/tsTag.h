@@ -107,11 +107,14 @@ struct MovieFrames
 
 //-----------------------------------------------------------------------------
 
-// import asset
+// import/export asset
 struct Asset {
-	// for import information
-	// >0: import asset
-    int         import;
+	enum Type {
+		TYPE_EXPORT = 0,	// export symbol or store resource filename
+		TYPE_SYMBOL = 1,	// import character from other swf.
+		TYPE_IMPORT = 2,	// import unknown data from outside.
+	};
+    Type        type;
     uint32_t    handle;
 	// for texture coordinate transformation
 	// param[0]: 20.f / width of texture
@@ -120,7 +123,7 @@ struct Asset {
 	// param[3]: y / height of texture
 	float		param[4]; 
 };
-const Asset kNULL_ASSET = {false, 0, {0,0,0,0}};
+const Asset kNULL_ASSET = {Asset::TYPE_EXPORT, 0, {0,0,0,0}};
 
 //-----------------------------------------------------------------------------
 
@@ -176,6 +179,14 @@ struct Event {
 // character interface for display list
 class ICharacter {
 public:
+	enum TYPE {
+		TYPE_NONE	= 0,
+		TYPE_SHAPE	= 1,
+		TYPE_TEXT	= 2,
+		TYPE_MOVIE	= 3,
+		TYPE_BUTTON = 4,
+	};
+
 	const static uint32_t kFRAME_MAXIMUM = 0xffffffff;
 
     virtual const RECT& getRectangle(void) const = 0;
@@ -183,6 +194,8 @@ public:
 	virtual void update(void) = 0;
 	virtual ICharacter* getTopMost(float localX, float localY, bool polygonTest) = 0;
 	virtual void onEvent(Event::Code) = 0;
+
+	virtual TYPE type() const = 0;
 
 	virtual ~ICharacter() { SWF_TRACE("delete ICharacter[%x]\n",this); }
 };

@@ -207,7 +207,7 @@ bool ShapeWithStyle::read( Reader& reader, SWF& swf, DefineShapeTag* define_shap
 			continue;
 
 		it->_asset = swf.getAsset(bitmap);
-		if (it->_asset.import) {
+		if (Asset::TYPE_IMPORT <= it->_asset.type) {
 			// compute the boundary of the mesh for import asset
 			RECT bound = {FLT_MAX,FLT_MAX,-FLT_MAX,-FLT_MAX};
 			for(VertexArray::const_iterator v = it->_vertices.begin(); v != it->_vertices.end(); ++v) {
@@ -409,7 +409,7 @@ void ShapeWithStyle::draw() {
 	for (ShapeArray::const_iterator i = _shapes.begin(); i != _shapes.end(); ++i) {
 		const Shape& shape = *i;
 		for (MeshArray::const_iterator j = shape._meshes.begin(); j != shape._meshes.end(); ++j) {
-			if (j->_asset.import) {
+			if (Asset::TYPE_IMPORT <= j->_asset.type) {
 				Renderer::getInstance()->drawImportAsset(j->_bound, SWF::getCurrentCXForm(), j->_asset);
 			} else {
 				Renderer::getInstance()->drawTriangles( j->_vertices, SWF::getCurrentCXForm(), *(j->_style), j->_asset);

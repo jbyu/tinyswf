@@ -9,6 +9,7 @@ Copyright (c) 2013 jbyu. All rights reserved.
 #include "tags/DefineShape.h"
 #include "tags/DefineButton.h"
 #include "tags/DefineText.h"
+#include "tags/ImportAssets2.h"
 
 using namespace tinyswf;
 
@@ -127,6 +128,7 @@ public:
 		return NULL;
 	}
 	virtual void onEvent(Event::Code) {}
+	virtual TYPE type(void) const { return TYPE_NONE; }
 };
 
 static nullCharacter soDefaultNullCharacter;
@@ -145,6 +147,9 @@ ICharacter *MovieClip::createCharacter(const ITag* tag) {
 	case TAG_DEFINE_EDIT_TEXT:
 		character = new Text(*(DefineEditTextTag*)tag);
 		_characters.push_back(character);
+		break;
+	case TAG_IMPORT_ASSETS2:
+		character = ((ImportAssets2Tag*)tag)->getCharacter();
 		break;
 	default:
 		character = (DefineShapeTag*)tag;
@@ -191,16 +196,6 @@ ICharacter *MovieClip::getInstance(const char* name) {
 		++fit;
 	}
 	return NULL;
-}
-
-bool MovieClip::setString(const char* name, const char *text) {
-	ICharacter *ch = getInstance(name);
-	if (!ch)
-		return false;
-	tinyswf::Text* instance = (tinyswf::Text*)ch;
-	instance->setString(text);
-
-	return true;
 }
 
 void MovieClip::clearDisplayList(void)

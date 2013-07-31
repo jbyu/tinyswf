@@ -45,67 +45,67 @@ void main()								\n\
 ";
 
 CCFlashRenderer::CCFlashRenderer()
-	:miMaskLevel(0)
+	:_maskLevel(0)
 {
 	// flash texture shader
-    mpTextureShader = new GLProgram();
-	mpTextureShader->initWithVertexShaderByteArray(textureShader_vert, textureShader_frag);
-	mpTextureShader->addAttribute(kAttributeNamePosition, kVertexAttrib_Position);
-    mpTextureShader->link();
-    mpTextureShader->updateUniforms();
-	miAddColorLocation = glGetUniformLocation( mpTextureShader->getProgram(), "u_AddColor");
-	miMultColorLocation = glGetUniformLocation( mpTextureShader->getProgram(), "u_MultColor");
-	miTextureMatrixLocation = glGetUniformLocation( mpTextureShader->getProgram(), "CC_TMatrix");
+    _textureShader = new GLProgram();
+	_textureShader->initWithVertexShaderByteArray(textureShader_vert, textureShader_frag);
+	_textureShader->addAttribute(kAttributeNamePosition, kVertexAttrib_Position);
+    _textureShader->link();
+    _textureShader->updateUniforms();
+	_addColorLocation = glGetUniformLocation( _textureShader->getProgram(), "u_AddColor");
+	_multColorLocation = glGetUniformLocation( _textureShader->getProgram(), "u_MultColor");
+	_textureMatrixLocation = glGetUniformLocation( _textureShader->getProgram(), "CC_TMatrix");
     CHECK_GL_ERROR_DEBUG();
 
 	// default color only shader
-	mpDefaultShader = ShaderCache::getInstance()->programForKey(kShader_Position_uColor);
-	mpDefaultShader->retain();
-	miColorLocation = glGetUniformLocation( mpDefaultShader->getProgram(), "u_color");
+	_defaultShader = ShaderCache::getInstance()->programForKey(kShader_Position_uColor);
+	_defaultShader->retain();
+	_defaultColorLocation = glGetUniformLocation( _defaultShader->getProgram(), "u_color");
     CHECK_GL_ERROR_DEBUG();
 }
 
 CCFlashRenderer::~CCFlashRenderer() {
-	CC_SAFE_RELEASE_NULL(mpDefaultShader);
-	CC_SAFE_RELEASE_NULL(mpTextureShader);
-	FlashTextureCache::iterator it = moCache.begin();
-	while(moCache.end() != it) {
-		Texture2D* tex = it->second;
-		TextureCache::getInstance()->removeTexture(tex);
+	CC_SAFE_RELEASE_NULL(_defaultShader);
+	CC_SAFE_RELEASE_NULL(_textureShader);
+
+	ImoprtSWFCache::iterator it = _swfCache.begin();
+	while(_swfCache.end() != it) {
+		delete it->second;
 		++it;
 	}
 }
 
 void CCFlashRenderer::maskBegin(void) {
-	if (0 == miMaskLevel) {
+	if (0 == _maskLevel) {
 		glEnable(GL_STENCIL_TEST);
 	}
 	// we set the stencil buffer to 'm_mask_level+1' 
 	// where we draw any polygon and stencil buffer is 'm_mask_level'
-	glStencilFunc(GL_EQUAL, miMaskLevel++, kStencilMask);
+	glStencilFunc(GL_EQUAL, _maskLevel++, kStencilMask);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_INCR); 
 	glColorMask(0, 0, 0, 0);
 }
 
 void CCFlashRenderer::maskEnd(void) {	     
 	// we draw only where the stencil is m_mask_level (where the current mask was drawn)
-	glStencilFunc(GL_EQUAL, miMaskLevel, kStencilMask);
+	glStencilFunc(GL_EQUAL, _maskLevel, kStencilMask);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);	
 	glColorMask(1, 1, 1, 1);
 }
 
 void CCFlashRenderer::maskOffBegin(void) {	     
-	SWF_ASSERT(0 < miMaskLevel);
+	SWF_ASSERT(0 < _maskLevel);
 	// we set the stencil buffer back to 'm_mask_level' 
 	// where the stencil buffer m_mask_level + 1
-	glStencilFunc(GL_EQUAL, miMaskLevel--, kStencilMask);
+	glStencilFunc(GL_EQUAL, _maskLevel--, kStencilMask);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_DECR); 
 	glColorMask(0, 0, 0, 0);
 }
 
 void CCFlashRenderer::maskOffEnd(void) {	     
 	maskEnd();
-	if (0 == miMaskLevel) {
+	if (0 == _maskLevel) {
 		glDisable(GL_STENCIL_TEST); 
 	}
 }
@@ -132,7 +132,7 @@ inline void MATRIX3f2kmMat4(kmMat4 &matrix, const tinyswf::MATRIX3f& mtx) {
 void CCFlashRenderer::applyTransform(const tinyswf::MATRIX3f& mtx) {
     kmMat4 matrix;
 	MATRIX3f2kmMat4(matrix, mtx);
-    kmGLLoadMatrix(&matrixMV);
+    kmGLLoadMatrix(&_matrixMV);
 	kmGLMultMatrix(&matrix);
 }
 
@@ -142,9 +142,9 @@ void CCFlashRenderer::drawLineStrip(const tinyswf::VertexArray& vertices, const 
 	glLineWidth(style.getWidth());
 
 	ccGLEnableVertexAttribs( kVertexAttribFlag_Position );
-    mpDefaultShader->use();
-	mpDefaultShader->setUniformsForBuiltins();
-	mpDefaultShader->setUniformLocationWith4fv(miColorLocation, (GLfloat*) &color.r, 1);
+    _defaultShader->use();
+	_defaultShader->setUniformsForBuiltins();
+	_defaultShader->setUniformLocationWith4fv(_defaultColorLocation, (GLfloat*) &color.r, 1);
 	glVertexAttribPointer(kVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, 0, &vertices.front().x);
 	glDrawArrays(GL_LINE_STRIP, 0, vertices.size());
     CC_INCREMENT_GL_DRAWS(1);
@@ -159,9 +159,9 @@ void CCFlashRenderer::drawTriangles(const tinyswf::VertexArray& vertices, const 
 		tinyswf::COLOR4f color = cxform.mult * style.getColor();
 		color += cxform.add;
 
-	    mpDefaultShader->use();
-		mpDefaultShader->setUniformsForBuiltins();
-		mpDefaultShader->setUniformLocationWith4fv(miColorLocation, (GLfloat*) &color.r, 1);
+	    _defaultShader->use();
+		_defaultShader->setUniformsForBuiltins();
+		_defaultShader->setUniformLocationWith4fv(_defaultColorLocation, (GLfloat*) &color.r, 1);
 
 		glVertexAttribPointer(kVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, 0, &vertices.front().x);
 		glDrawArrays(PRIMITIVE_MODE, 0, vertices.size());
@@ -172,11 +172,11 @@ void CCFlashRenderer::drawTriangles(const tinyswf::VertexArray& vertices, const 
     kmMat4 matrix;
 	MATRIX3f2kmMat4(matrix, style.getBitmapMatrix());
 
-    mpTextureShader->use();
-	mpTextureShader->setUniformsForBuiltins();
-	mpTextureShader->setUniformLocationWithMatrix4fv(miTextureMatrixLocation, matrix.mat, 1);
-	mpTextureShader->setUniformLocationWith4fv(miMultColorLocation, (GLfloat*) &cxform.mult.r, 1);
-	mpTextureShader->setUniformLocationWith4fv(miAddColorLocation, (GLfloat*) &cxform.add.r, 1);
+    _textureShader->use();
+	_textureShader->setUniformsForBuiltins();
+	_textureShader->setUniformLocationWithMatrix4fv(_textureMatrixLocation, matrix.mat, 1);
+	_textureShader->setUniformLocationWith4fv(_multColorLocation, (GLfloat*) &cxform.mult.r, 1);
+	_textureShader->setUniformLocationWith4fv(_addColorLocation, (GLfloat*) &cxform.add.r, 1);
 
 	Texture2D *texture = (Texture2D *)asset.handle;
 	ccGLBindTexture2D( texture->getName() );
@@ -225,7 +225,7 @@ void CCFlashRenderer::drawBegin(void) {
 
 	kmGLMatrixMode(KM_GL_MODELVIEW);
 	kmGLPushMatrix();
-	kmGLGetMatrix(KM_GL_MODELVIEW, &matrixMV);
+	kmGLGetMatrix(KM_GL_MODELVIEW, &_matrixMV);
 	
 	ccGLBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
@@ -237,34 +237,55 @@ void CCFlashRenderer::drawEnd(void) {
 	kmGLPopMatrix();
 }
 
-Texture2D* CCFlashRenderer::getTexture( const char *filename , int &width, int&height, int&x, int&y) {
-    Texture2D* ret = 0;
-    FlashTextureCache::iterator it = moCache.find(filename);
-    if (moCache.end() != it)
-        return it->second;
-
-	ret = TextureCache::getInstance()->addImage(filename);
-	width = ret->getPixelsWide();
-	height = ret->getPixelsHigh();
-	x = y = 0;
-
-    moCache[filename] = ret;
-    return ret;
-}
-
 //-----------------------------------------------------------------------------
 
-tinyswf::Asset myLoadAssetCallback( const char *name, bool import ) {
-	tinyswf::Asset asset = {import, 0, 0, 0};
-	if (import) {
-		asset.handle = 1;
+static CCFlash *spCurrentSWF = NULL;
+
+tinyswf::SWF* loadSWF(const char* filename) {
+    unsigned long size = 0;
+    unsigned char* pBuffer = FileUtils::getInstance()->getFileData(filename, "rb", &size);
+	if (! pBuffer)
+		return NULL;
+
+	CCLOG("load swf:%s",filename);
+    tinyswf::Reader reader((char*)pBuffer, size);
+    tinyswf::SWF* swf = new tinyswf::SWF;
+    bool ret = swf->read(reader);
+    CC_SAFE_DELETE_ARRAY(pBuffer);
+
+	return swf;
+}
+
+tinyswf::SWF* CCFlashRenderer::importSWF(const char* filename) {
+    ImoprtSWFCache::iterator it = _swfCache.find(filename);
+    if (_swfCache.end() != it) {
+        return it->second;
+	}
+	tinyswf::SWF* swf = loadSWF(filename);
+	_swfCache[filename] = swf;
+	return swf;
+}
+
+tinyswf::Asset CCFlashLoadAsset( const char *name, const char *url ) {
+	tinyswf::Asset asset = {Asset::TYPE_EXPORT, 0, 0, 0};
+	if (url) {
+		CCFlashRenderer* renderer = (CCFlashRenderer*)Renderer::getInstance();
+		SWF *swf = renderer->importSWF(url);
+		MovieClip *movie = swf->duplicate(name, false);
+		if (movie) {
+			asset.type = Asset::TYPE_SYMBOL;
+			asset.handle = (uint32_t)movie;
+		} else {
+			asset.type = Asset::TYPE_IMPORT;
+			asset.handle = 1;
+		}
 		return asset;
 	}
 
 	if (strstr(name,".png")) {
+		CCASSERT(spCurrentSWF, "target SWF is null");
 		int x,y,w,h;
-		CCFlashRenderer *renderer = (CCFlashRenderer*) tinyswf::Renderer::getInstance();
-		asset.handle = (uint32_t)renderer->getTexture(name, w,h,x,y);
+		asset.handle = (uint32_t)spCurrentSWF->getTexture(name, w,h,x,y);
 		const float invW = 1.f / w;
 		const float invH = 1.f / h;
 		asset.param[0] = tinyswf::SWF_TWIPS * invW;
@@ -278,39 +299,54 @@ tinyswf::Asset myLoadAssetCallback( const char *name, bool import ) {
 }
 
 //-----------------------------------------------------------------------------
-void myURLCallback( tinyswf::MovieClip&, bool isFSCommand, const char *url, const char *target )
-{
-	CCLOG("fs:%d, url:%s, targt:%s\n", isFSCommand, url, target);
+
+Texture2D* CCFlash::getTexture( const char *filename , int &width, int&height, int&x, int&y) {
+    Texture2D* ret = NULL;
+
+    FlashTextureCache::iterator it = _textureCache.find(filename);
+    if (_textureCache.end() != it) {
+        ret = it->second;
+	} else {
+		ret = TextureCache::getInstance()->addImage(filename);
+		ret->retain();
+	    _textureCache[filename] = ret;
+	}
+
+	width = ret->getPixelsWide();
+	height = ret->getPixelsHigh();
+	x = y = 0;
+
+    return ret;
 }
 
 CCFlash::~CCFlash() {
-	delete mpSWF;
+	FlashTextureCache::iterator it = _textureCache.begin();
+	while(_textureCache.end() != it) {
+		it->second->release();
+		++it;
+	}
+	delete _swf;
+	TextureCache::getInstance()->removeUnusedTextures();
 }
 
-bool CCFlash::initWithFile(const char* filename) {
-    unsigned long size = 0;
-    unsigned char* pBuffer = FileUtils::getInstance()->getFileData(filename, "rb", &size);
-    tinyswf::Reader reader((char*)pBuffer, size);
-    mpSWF = new tinyswf::SWF;
-    bool ret = mpSWF->read(reader);
-    CC_SAFE_DELETE_ARRAY(pBuffer);
-
+bool CCFlash::initWithFile(const char* filename, tinyswf::SWF::GetURLCallback fscommand) {
+	spCurrentSWF = this;
+    _swf = loadSWF(filename);
+	_swf->setGetURL( fscommand );
+	spCurrentSWF = NULL;
 	this->setTouchEnabled(true);
 
-	mpSWF->setGetURL( myURLCallback );
-
-#if 1
-	MATRIX3f& mtx = mpSWF->getCurrentMatrix();
+	// adjust position for different screen resolution
+	MATRIX3f& mtx = _swf->getCurrentMatrix();
     Point origin = Director::getInstance()->getVisibleOrigin();
 	mtx.f[6] = origin.x;
 	mtx.f[7] = origin.y;
-#endif
 	return true;
 }
 
-CCFlash * CCFlash::create(const char*filename) {
+CCFlash * CCFlash::create(const char*filename, tinyswf::SWF::GetURLCallback fscommand) {
     CCFlash *node = new CCFlash();
-    if(node && node->initWithFile(filename)) {
+    if(node && node->initWithFile(filename, fscommand)) {
         node->autorelease();
         return node;
     }
@@ -319,16 +355,16 @@ CCFlash * CCFlash::create(const char*filename) {
 }
 
 void CCFlash::draw() {
-	mpSWF->draw();
+	_swf->draw();
 }
 
 void CCFlash::update(float delta) {
 	CCNode::update(delta);
-	mpSWF->update(delta);
+	_swf->update(delta);
 }
 
-bool CCFlash::setString(const char* name, const char *text) {
-	return mpSWF->setString(name, text);
+tinyswf::ICharacter* CCFlash::getCharacter(const char* name) {
+	return _swf->getInstance(name);
 }
 
 void CCFlash::setColor(const Color3B &color)
@@ -353,7 +389,7 @@ bool CCFlash::ccTouchBegan(Touch* touch, cocos2d::Event* event)
 {
     CC_UNUSED_PARAM(event);
 	Point pt = touch->getLocationInView();
-	mpSWF->notifyMouse(1, pt.x, pt.y, true); 
+	_swf->notifyMouse(1, pt.x, pt.y, true); 
     return true;
 }
 
@@ -361,7 +397,7 @@ void CCFlash::ccTouchEnded(Touch *touch, cocos2d::Event* event)
 {
     CC_UNUSED_PARAM(event);
 	Point pt = touch->getLocationInView();
-	mpSWF->notifyMouse(0, pt.x, pt.y, true); 
+	_swf->notifyMouse(0, pt.x, pt.y, true); 
 }
 
 void CCFlash::ccTouchCancelled(Touch *touch, cocos2d::Event* event)
@@ -373,5 +409,5 @@ void CCFlash::ccTouchMoved(Touch* touch, cocos2d::Event* event)
 {
     CC_UNUSED_PARAM(event);
 	Point pt = touch->getLocationInView();
-	mpSWF->notifyMouse(1, pt.x, pt.y, true); 
+	_swf->notifyMouse(1, pt.x, pt.y, true); 
 }

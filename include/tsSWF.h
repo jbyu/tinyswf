@@ -78,7 +78,7 @@ class SWF : public MovieClip {
 public:
     // factory function prototype
 	typedef ITag* (*TagFactoryFunc)( TagHeader& );
-    typedef Asset (*LoadAssetCallback)( const char *name, bool import );
+    typedef Asset (*LoadAssetCallback)( const char *name, const char *url );
     typedef void (*GetURLCallback)( MovieClip&, bool isFSCommand, const char *command, const char *target );
 
 	// Curve subdivision error tolerance.
@@ -118,7 +118,7 @@ public:
 	}
 		
 	// duplicate movieclip for other purpose outside flash
-    MovieClip *duplicate(const char *name);
+    MovieClip *duplicate(const char *name, bool hasMatrix = true);
 	// update all duplicated movieclips
     void updateDuplicate(float delta);
 	// draw all duplicated movieclips
@@ -145,8 +145,8 @@ public:
 
     COLOR4f& getBackgroundColor(void) { return _bgColor; }
 
-	// handle export/import assets
-    bool addAsset(uint16_t id, const char *name, bool import);
+	// handle export/import assets, return NULL or imported character from other swf
+	ICharacter* addAsset(uint16_t id, const char *name, const char* url);
     const Asset& getAsset(uint16_t id) const  {
         AssetDictionary::const_iterator it = moAssets.find(id);
         if (moAssets.end() != it)

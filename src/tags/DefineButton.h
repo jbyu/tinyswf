@@ -147,6 +147,8 @@ public:
 	virtual ICharacter* getTopMost(float localX, float localY, bool polygonTest);
 	virtual void onEvent(Event::Code);
 
+	virtual TYPE type() const { return TYPE_BUTTON; }
+
 private:
 	// no copy constructor and assignment operator
 	Button& operator=(const Button&);

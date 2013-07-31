@@ -128,7 +128,7 @@ public:
 
 	void addMesh(size_t fill_idx) {
 		SWF_ASSERT(0 <= fill_idx && _fill_styles.size() > fill_idx);
-		Mesh mesh = { &_fill_styles[fill_idx], {false,0,{0,0,0,0}}};
+		Mesh mesh = { &_fill_styles[fill_idx], kNULL_ASSET };
 		_shapes.back()._meshes.push_back(mesh);
 	}
 
@@ -209,6 +209,8 @@ public:
 	virtual ICharacter* getTopMost(float localX, float localY, bool polygonTest);
 	virtual void onEvent(Event::Code) {}
 		
+	virtual TYPE type() const { return TYPE_SHAPE; }
+
 	static ITag* create( TagHeader& header );
 	
 protected:

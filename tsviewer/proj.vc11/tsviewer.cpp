@@ -419,10 +419,11 @@ public:
 
 //-----------------------------------------------------------------------------
 
-tinyswf::Asset myLoadAssetCallback( const char *name, bool import )
+tinyswf::Asset myLoadAssetCallback( const char *name,  const char *url )
 {
-	tinyswf::Asset asset = {import, 0, 0, 0};
-    if (import) {
+	tinyswf::Asset asset = {tinyswf::Asset::TYPE_EXPORT, 0, 0, 0};
+    if (url) {
+		asset.type = tinyswf::Asset::TYPE_IMPORT;
 		asset.handle = 1;
         return asset;
 	}
