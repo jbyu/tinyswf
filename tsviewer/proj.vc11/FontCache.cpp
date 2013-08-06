@@ -9,8 +9,8 @@ const int kTEXTURE_SIZE = 512;
 const int kNUMBER_GLYPH_PER_ROW	= kTEXTURE_SIZE / kGLYPH_WIDTH; 
 // number of glyph per row in the texture
 
-OSFont::OSFont(const char *font_name, float fontsize) {
-	_font = create(font_name, fontsize);
+OSFont::OSFont(const char *font_name, float fontsize, int style) {
+	_font = create(font_name, fontsize, style);
 	SWF_ASSERT(_font);
 	_cache = new GlyphCache(kNUMBER_GLYPH_PER_ROW * kNUMBER_GLYPH_PER_ROW);
 
@@ -81,13 +81,13 @@ GLFontHandler::~GLFontHandler() {
 	OSFont::terminate();
 }
 
-OSFont* GLFontHandler::selectFont(const char *font_name, float fontsize) {
+OSFont* GLFontHandler::selectFont(const char *font_name, float fontsize, int style) {
 	CacheData::iterator it = _font_cache.find(font_name);
 	if (it != _font_cache.end()) {
 		_selectedFont = (it->second);
 		return _selectedFont;
 	}
-	_selectedFont = new OSFont(font_name, fontsize);
+	_selectedFont = new OSFont(font_name, fontsize, style);
 	_font_cache[font_name] = _selectedFont;
 	return _selectedFont;
 }
@@ -173,7 +173,7 @@ uint32_t GLFontHandler::formatText(VertexArray& vertices,
 										const TextStyle& style,
 										const std::wstring& text) {
 	//select font to get glyph
-	this->selectFont(style.font_name.c_str(), style.font_height);
+	this->selectFont(style.font_name.c_str(), style.font_height, style.font_style);
 
 	FormatText lines;
 	uint32_t numGlyphs = format(lines, rect, style, text, this);
@@ -226,7 +226,7 @@ void GLFontHandler::drawText(const VertexArray& vertices, uint32_t count, const 
 	glLoadMatrixf(texMtx);
 	glMatrixMode(GL_MODELVIEW);
 
-	OSFont *font = selectFont(style.font_name.c_str(), style.font_height);
+	OSFont *font = selectFont(style.font_name.c_str(), style.font_height, style.font_style);
     glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, font->_bitmap);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);

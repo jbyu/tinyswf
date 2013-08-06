@@ -10,9 +10,10 @@ namespace tinyswf {
 
 class DefineFontTag : public ITag {
 	uint16_t	_character_id;
+	int			_font_style;
 	std::string _font_name;
 	std::vector<uint16_t> _code_table;
-
+	
 public:
 	DefineFontTag( TagHeader& h ) 
 		:ITag( h )
@@ -25,6 +26,7 @@ public:
 		
 	virtual void print();
 
+	int getFontStyle(void) { return _font_style; }
 	const std::string& getFontName(void) { return _font_name; }
 
 	static ITag* create( TagHeader& header ) {

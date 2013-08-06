@@ -135,8 +135,8 @@ public:
     void draw(void);
 
 	// button: 0 for up, 1 for down
-	void notifyMouse(int button, float x, float y, bool touchScreen = false);
-	void notifyDuplicate(int button, float x, float y, bool touchScreen = false);
+	bool notifyMouse(int button, float x, float y, bool touchScreen = false);
+	bool notifyDuplicate(int button, float x, float y, bool touchScreen = false);
 
 	// flash information
 	float getFrameWidth() const     { return _header.getFrameWidth(); }

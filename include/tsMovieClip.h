@@ -15,6 +15,7 @@ class SWF;
 class Button;
 class DefineSpriteTag;
 class DefineButton2Tag;
+class DefineEditTextTag;
 
 //-----------------------------------------------------------------------------
 
@@ -72,6 +73,8 @@ protected:
         *_transform = kMatrixIdentity;
     }
 
+	void gotoFrame( uint32_t frame, bool skipAction );
+
 	ICharacter *createCharacter(const ITag*);
 	ICharacter* getInstance(const PlaceObjectTag*);
     DisplayList& getDisplayList(void) { return _display_list; }
@@ -100,10 +103,10 @@ public:
 	virtual ICharacter* getTopMost(float localX, float localY, bool polygonTest);
 	virtual void onEvent(Event::Code) {}
 
-	virtual TYPE type() const { return TYPE_MOVIE; }
+	const static TYPE kType = TYPE_MOVIE;
+	virtual TYPE type() const { return kType; }
 
     void play( bool enable ) { 	_play = enable; }
-	void gotoFrame( uint32_t frame, bool skipAction );
 
 	uint32_t getCurrentFrame( void ) const { return _frame; }
     uint32_t getFrameCount( void ) const { return _data._frames.size(); }
@@ -130,6 +133,89 @@ protected:
     bool        _play;
 	uint32_t	_frame;
 	DisplayList	_display_list;
+};
+
+//-----------------------------------------------------------------------------
+
+class Button : public MovieClip {
+public:
+	enum MouseState {
+		MOUSE_UP = 0,
+		MOUSE_OVER,
+		MOUSE_DOWN,
+		MOUSE_HIT_STATE,
+		MOUSE_MAXIMUM
+	};
+
+	Button( MovieClip& parent, DefineButton2Tag& data );
+	virtual ~Button();
+
+	// override DefineShapeTag function
+	virtual void update(void);
+	virtual ICharacter* getTopMost(float localX, float localY, bool polygonTest);
+	virtual void onEvent(Event::Code);
+
+	const static TYPE kType = TYPE_BUTTON;
+	virtual TYPE type() const { return kType; }
+
+private:
+	// no copy constructor and assignment operator
+	Button& operator=(const Button&);
+	Button(const Button&);
+
+	DefineButton2Tag& getDefinition(void) { return _definition; }
+
+	void setupFrame(void);
+
+	struct ButtonState {
+		const int		_state;
+		PlaceObjectTag* _object;
+	};
+	typedef std::vector< ButtonState > StateArray;
+
+	MovieClip&			_parent;
+	DefineButton2Tag&	_definition;
+	MovieFrames			_frames;
+	MouseState			_mouseState;
+	StateArray			_buttonStates;
+	DisplayList			_buttonHitTests;
+};
+
+//-----------------------------------------------------------------------------
+
+class Text : public ICharacter {
+public:
+	Text(const DefineEditTextTag&);
+	virtual ~Text() {}
+
+	// override ICharacter function
+    virtual const RECT& getRectangle(void) const { return _bound; }
+	virtual void draw(void);
+	virtual void update(void) {}
+	virtual ICharacter* getTopMost(float localX, float localY, bool polygonTest) { 
+		SWF_UNUSED_PARAM(localX);
+		SWF_UNUSED_PARAM(localY);
+		SWF_UNUSED_PARAM(polygonTest);
+		return NULL;
+	}
+	virtual void onEvent(Event::Code) {}
+
+	const static TYPE kType = TYPE_TEXT;
+	virtual TYPE type() const { return kType; }
+
+	bool setString(const char* str);
+	
+protected:
+	// no copy constructor and assignment operator
+	Text& operator=(const Text&);
+	Text(const Text&);
+
+	const DefineEditTextTag& _reference;
+	uint32_t	_glyphs;
+	RECT		_bound;
+	TextStyle	_style;
+	VertexArray _vertices;
+	std::wstring _text;
 };
 
 //-----------------------------------------------------------------------------

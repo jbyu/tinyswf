@@ -30,6 +30,8 @@ bool DefineFontTag::read( Reader& reader, SWF& swf, MovieFrames& ) {
 	uint32_t code_table_offset;
 	int glyph_count = reader.get<uint16_t>();
 
+	_font_style = flag & (FLAG_ITALIC | FLAG_BOLD);
+
 	if (0 == glyph_count) {
 		swf.addCharacter( this, _character_id );
 		return true;

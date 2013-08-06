@@ -117,11 +117,11 @@ struct Asset {
     Type        type;
     uint32_t    handle;
 	// for texture coordinate transformation
-	// param[0]: 20.f / width of texture
-	// param[1]: 20.f / height of texture
-	// param[2]: x / width of texture
-	// param[3]: y / height of texture
-	float		param[4]; 
+	// sw: 20.f / width of texture
+	// sh: 20.f / height of texture
+	// tx: x / width of texture
+	// ty: y / height of texture
+	MATRIX		texture;
 };
 const Asset kNULL_ASSET = {Asset::TYPE_EXPORT, 0, {0,0,0,0}};
 
@@ -291,6 +291,7 @@ struct TextStyle {
 	float		indent;
 	float		leading;
 	float		font_height;
+	int			font_style;
 	std::string font_name;
 };
 

@@ -221,12 +221,7 @@ bool ShapeWithStyle::read( Reader& reader, SWF& swf, DefineShapeTag* define_shap
 		MATRIX inv, mtx;
 		memcpy(mtx.m_, style->_bitmap_matrix.f, sizeof(MATRIX));
 		inv.setInverse(mtx);
-		mtx.sx = it->_asset.param[0];// 20.f/w
-		mtx.sy = it->_asset.param[1];// 20.f/h
-		mtx.tx = it->_asset.param[2];// x/w
-		mtx.ty = it->_asset.param[3];// y/h
-		mtx.r0 = mtx.r1 = 0.f;
-		mtx = MATRIX::concatenate(inv, mtx);
+		mtx = MATRIX::concatenate(inv, it->_asset.texture);
 		MATRIX3fSet(style->_bitmap_matrix, mtx);
 	}
 	}

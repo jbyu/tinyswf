@@ -377,7 +377,7 @@ public:
     glPopMatrix();
     }
 
-    unsigned int getTexture( const char *filename , int &width, int&height, int&x, int&y)
+    unsigned int getTexture( const char *filename, tinyswf::MATRIX &texture)
     {
         unsigned int ret = 0;
         //char path[256];
@@ -400,12 +400,21 @@ public:
 					//| SOIL_FLAG_TEXTURE_RECTANGLE
 					);
 #else
-		x = y = 0;
-		int channels;
+		int width, height, channels;
 		unsigned char *img = SOIL_load_image( filename, &width, &height, &channels, SOIL_LOAD_AUTO );
 		if( NULL == img ) {
 			return 0;
 		}
+
+		const float invW = 1.f / width;
+		const float invH = 1.f / height;
+		texture.sx = tinyswf::SWF_TWIPS * invW;
+		texture.sy = tinyswf::SWF_TWIPS * invH;
+		texture.r0 = 0;
+		texture.r1 = 0;
+		texture.tx = 0;
+		texture.ty = 0;
+
 		ret = SOIL_create_OGL_texture(img, width, height, channels,
 			SOIL_CREATE_NEW_ID, SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MIPMAPS);
 		SOIL_free_image_data(img);
@@ -429,15 +438,8 @@ tinyswf::Asset myLoadAssetCallback( const char *name,  const char *url )
 	}
 
     if (strstr(name,".png")) {
-		int x,y,w,h;
 		glRenderer *renderer = (glRenderer*) tinyswf::Renderer::getInstance();
-		asset.handle = renderer->getTexture(name, w,h,x,y);
-		const float invW = 1.f / w;
-		const float invH = 1.f / h;
-		asset.param[0] = tinyswf::SWF_TWIPS * invW;
-		asset.param[1] = tinyswf::SWF_TWIPS * invH;
-		asset.param[2] = x * invW;
-		asset.param[3] = y * invH;
+		asset.handle = renderer->getTexture(name, asset.texture);
     } else if (strstr(name,".wav"))  {
         asset.handle = tinyswf::Speaker::getInstance()->getSound(name);
     }
@@ -552,7 +554,7 @@ void keyboard(unsigned char key, int x, int y)
     case 's':
         if (gpSWF) 
         {
-            gpSWF->gotoFrame(0xffffffff, false);
+			gpSWF->gotoAndPlay(0xffffffff);
             gpSWF->play(true);
         }
         break;

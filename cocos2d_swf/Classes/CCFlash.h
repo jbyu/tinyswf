@@ -12,9 +12,15 @@ tinyswf::Asset CCFlashLoadAsset( const char *name, const char *url );
 class CCFlash : public cocos2d::LayerRGBA {
     typedef std::map<std::string, cocos2d::Texture2D*> FlashTextureCache;
     FlashTextureCache _textureCache;
+	bool _useTextureAtlas;
 	tinyswf::SWF *_swf;
+	std::string _directory;
 
 public:
+	CCFlash(bool useAtlas)
+		:_useTextureAtlas(useAtlas)
+	{}
+
 	virtual ~CCFlash();
 
     virtual void draw();
@@ -25,8 +31,6 @@ public:
 
 	tinyswf::ICharacter* getCharacter(const char* name);
 
-    virtual void registerWithTouchDispatcher();
-
     virtual bool ccTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event) override;
     virtual void ccTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event) override;
     virtual void ccTouchCancelled(cocos2d::Touch *touch, cocos2d::Event* event) override;
@@ -35,9 +39,9 @@ public:
     virtual void setColor(const cocos2d::Color3B &color) override;
     virtual void setOpacity(GLubyte opacity) override;
 
-    static CCFlash* create(const char* filename, tinyswf::SWF::GetURLCallback fscommand = NULL);
+    static CCFlash* create(const char* filename, bool useAtlas = false, tinyswf::SWF::GetURLCallback fscommand = NULL);
 
-    cocos2d::Texture2D* getTexture(const char *filename , int &width, int&height, int&x, int&y);
+    cocos2d::Texture2D* getTexture(const char *filename, tinyswf::MATRIX &texture);
 };
 
 class CCFlashRenderer : public tinyswf::Renderer {

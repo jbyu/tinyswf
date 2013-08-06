@@ -3,13 +3,15 @@ Copyright (c) 2013 jbyu. All rights reserved.
 ******************************************************************************/
 #include "CCFlash.h"
 #include "FontCache.h"
-#include "cocos2d.h"
-
+#include "AppMacros.h"
 #pragma comment(lib, "libtinyswf.lib")
+
+#define USE_TEXTURE_ATLAS	1
 
 using namespace cocos2d;
 using namespace tinyswf;
 
+static float sfDesignScreenHeight = 960;
 const GLuint kStencilMask = 0xffffffff;
 
 const char textureShader_vert[] = "	\n\
@@ -63,6 +65,8 @@ CCFlashRenderer::CCFlashRenderer()
 	_defaultShader->retain();
 	_defaultColorLocation = glGetUniformLocation( _defaultShader->getProgram(), "u_color");
     CHECK_GL_ERROR_DEBUG();
+
+	sfDesignScreenHeight = EGLView::getInstance()->getDesignResolutionSize().height;
 }
 
 CCFlashRenderer::~CCFlashRenderer() {
@@ -252,6 +256,7 @@ tinyswf::SWF* loadSWF(const char* filename) {
     tinyswf::SWF* swf = new tinyswf::SWF;
     bool ret = swf->read(reader);
     CC_SAFE_DELETE_ARRAY(pBuffer);
+	//swf->update(0);
 
 	return swf;
 }
@@ -284,14 +289,7 @@ tinyswf::Asset CCFlashLoadAsset( const char *name, const char *url ) {
 
 	if (strstr(name,".png")) {
 		CCASSERT(spCurrentSWF, "target SWF is null");
-		int x,y,w,h;
-		asset.handle = (uint32_t)spCurrentSWF->getTexture(name, w,h,x,y);
-		const float invW = 1.f / w;
-		const float invH = 1.f / h;
-		asset.param[0] = tinyswf::SWF_TWIPS * invW;
-		asset.param[1] = tinyswf::SWF_TWIPS * invH;
-		asset.param[2] = x * invW;
-		asset.param[3] = y * invH;
+		asset.handle = (uint32_t)spCurrentSWF->getTexture(name, asset.texture);
 	} else if (strstr(name,".wav"))  {
 		//asset.handle = tinyswf::Speaker::getSpeaker()->getSound(name);
 	}
@@ -300,21 +298,52 @@ tinyswf::Asset CCFlashLoadAsset( const char *name, const char *url ) {
 
 //-----------------------------------------------------------------------------
 
-Texture2D* CCFlash::getTexture( const char *filename , int &width, int&height, int&x, int&y) {
+Texture2D* CCFlash::getTexture( const char *filename, tinyswf::MATRIX &texture) {
     Texture2D* ret = NULL;
-
-    FlashTextureCache::iterator it = _textureCache.find(filename);
+	std::string path = _directory + filename;
+	FlashTextureCache::iterator it = _textureCache.find(path.c_str());
     if (_textureCache.end() != it) {
         ret = it->second;
 	} else {
-		ret = TextureCache::getInstance()->addImage(filename);
-		ret->retain();
-	    _textureCache[filename] = ret;
-	}
+		if (_useTextureAtlas) {
+			SpriteFrame *frame = SpriteFrameCache::getInstance()->getSpriteFrameByName(path.c_str());
+			CCASSERT(frame, "no SpriteFrame");
+			ret = frame->getTexture();
 
-	width = ret->getPixelsWide();
-	height = ret->getPixelsHigh();
-	x = y = 0;
+			const float invW = 1.f / ret->getPixelsWide();
+			const float invH = 1.f / ret->getPixelsHigh();
+			const Rect &rect = frame->getRectInPixels();
+			if (frame->isRotated()) {
+				texture.sx = 0;
+				texture.sy = 0;
+				texture.r0 = tinyswf::SWF_TWIPS * invH;
+				texture.r1 = -tinyswf::SWF_TWIPS * invW;
+				texture.tx = (rect.origin.x + rect.size.height) * invW;
+				texture.ty = rect.origin.y * invH;
+			} else {
+				texture.sx = tinyswf::SWF_TWIPS * invW;
+				texture.sy = tinyswf::SWF_TWIPS * invH;
+				texture.r0 = 0;
+				texture.r1 = 0;
+				texture.tx = rect.origin.x * invW;
+				texture.ty = rect.origin.y * invH;
+			}
+		} else {
+			ret = TextureCache::getInstance()->addImage(path.c_str());
+			CCASSERT(ret, "no texture");
+
+			const float invW = 1.f / ret->getPixelsWide();
+			const float invH = 1.f / ret->getPixelsHigh();
+			texture.sx = tinyswf::SWF_TWIPS * invW;
+			texture.sy = tinyswf::SWF_TWIPS * invH;
+			texture.r0 = 0;
+			texture.r1 = 0;
+			texture.tx = 0;
+			texture.ty = 0;
+		}
+		ret->retain();
+	    _textureCache[path.c_str()] = ret;
+	}
 
     return ret;
 }
@@ -326,26 +355,44 @@ CCFlash::~CCFlash() {
 		++it;
 	}
 	delete _swf;
-	TextureCache::getInstance()->removeUnusedTextures();
+	//TextureCache::getInstance()->removeUnusedTextures();
 }
 
 bool CCFlash::initWithFile(const char* filename, tinyswf::SWF::GetURLCallback fscommand) {
+	const char *ch = strrchr(filename, '/');
+	if (ch) {
+		if (_useTextureAtlas) {
+			// skip "raw/" prefix
+			_directory.assign(filename+4, ch - filename + 1 - 4);
+		} else {
+			_directory.assign(filename, ch - filename + 1);
+		}
+	}
+
 	spCurrentSWF = this;
     _swf = loadSWF(filename);
 	_swf->setGetURL( fscommand );
 	spCurrentSWF = NULL;
+
+	this->setTouchMode(kTouchesOneByOne);
 	this->setTouchEnabled(true);
 
-	// adjust position for different screen resolution
-	MATRIX3f& mtx = _swf->getCurrentMatrix();
-    Point origin = Director::getInstance()->getVisibleOrigin();
-	mtx.f[6] = origin.x;
-	mtx.f[7] = origin.y;
+#if 0
+	//Point origin = Director::getInstance()->getVisibleOrigin();
+    Size size = Director::getInstance()->getWinSize();
+	if (1136 == size.height) {
+		// adjust position for different screen resolution
+		//MATRIX3f& mtx = _swf->getCurrentMatrix();
+		//mtx.f[6] = origin.x;
+		//mtx.f[7] = -kIPHONE_4INCH_OFFSET;
+		this->setPositionY(kIPHONE_4INCH_OFFSET);
+	}
+#endif
 	return true;
 }
 
-CCFlash * CCFlash::create(const char*filename, tinyswf::SWF::GetURLCallback fscommand) {
-    CCFlash *node = new CCFlash();
+CCFlash * CCFlash::create(const char*filename, bool useAtlas, tinyswf::SWF::GetURLCallback fscommand) {
+	CCFlash *node = new CCFlash(useAtlas);
     if(node && node->initWithFile(filename, fscommand)) {
         node->autorelease();
         return node;
@@ -356,6 +403,7 @@ CCFlash * CCFlash::create(const char*filename, tinyswf::SWF::GetURLCallback fsco
 
 void CCFlash::draw() {
 	_swf->draw();
+	CCNode::draw();
 }
 
 void CCFlash::update(float delta) {
@@ -379,25 +427,19 @@ void CCFlash::setOpacity(GLubyte opacity)
     //updateColor();
 }
 
-void CCFlash::registerWithTouchDispatcher()
-{
-    Director* pDirector = Director::getInstance();
-    pDirector->getTouchDispatcher()->addTargetedDelegate(this, this->getTouchPriority(), true);
-}
-
 bool CCFlash::ccTouchBegan(Touch* touch, cocos2d::Event* event)
 {
     CC_UNUSED_PARAM(event);
-	Point pt = touch->getLocationInView();
-	_swf->notifyMouse(1, pt.x, pt.y, true); 
-    return true;
+	//Point pt = touch->getLocationInView();
+	Point pt = this->convertTouchToNodeSpace(touch);
+	return _swf->notifyMouse(1, pt.x, sfDesignScreenHeight - pt.y, true); 
 }
 
 void CCFlash::ccTouchEnded(Touch *touch, cocos2d::Event* event)
 {
     CC_UNUSED_PARAM(event);
-	Point pt = touch->getLocationInView();
-	_swf->notifyMouse(0, pt.x, pt.y, true); 
+	Point pt = this->convertTouchToNodeSpace(touch);
+	_swf->notifyMouse(0, pt.x, sfDesignScreenHeight - pt.y, true); 
 }
 
 void CCFlash::ccTouchCancelled(Touch *touch, cocos2d::Event* event)
@@ -408,6 +450,6 @@ void CCFlash::ccTouchCancelled(Touch *touch, cocos2d::Event* event)
 void CCFlash::ccTouchMoved(Touch* touch, cocos2d::Event* event)
 {
     CC_UNUSED_PARAM(event);
-	Point pt = touch->getLocationInView();
-	_swf->notifyMouse(1, pt.x, pt.y, true); 
+	Point pt = this->convertTouchToNodeSpace(touch);
+	_swf->notifyMouse(1, pt.x, sfDesignScreenHeight - pt.y, true); 
 }

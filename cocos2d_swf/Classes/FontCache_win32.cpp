@@ -34,12 +34,23 @@ bool OSFont::initialize(void) {
 	return true;
 }
 
-OSFont::Handle OSFont::create(const char *fontname, float fontsize) {
-	SYSFONT *font = new SYSFONT;
+enum FONT_STYLE {
+	FLAG_ITALIC			= 0x02,
+	FLAG_BOLD			= 0x01
+};
 
-	//int nHeight = -MulDiv(fontsize, GetDeviceCaps(ghDC, LOGPIXELSY), 72);
-	HFONT hFont = CreateFont((int)fontsize, 0, 0, 0,
-		FW_DONTCARE, FALSE, FALSE, FALSE, 
+OSFont::Handle OSFont::create(const char *fontname, float fontsize, int style) {
+	SYSFONT *font = new SYSFONT;
+	float height = fontsize * GetDeviceCaps(ghDC, LOGPIXELSY) / 72.f;
+
+	bool bItalic = (FLAG_ITALIC & style) > 0;
+	int weight = FW_NORMAL;
+	if (FLAG_BOLD & style) {
+		weight = FW_BOLD;
+	}
+
+	HFONT hFont = CreateFont((int)height, 0, 0, 0,
+		weight, bItalic, FALSE, FALSE, 
 		DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH,
 		fontname);
 	SelectObject(ghDC, hFont);
@@ -56,6 +67,10 @@ OSFont::Handle OSFont::create(const char *fontname, float fontsize) {
 	DeleteObject(hFont);
 
     int start = stbtt_GetFontOffsetForIndex( (const unsigned char *)pData, 0);
+	if (0 != tag) {
+		//start = stbtt_FindMatchingFont((const unsigned char *)pData, fontname, STBTT_MACSTYLE_DONTCARE);
+	}
+	CCASSERT(0 <= start, "no such font!");
     if (stbtt_InitFont(&font->info, (const unsigned char *)pData, start)) {
 	    // Store normalized line height. The real line height is got by multiplying the lineh by font size.
     	int ascent, descent, lineGap;
@@ -64,7 +79,7 @@ OSFont::Handle OSFont::create(const char *fontname, float fontsize) {
 	    //fnt->ascender = (float)ascent / (float)fh;
 	    //fnt->descender = (float)descent / (float)fh;
 	    //fnt->lineh = (float)(fh + lineGap) / (float)fh;
-       	float scale = stbtt_ScaleForPixelHeight(&font->info, fontsize*1.1f);
+       	float scale = stbtt_ScaleForPixelHeight(&font->info, height);
 		font->ascent = ascent * scale;
         font->descent = descent * scale;
 		font->line_height = (ascent - descent + lineGap) * scale;

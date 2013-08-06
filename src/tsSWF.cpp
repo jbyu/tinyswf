@@ -268,12 +268,13 @@ RECT SWF::calculateRectangle(uint16_t character, const MATRIX* xf) {
 	return rect;
 }
 
-void SWF::notifyMouse(int button, float x, float y, bool touchScreen) {
+bool SWF::notifyMouse(int button, float x, float y, bool touchScreen) {
 	ICharacter *pTopMost = this->getTopMost( x, y, false);
 	notifyEvent(button,  x,  y, pTopMost, touchScreen);
+	return NULL != pTopMost;
 }
 
-void SWF::notifyDuplicate(int button, float x, float y, bool touchScreen) {
+bool SWF::notifyDuplicate(int button, float x, float y, bool touchScreen) {
 	ICharacter* pTopMost = NULL;
 	CharacterArray::reverse_iterator rit = _duplicates.rbegin();
 	while( rit != _duplicates.rend() ) {
@@ -290,6 +291,7 @@ void SWF::notifyDuplicate(int button, float x, float y, bool touchScreen) {
         ++rit;
 	}
 	notifyEvent(button,  x,  y, pTopMost, touchScreen);
+	return NULL != pTopMost;
 }
 
 void SWF::notifyEvent(int button, float x, float y, ICharacter *pTopMost, bool touchScreen) {

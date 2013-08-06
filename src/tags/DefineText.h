@@ -93,42 +93,5 @@ public:
 	}				
 };
 
-//-----------------------------------------------------------------------------
-
-class Text : public ICharacter {
-public:
-	Text(const DefineEditTextTag&);
-	virtual ~Text() {}
-
-	// override ICharacter function
-    virtual const RECT& getRectangle(void) const { return _bound; }
-	virtual void draw(void);
-	virtual void update(void) {}
-	virtual ICharacter* getTopMost(float localX, float localY, bool polygonTest) { 
-		SWF_UNUSED_PARAM(localX);
-		SWF_UNUSED_PARAM(localY);
-		SWF_UNUSED_PARAM(polygonTest);
-		return NULL;
-	}
-	virtual void onEvent(Event::Code) {}
-
-	virtual TYPE type() const { return TYPE_TEXT; }
-
-	bool setString(const char* str);
-	
-protected:
-	// no copy constructor and assignment operator
-	Text& operator=(const Text&);
-	Text(const Text&);
-
-	const DefineEditTextTag& _reference;
-	uint32_t	_glyphs;
-	RECT		_bound;
-	TextStyle	_style;
-	VertexArray _vertices;
-	std::wstring _text;
-};
-	
-
 }//namespace
 #endif//__DEFINE_TEXT_H__

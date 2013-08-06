@@ -127,6 +127,7 @@ bool DefineEditTextTag::read( Reader& reader, SWF& swf, MovieFrames& ) {
 		DefineFontTag* tag = (DefineFontTag*) swf.getCharacter(_font_id);
 		SWF_ASSERT(tag);
 		_style.font_name = tag->getFontName();
+		_style.font_style = tag->getFontStyle();
 	}
 	if (flag2 & INFO_HAS_FONT_CLASS) {
 		_font_class.assign( reader.getString() );

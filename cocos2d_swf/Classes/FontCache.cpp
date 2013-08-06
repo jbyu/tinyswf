@@ -8,8 +8,8 @@ const int kTEXTURE_SIZE = 512;
 const int kNUMBER_GLYPH_PER_ROW	= kTEXTURE_SIZE / kGLYPH_WIDTH; 
 // number of glyph per row in the texture
 
-OSFont::OSFont(const char *font_name, float fontsize) {
-	_font = create(font_name, fontsize);
+OSFont::OSFont(const char *font_name, float fontsize, int style) {
+	_font = create(font_name, fontsize, style);
 	SWF_ASSERT(_font);
 	_cache = new GlyphCache(kNUMBER_GLYPH_PER_ROW * kNUMBER_GLYPH_PER_ROW);
 	_bitmap = new Texture2D;
@@ -120,13 +120,13 @@ CCFlashFontHandler::~CCFlashFontHandler() {
 	CC_SAFE_RELEASE_NULL(mpFontShader);
 }
 
-OSFont* CCFlashFontHandler::selectFont(const char *font_name, float fontsize) {
+OSFont* CCFlashFontHandler::selectFont(const char *font_name, float fontsize, int style) {
 	CacheData::iterator it = _font_cache.find(font_name);
 	if (it != _font_cache.end()) {
 		_selectedFont = (it->second);
 		return _selectedFont;
 	}
-	_selectedFont = new OSFont(font_name, fontsize);
+	_selectedFont = new OSFont(font_name, fontsize, style);
 	_font_cache[font_name] = _selectedFont;
 	return _selectedFont;
 }
@@ -212,7 +212,7 @@ uint32_t CCFlashFontHandler::formatText(VertexArray& vertices,
 										const TextStyle& style,
 										const std::wstring& text) {
 	//select font to get glyph
-	this->selectFont(style.font_name.c_str(), style.font_height);
+	this->selectFont(style.font_name.c_str(), style.font_height, style.font_style);
 
 	FormatText lines;
 	uint32_t numGlyphs = format(lines, rect, style, text, this);
@@ -266,7 +266,7 @@ void CCFlashFontHandler::drawText(const VertexArray& vertices, uint32_t count, c
 	mpFontShader->setUniformLocationWith1f(miFontUVScaleLocation, uv_scale);
 	mpFontShader->setUniformLocationWith4fv(miFontColorLocation, (GLfloat*) &style.color.r, 1);
 
-	OSFont *font = selectFont(style.font_name.c_str(), style.font_height);
+	OSFont *font = selectFont(style.font_name.c_str(), style.font_height, style.font_style);
 	ccGLBindTexture2D(font->_bitmap->getName());
 	
 	float *data = (float*)&(vertices.front().x);

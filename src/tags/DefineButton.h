@@ -129,51 +129,6 @@ public:
 
 //-----------------------------------------------------------------------------
 
-class Button : public MovieClip {
-public:
-	enum MouseState {
-		MOUSE_UP = 0,
-		MOUSE_OVER,
-		MOUSE_DOWN,
-		MOUSE_HIT_STATE,
-		MOUSE_MAXIMUM
-	};
-
-	Button( MovieClip& parent, DefineButton2Tag& data );
-	virtual ~Button();
-
-	// override DefineShapeTag function
-	virtual void update(void);
-	virtual ICharacter* getTopMost(float localX, float localY, bool polygonTest);
-	virtual void onEvent(Event::Code);
-
-	virtual TYPE type() const { return TYPE_BUTTON; }
-
-private:
-	// no copy constructor and assignment operator
-	Button& operator=(const Button&);
-	Button(const Button&);
-
-	DefineButton2Tag& getDefinition(void) { return _definition; }
-
-	void setupFrame(void);
-
-	struct ButtonState {
-		const int		_state;
-		PlaceObjectTag* _object;
-	};
-	typedef std::vector< ButtonState > StateArray;
-
-	MovieClip&			_parent;
-	DefineButton2Tag&	_definition;
-	MovieFrames			_frames;
-	MouseState			_mouseState;
-	StateArray			_buttonStates;
-	DisplayList			_buttonHitTests;
-};
-
-//-----------------------------------------------------------------------------
-
 }// namespace	
 
 #endif	// __DEFINE_BUTTON_H__
