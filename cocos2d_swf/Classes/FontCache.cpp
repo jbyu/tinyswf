@@ -99,14 +99,14 @@ void main()								\n\
 CCFlashFontHandler::CCFlashFontHandler() {
 	OSFont::initialize();
 	// font shader
-    mpFontShader = new GLProgram();
-	mpFontShader->initWithVertexShaderByteArray(fontShader_vert, fontShader_frag);
-	mpFontShader->addAttribute(kAttributeNamePosition, kVertexAttrib_Position);
-    mpFontShader->addAttribute(kAttributeNameTexCoord, kVertexAttrib_TexCoords);
-    mpFontShader->link();
-    mpFontShader->updateUniforms();
-	miFontUVScaleLocation = glGetUniformLocation( mpFontShader->getProgram(), "u_uvScale");
-	miFontColorLocation = glGetUniformLocation( mpFontShader->getProgram(), "u_color");
+    _fontShader = new GLProgram();
+	_fontShader->initWithVertexShaderByteArray(fontShader_vert, fontShader_frag);
+	_fontShader->addAttribute(kAttributeNamePosition, kVertexAttrib_Position);
+    _fontShader->addAttribute(kAttributeNameTexCoord, kVertexAttrib_TexCoords);
+    _fontShader->link();
+    _fontShader->updateUniforms();
+	_uvScaleLocation = glGetUniformLocation( _fontShader->getProgram(), "u_uvScale");
+	_colorLocation = glGetUniformLocation( _fontShader->getProgram(), "u_color");
     CHECK_GL_ERROR_DEBUG();
 }
 
@@ -117,7 +117,7 @@ CCFlashFontHandler::~CCFlashFontHandler() {
 		++it;
 	}
 	OSFont::terminate();
-	CC_SAFE_RELEASE_NULL(mpFontShader);
+	CC_SAFE_RELEASE_NULL(_fontShader);
 }
 
 OSFont* CCFlashFontHandler::selectFont(const char *font_name, float fontsize, int style) {
@@ -257,14 +257,17 @@ uint32_t CCFlashFontHandler::formatText(VertexArray& vertices,
 	return numGlyphs * kVERTICES_PER_GLYPH;
 }
 
-void CCFlashFontHandler::drawText(const VertexArray& vertices, uint32_t count, const TextStyle& style) {
+void CCFlashFontHandler::drawText(const VertexArray& vertices, uint32_t count, const CXFORM& cxform, const TextStyle& style) {
 	const float uv_scale = 1.f / kTEXTURE_SIZE;
 	ccGLEnableVertexAttribs(kVertexAttribFlag_Position | kVertexAttribFlag_TexCoords);
 
-    mpFontShader->use();
-	mpFontShader->setUniformsForBuiltins();
-	mpFontShader->setUniformLocationWith1f(miFontUVScaleLocation, uv_scale);
-	mpFontShader->setUniformLocationWith4fv(miFontColorLocation, (GLfloat*) &style.color.r, 1);
+	tinyswf::COLOR4f color = cxform.mult * style.color;
+	color += cxform.add;
+
+    _fontShader->use();
+	_fontShader->setUniformsForBuiltins();
+	_fontShader->setUniformLocationWith1f(_uvScaleLocation, uv_scale);
+	_fontShader->setUniformLocationWith4fv(_colorLocation, (GLfloat*) &color.r, 1);
 
 	OSFont *font = selectFont(style.font_name.c_str(), style.font_height, style.font_style);
 	ccGLBindTexture2D(font->_bitmap->getName());

@@ -89,7 +89,7 @@ public:
 	MovieClip( SWF* swf,  const MovieFrames& data );
     virtual ~MovieClip();
 
-	ICharacter* getInstance(const char *name);
+	virtual ICharacter* getCharacter(const char *name);
 
     MATRIX* getTransform(void) { return _transform; }
 
@@ -120,6 +120,14 @@ public:
     static bool createFrames( Reader& reader, SWF& swf, MovieFrames& );
     static void destroyFrames( MovieFrames& );
 
+	template<class T>
+	inline T* get(const char *name) {
+		tinyswf::ICharacter* ch = this->getCharacter(name);
+		SWF_ASSERT(ch);
+		SWF_ASSERT(T::kType == ch->type());
+		return (T*) ch;
+	}
+
 protected:
 	typedef std::map<const ITag*, ICharacter*>	CharacterCache;
 	typedef std::vector<ICharacter*>			CharacterArray;
@@ -149,6 +157,8 @@ public:
 
 	Button( MovieClip& parent, DefineButton2Tag& data );
 	virtual ~Button();
+
+	virtual ICharacter* getCharacter(const char *name);
 
 	// override DefineShapeTag function
 	virtual void update(void);

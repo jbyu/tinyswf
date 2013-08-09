@@ -97,12 +97,12 @@ MovieClip::MovieClip( SWF* swf,  const MovieFrames& data )
 	,_play(true)
 	,_frame(ICharacter::kFRAME_MAXIMUM)
 {
-	SWF_TRACE("create MovieClip\n");
+	//SWF_TRACE("create MovieClip\n");
 }
 
 MovieClip::~MovieClip()
 {
-	SWF_TRACE("delete MovieClip[%x]\n",this);
+	//SWF_TRACE("delete MovieClip[%x]\n",this);
 	delete _transform;
 	_transform = NULL;
 
@@ -178,7 +178,7 @@ ICharacter *MovieClip::getInstance(const PlaceObjectTag* placeTag) {
 	return character;
 }
 
-ICharacter *MovieClip::getInstance(const char* name) {
+ICharacter *MovieClip::getCharacter(const char* name) {
 	FrameList::const_iterator fit = _data._frames.begin();
 	while (fit != _data._frames.end()) {
 		const TagList *tags = (*fit);
@@ -188,7 +188,24 @@ ICharacter *MovieClip::getInstance(const char* name) {
 			if (tag->code() == TAG_PLACE_OBJECT2) {
 				PlaceObjectTag* placeTag = (PlaceObjectTag*)tag;
 				if (placeTag->name() == name) {
-					return getInstance(placeTag);
+					ICharacter *ch = getInstance(placeTag);
+					switch(ch->type()) {
+					case ICharacter::TYPE_MOVIE:
+						{
+							MovieClip *mv = (MovieClip*)ch;
+							mv->_transform = &placeTag->transform();
+						}
+						break;
+					case ICharacter::TYPE_BUTTON:
+						{
+							Button *mv = (Button*)ch;
+							mv->_transform = &placeTag->transform();
+						}
+						break;
+					default:
+						break;
+					}
+					return ch;
 				}
 			}
 			++it;
@@ -259,6 +276,10 @@ void MovieClip::update(void)
 }
 
 void MovieObject::draw() {
+	SWF_ASSERT (_character);
+	if (! _character->visible())
+		return;
+
     //concatenate matrix
 	MATRIX3f& currMTX = SWF::getCurrentMatrix();
     MATRIX3f origMTX = currMTX, mtx;
@@ -278,7 +299,6 @@ void MovieObject::draw() {
     // 2nd pass TexEnv(GL_MODULATE) with glBlendFunc(GL_SRC_ALPHA, GL_ONE)
     //      dest + Cp * Ct
     // let Mult as Cc and Add as Cp, then we get the result
-	SWF_ASSERT (_character);
 	_character->draw();
 
 	// restore old matrix

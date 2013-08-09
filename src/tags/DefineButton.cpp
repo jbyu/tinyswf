@@ -3,6 +3,7 @@ Copyright (c) 2013 jbyu. All rights reserved.
 ******************************************************************************/
 
 #include "DefineButton.h"
+#include "DefineText.h"
 #include "PlaceObject.h"
 #include "tsSWF.h"
 
@@ -150,11 +151,21 @@ Button::Button( MovieClip& parent,  DefineButton2Tag& data )
 	,_definition(data)
 	,_mouseState(MOUSE_UP)
 {
-	SWF_TRACE("create Button\n");
+	//SWF_TRACE("create Button\n");
 	// allocate PlaceObjects for button states
 	ButtonRecordArray::const_iterator it = getDefinition()._buttonRecords.begin();
 	while( getDefinition()._buttonRecords.end() != it) {
-		PlaceObjectTag *object = new PlaceObjectTag( *it );
+		const char *name = "_btn";
+		ITag *tag = _owner->getCharacter(it->_character_id);
+		if (TAG_DEFINE_EDIT_TEXT == tag->code()) {
+			DefineEditTextTag *editText = (DefineEditTextTag*)tag;
+			name = editText->getName().c_str();
+		} else if (it->_state & 0x1) {
+			name = "_up";
+		} else if (it->_state & 0x4) {
+			name = "_down";
+		}
+		PlaceObjectTag *object = new PlaceObjectTag( *it, name );
 		ButtonState state = { it->_state, object };
 		_buttonStates.push_back( state );
 
@@ -173,7 +184,7 @@ Button::Button( MovieClip& parent,  DefineButton2Tag& data )
 
 Button::~Button()
 {
-	SWF_TRACE("delete Button[%x]\n", this);
+	//SWF_TRACE("delete Button[%x]\n", this);
 	StateArray::const_iterator it = _buttonStates.begin();
 	while( _buttonStates.end() != it) {
 		delete it->_object;
@@ -268,4 +279,14 @@ void Button::onEvent(Event::Code code) {
 	}
 }
 
-	
+ICharacter *Button::getCharacter(const char* name) {
+	StateArray::const_iterator it = _buttonStates.begin();
+	while (it != _buttonStates.end()) {
+		const ButtonState& state = (*it);
+		if (state._object->name() == name) {
+			return getInstance(state._object);
+		}
+		++it;
+	}
+	return NULL;
+}

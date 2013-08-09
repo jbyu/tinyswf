@@ -9,6 +9,10 @@ Copyright (c) 2013 jbyu. All rights reserved.
 
 tinyswf::Asset CCFlashLoadAsset( const char *name, const char *url );
 
+typedef std::function<void(const char* name)> swfImportCallback;
+
+void CCFlashSetButtonText(tinyswf::Button& btn, const char* variable, const char* text);
+
 class CCFlash : public cocos2d::LayerRGBA {
     typedef std::map<std::string, cocos2d::Texture2D*> FlashTextureCache;
     FlashTextureCache _textureCache;
@@ -29,7 +33,7 @@ public:
 
 	virtual bool initWithFile(const char* filename, tinyswf::SWF::GetURLCallback fscommand);
 
-	tinyswf::ICharacter* getCharacter(const char* name);
+	tinyswf::SWF* getSWF(void) { return _swf; }
 
     virtual bool ccTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event) override;
     virtual void ccTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event) override;
@@ -57,6 +61,8 @@ class CCFlashRenderer : public tinyswf::Renderer {
 	int _maskLevel;
 	kmMat4 _matrixMV;
 
+	swfImportCallback _importCallback;
+
 public:
     CCFlashRenderer();
     virtual ~CCFlashRenderer();
@@ -78,6 +84,11 @@ public:
     void drawEnd(void);
 
 	tinyswf::SWF* importSWF(const char* filename);
+
+	static float kDesignScreenHeight;
+
+	void setImportCallback(swfImportCallback func) { _importCallback = func; }
+	swfImportCallback& getImportCallback(void) { return _importCallback; }
 };
 
 

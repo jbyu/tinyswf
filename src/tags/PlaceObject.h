@@ -36,7 +36,7 @@ public:
 	{
 	}
 
-	PlaceObjectTag( const ButtonRecord& h );
+	PlaceObjectTag( const ButtonRecord& h, const char*name = "btn" );
 
 	virtual ~PlaceObjectTag()
 	{
@@ -51,6 +51,9 @@ public:
 	uint16_t depth()        const { return _depth; }
     uint16_t clipDepth()    const { return _clip_depth; }
 	uint16_t characterID()  const { return _character_id; }
+
+	MATRIX& transform() { return _transform; }
+
 	const std::string& name() const { return _name; }
 
 	void copyAttributes(MovieObject&);

@@ -272,7 +272,7 @@ Text::Text(const DefineEditTextTag &tag)
 
 void Text::draw(void) {
 	SWF_ASSERT( FontHandler::getInstance() );
-	FontHandler::getInstance()->drawText(_vertices, _glyphs, _style);
+	FontHandler::getInstance()->drawText(_vertices, _glyphs, SWF::getCurrentCXForm(), _style);
 }
 
 bool Text::setString(const char* str) {

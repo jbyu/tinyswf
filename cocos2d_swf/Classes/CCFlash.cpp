@@ -11,7 +11,7 @@ Copyright (c) 2013 jbyu. All rights reserved.
 using namespace cocos2d;
 using namespace tinyswf;
 
-static float sfDesignScreenHeight = 960;
+float CCFlashRenderer::kDesignScreenHeight = 960.f;
 const GLuint kStencilMask = 0xffffffff;
 
 const char textureShader_vert[] = "	\n\
@@ -66,7 +66,7 @@ CCFlashRenderer::CCFlashRenderer()
 	_defaultColorLocation = glGetUniformLocation( _defaultShader->getProgram(), "u_color");
     CHECK_GL_ERROR_DEBUG();
 
-	sfDesignScreenHeight = EGLView::getInstance()->getDesignResolutionSize().height;
+	kDesignScreenHeight = EGLView::getInstance()->getDesignResolutionSize().height;
 }
 
 CCFlashRenderer::~CCFlashRenderer() {
@@ -276,14 +276,18 @@ tinyswf::Asset CCFlashLoadAsset( const char *name, const char *url ) {
 	if (url) {
 		CCFlashRenderer* renderer = (CCFlashRenderer*)Renderer::getInstance();
 		SWF *swf = renderer->importSWF(url);
-		MovieClip *movie = swf->duplicate(name, false);
-		if (movie) {
-			asset.type = Asset::TYPE_SYMBOL;
-			asset.handle = (uint32_t)movie;
-		} else {
+		if (! swf) {
+			//renderer->getImportCallback()(name);
 			asset.type = Asset::TYPE_IMPORT;
-			asset.handle = 1;
+			return asset;
 		}
+		MovieClip *movie = swf->duplicate(name, false);
+		if (! movie) {
+			asset.type = Asset::TYPE_IMPORT;
+			return asset;
+		}
+		asset.type = Asset::TYPE_SYMBOL;
+		asset.handle = (uint32_t)movie;
 		return asset;
 	}
 
@@ -411,10 +415,6 @@ void CCFlash::update(float delta) {
 	_swf->update(delta);
 }
 
-tinyswf::ICharacter* CCFlash::getCharacter(const char* name) {
-	return _swf->getInstance(name);
-}
-
 void CCFlash::setColor(const Color3B &color)
 {
     LayerRGBA::setColor(color);
@@ -432,14 +432,14 @@ bool CCFlash::ccTouchBegan(Touch* touch, cocos2d::Event* event)
     CC_UNUSED_PARAM(event);
 	//Point pt = touch->getLocationInView();
 	Point pt = this->convertTouchToNodeSpace(touch);
-	return _swf->notifyMouse(1, pt.x, sfDesignScreenHeight - pt.y, true); 
+	return _swf->notifyMouse(1, pt.x, CCFlashRenderer::kDesignScreenHeight - pt.y, true); 
 }
 
 void CCFlash::ccTouchEnded(Touch *touch, cocos2d::Event* event)
 {
     CC_UNUSED_PARAM(event);
 	Point pt = this->convertTouchToNodeSpace(touch);
-	_swf->notifyMouse(0, pt.x, sfDesignScreenHeight - pt.y, true); 
+	_swf->notifyMouse(0, pt.x, CCFlashRenderer::kDesignScreenHeight - pt.y, true); 
 }
 
 void CCFlash::ccTouchCancelled(Touch *touch, cocos2d::Event* event)
@@ -451,5 +451,22 @@ void CCFlash::ccTouchMoved(Touch* touch, cocos2d::Event* event)
 {
     CC_UNUSED_PARAM(event);
 	Point pt = this->convertTouchToNodeSpace(touch);
-	_swf->notifyMouse(1, pt.x, sfDesignScreenHeight - pt.y, true); 
+	_swf->notifyMouse(1, pt.x, CCFlashRenderer::kDesignScreenHeight - pt.y, true); 
+}
+
+void CCFlashSetButtonText(Button& btn, const char* variable, const char* msg) {
+	{
+		MovieClip *movie = btn.get<MovieClip>("_up");
+		CCASSERT(movie, "no button up");
+		Text *text = movie->get<Text>(variable);
+		CCASSERT(text, "no text");
+		text->setString(msg);
+	}
+	{
+		MovieClip *movie = btn.get<MovieClip>("_down");
+		CCASSERT(movie, "no button down");
+		Text *text = movie->get<Text>(variable);
+		CCASSERT(text, "no text");
+		text->setString(msg);
+	}
 }

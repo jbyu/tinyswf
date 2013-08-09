@@ -15,7 +15,7 @@ using namespace tinyswf;
 #define vgMultMatrix (void)
 #define vgGetMatrix (void)
 
-PlaceObjectTag::PlaceObjectTag( const ButtonRecord& rec )
+PlaceObjectTag::PlaceObjectTag( const ButtonRecord& rec, const char *name )
 	:ITag( DoActionTag::scButtonHeader )
 	,_character_id( rec._character_id )
 	,_depth( rec._depth )
@@ -26,7 +26,7 @@ PlaceObjectTag::PlaceObjectTag( const ButtonRecord& rec )
 	,_placeMode( PLACE )
 	,_transform( rec._matrix )
 	,_cxform( rec._cxform )
-	,_name( "btn" )
+	,_name( name )
 {
 }
 

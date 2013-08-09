@@ -218,7 +218,7 @@ uint32_t GLFontHandler::formatText(VertexArray& vertices,
 	return numGlyphs * kVERTICES_PER_GLYPH;
 }
 
-void GLFontHandler::drawText(const VertexArray& vertices, uint32_t count, const TextStyle& style) {
+void GLFontHandler::drawText(const VertexArray& vertices, uint32_t count, const tinyswf::CXFORM& cxform, const TextStyle& style) {
 	const float uv_scale = 1.f / kTEXTURE_SIZE;
 	const float texMtx[] = {uv_scale,0,0,0, 0,uv_scale,0,0, 0,0,1,0, 0,0,0,1};
 
@@ -234,7 +234,10 @@ void GLFontHandler::drawText(const VertexArray& vertices, uint32_t count, const 
 	glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glColor4f(style.color.r, style.color.g, style.color.b, style.color.a);
+	tinyswf::COLOR4f color = cxform.mult * style.color;
+	color += cxform.add;
+
+	glColor4f(color.r, color.g, color.b, color.a);
 
 	glBegin(GL_TRIANGLES);
 	tinyswf::VertexArray::const_iterator it = vertices.begin(); 

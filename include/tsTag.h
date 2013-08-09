@@ -178,6 +178,8 @@ struct Event {
 
 // character interface for display list
 class ICharacter {
+	bool _visible;
+
 public:
 	enum TYPE {
 		TYPE_NONE	= 0,
@@ -197,7 +199,13 @@ public:
 
 	virtual TYPE type() const = 0;
 
-	virtual ~ICharacter() { SWF_TRACE("delete ICharacter[%x]\n",this); }
+	bool visible(void) const { return _visible; }
+	void setVisible(bool b) { _visible = b; }
+
+	ICharacter() : _visible(true) {}
+	virtual ~ICharacter() { 
+		//SWF_TRACE("delete ICharacter[%x]\n",this);
+	}
 };
 
 //-----------------------------------------------------------------------------

@@ -59,9 +59,9 @@ class CCFlashFontHandler : public tinyswf::FontHandler {
 	CacheData _font_cache;
 	OSFont* _selectedFont;
 
-	cocos2d::GLProgram *mpFontShader;
-	int miFontUVScaleLocation;
-	int miFontColorLocation;
+	cocos2d::GLProgram *_fontShader;
+	int _uvScaleLocation;
+	int _colorLocation;
 
 	OSFont* selectFont(const char *font_name, float fontsize, int style);
 
@@ -70,7 +70,7 @@ public:
 
 	virtual ~CCFlashFontHandler();
 
-	void drawText(const tinyswf::VertexArray& vertices, uint32_t glyphs, const tinyswf::TextStyle& style);
+	void drawText(const tinyswf::VertexArray& vertices, uint32_t glyphs, const tinyswf::CXFORM& cxform, const tinyswf::TextStyle& style);
 
 	uint32_t formatText(tinyswf::VertexArray& vertices, const tinyswf::RECT& rect, 
 		const tinyswf::TextStyle& style, const std::wstring& text);

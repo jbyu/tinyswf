@@ -88,6 +88,8 @@ public:
 		
 	virtual void print();
 
+	std::string& getName(void) { return _variable_name; }
+
 	static ITag* create( TagHeader& header ) {
 		return new DefineEditTextTag( header );
 	}				

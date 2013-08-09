@@ -48,12 +48,12 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>SWF_DEBUG;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\include;..\..\libtess2;..\..\rapidxml;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
+      <ForcedIncludeFiles>stdafx.h</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -111,15 +111,30 @@
     <ClInclude Include="..\..\src\tags\SetBackgroundColor.h" />
     <ClInclude Include="..\..\src\tags\ShowFrame.h" />
     <ClInclude Include="..\..\src\tags\VectorEngine.h" />
+    <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\libtess2\bucketalloc.c" />
-    <ClCompile Include="..\..\libtess2\dict.c" />
-    <ClCompile Include="..\..\libtess2\geom.c" />
-    <ClCompile Include="..\..\libtess2\mesh.c" />
-    <ClCompile Include="..\..\libtess2\priorityq.c" />
-    <ClCompile Include="..\..\libtess2\sweep.c" />
-    <ClCompile Include="..\..\libtess2\tess.c" />
+    <ClCompile Include="..\..\libtess2\bucketalloc.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\libtess2\dict.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\libtess2\geom.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\libtess2\mesh.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\libtess2\priorityq.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\libtess2\sweep.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\libtess2\tess.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\..\src\tags\DefineButton.cpp" />
     <ClCompile Include="..\..\src\tags\DefineFont.cpp" />
     <ClCompile Include="..\..\src\tags\DefineText.cpp" />
@@ -133,6 +148,9 @@
     <ClCompile Include="..\..\src\tsReader.cpp" />
     <ClCompile Include="..\..\src\tsSWF.cpp" />
     <ClCompile Include="..\..\src\tsTag.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

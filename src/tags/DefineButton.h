@@ -29,7 +29,7 @@ struct ButtonRecord {
 	ButtonStateOver			UB[1] Present in over state
 	ButtonStateUp			UB[1] Present in up state
 	*/
-	int		_state;
+	int			_state;
 	uint16_t	_character_id;
 	uint16_t	_depth;
 	MATRIX	_matrix;

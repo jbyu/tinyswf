@@ -61,7 +61,7 @@ class FontHandler {
 public:
 	virtual ~FontHandler() {}
 
-	virtual void drawText(const VertexArray& vertices, uint32_t glyphs, const TextStyle& style) = 0;
+	virtual void drawText(const VertexArray& vertices, uint32_t glyphs, const CXFORM& cxform, const TextStyle& style) = 0;
 
     virtual uint32_t formatText(VertexArray& vertices, const RECT& rect, const TextStyle& style, const std::wstring& text) = 0;
 

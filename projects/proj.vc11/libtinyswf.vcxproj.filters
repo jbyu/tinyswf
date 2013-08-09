@@ -110,6 +110,7 @@
     <ClInclude Include="..\..\src\tags\DefineFont.h">
       <Filter>header\tags</Filter>
     </ClInclude>
+    <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\tsTag.cpp">
@@ -172,5 +173,6 @@
     <ClCompile Include="..\..\src\tags\DefineFont.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
 </Project>

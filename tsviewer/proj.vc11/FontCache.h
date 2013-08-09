@@ -61,7 +61,7 @@ public:
 
 	virtual ~GLFontHandler();
 
-	void drawText(const tinyswf::VertexArray& vertices, uint32_t glyphs, const tinyswf::TextStyle& style);
+	void drawText(const tinyswf::VertexArray& vertices, uint32_t glyphs, const tinyswf::CXFORM& cxform, const tinyswf::TextStyle& style);
 
 	uint32_t formatText(tinyswf::VertexArray& vertices, const tinyswf::RECT& rect, 
 		const tinyswf::TextStyle& style, const std::wstring& text);
