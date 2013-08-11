@@ -103,7 +103,7 @@ MovieClip::MovieClip( SWF* swf,  const MovieFrames& data )
 MovieClip::~MovieClip()
 {
 	//SWF_TRACE("delete MovieClip[%x]\n",this);
-	delete _transform;
+	//delete _transform;
 	_transform = NULL;
 
 	// clean up
