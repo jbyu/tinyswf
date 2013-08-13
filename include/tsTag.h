@@ -123,7 +123,7 @@ struct Asset {
 	// ty: y / height of texture
 	MATRIX		texture;
 };
-const Asset kNULL_ASSET = {Asset::TYPE_EXPORT, 0, {0,0,0,0}};
+const Asset kNULL_ASSET = {Asset::TYPE_EXPORT, 0};
 
 //-----------------------------------------------------------------------------
 

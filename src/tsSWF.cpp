@@ -36,7 +36,6 @@ SWF::SWF()
     :MovieClip(this, _swf_data)
 	,_mouseX(0)
 	,_mouseY(0)
-	,_mouseButtonStateCurr(0)
 	,_mouseButtonStateLast(0)
 	,_mouseInsideEntityLast(false)
 	,_pActiveEntity(NULL)
@@ -268,10 +267,17 @@ RECT SWF::calculateRectangle(uint16_t character, const MATRIX* xf) {
 	return rect;
 }
 
+void SWF::notifyReset(void) {
+	_pActiveEntity = NULL;
+	_mouseInsideEntityLast = false;
+	_mouseButtonStateLast = 0;
+}
+
 bool SWF::notifyMouse(int button, float x, float y, bool touchScreen) {
 	ICharacter *pTopMost = this->getTopMost( x, y, false);
+	bool hit = NULL != pTopMost;
 	notifyEvent(button,  x,  y, pTopMost, touchScreen);
-	return NULL != pTopMost;
+	return hit;
 }
 
 bool SWF::notifyDuplicate(int button, float x, float y, bool touchScreen) {
@@ -297,9 +303,10 @@ bool SWF::notifyDuplicate(int button, float x, float y, bool touchScreen) {
 void SWF::notifyEvent(int button, float x, float y, ICharacter *pTopMost, bool touchScreen) {
 	_mouseX = x;
 	_mouseY = y;
-	_mouseButtonStateCurr = button;
+	const int previous = _mouseButtonStateLast;
+	_mouseButtonStateLast = button;
 
-	if (0 < _mouseButtonStateLast) {
+	if (0 < previous) {
 		// Mouse button was down.
 #if 0
 		// Handle trackAsMenu dragOver
@@ -330,24 +337,29 @@ void SWF::notifyEvent(int button, float x, float y, ICharacter *pTopMost, bool t
 		}
 #endif
 		// Handle onRelease, onReleaseOutside
-		if (0 == _mouseButtonStateCurr) {
+		if (0 == button) {
 			// Mouse button is up.
 			//m_mouse_listener.notify(event_id::MOUSE_UP);
-			if (pTopMost != _pActiveEntity) {
+			ICharacter *target = _pActiveEntity;
+			if (touchScreen) {
+				_pActiveEntity = NULL;
+				//_mouseInsideEntityLast = false;
+			}
+			if (pTopMost != target) {
 				// onReleaseOutside
-				if (_pActiveEntity) { //&& !active_entity->get_track_as_menu() )
-					_pActiveEntity->onEvent( Event::RELEASE_OUTSIDE );
+				if (target) { //&& !active_entity->get_track_as_menu() )
+					target->onEvent( Event::RELEASE_OUTSIDE );
 				}
 			} else {
 				// onRelease
-				if (_pActiveEntity && _mouseInsideEntityLast) {
-					_pActiveEntity->onEvent( Event::RELEASE );
+				if (target && _mouseInsideEntityLast) {
+					target->onEvent( Event::RELEASE );
 				}
 			}
 		}
 	} else {
 		// Mouse button was up.
-		if (0 == _mouseButtonStateCurr) {
+		if (0 == button) {
 			// Mouse button is up.
 			// New active entity is whatever is below the mouse right now.
 			if (pTopMost != _pActiveEntity) {
@@ -393,7 +405,6 @@ void SWF::notifyEvent(int button, float x, float y, ICharacter *pTopMost, bool t
 			}
 		}
 	}
-	_mouseButtonStateLast = _mouseButtonStateCurr;
 }
 
 #ifdef WIN32

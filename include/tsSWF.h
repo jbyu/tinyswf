@@ -139,6 +139,7 @@ public:
 	// button: 0 for up, 1 for down
 	bool notifyMouse(int button, float x, float y, bool touchScreen = false);
 	bool notifyDuplicate(int button, float x, float y, bool touchScreen = false);
+	void notifyReset(void);
 
 	// flash information
 	float getFrameWidth() const     { return _header.getFrameWidth(); }
@@ -171,7 +172,6 @@ private:
     typedef std::map< std::string, uint16_t >       SymbolDictionary;
 
 	float	_mouseX, _mouseY;
-	int		_mouseButtonStateCurr;
 	int		_mouseButtonStateLast;
 	bool	_mouseInsideEntityLast;
 	ICharacter *_pActiveEntity;
