@@ -589,7 +589,7 @@ void mouseCB(int button,int stat,int x,int y) {
 	motionCB(x,y);
 }
 
-void myURLCallback( tinyswf::MovieClip&, bool isFSCommand, const char *url, const char *target )
+void myURLCallback( tinyswf::MovieClip&, bool isFSCommand, const char *url, const char *target, void* )
 {
 	printf("fs:%d, url:%s, targt:%s\n", isFSCommand, url, target);
 }

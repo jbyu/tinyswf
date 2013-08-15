@@ -115,6 +115,12 @@ void SWF::print()
 	_header.print();
 }
 
+void SWF::callGetURL(MovieClip& movie, bool fscommand, const char *url, const char *target) {
+    if (! _getURL)
+		return;
+	_getURL( movie, fscommand, url, target, _urlParam );
+}
+
 ICharacter* SWF::addAsset(uint16_t id, const char *name, const char* url) {
     if (!_asset_loader)
 		return NULL;

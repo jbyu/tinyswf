@@ -111,11 +111,9 @@ void DoActionTag::setup(MovieClip& movie, bool skipAction)
             {
                 SWF* swf = movie.getSWF();
                 if (! swf) break;
-                SWF::GetURLCallback callback = swf->getGetURL();
-                if (! callback) break;
 				const char *url = action.buffer;
 				const char *target = action.buffer + action.data;
-				callback( movie, 0<action.padding, url, target );
+				swf->callGetURL(movie, 0 < action.padding, url, target);
             }
             break;
         case ACTION_NEXT_FRAME:

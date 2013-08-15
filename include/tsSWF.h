@@ -79,7 +79,7 @@ public:
     // factory function prototype
 	typedef ITag* (*TagFactoryFunc)( TagHeader& );
     typedef Asset (*LoadAssetCallback)( const char *name, const char *url );
-    typedef void (*GetURLCallback)( MovieClip&, bool isFSCommand, const char *command, const char *target );
+    typedef void (*GetURLCallback)( MovieClip&, bool isFSCommand, const char *command, const char *target, void *param );
 
 	// Curve subdivision error tolerance.
 	static float curve_error_tolerance;
@@ -158,8 +158,8 @@ public:
     }
        
 	// handle GetURL function (include fscommand)
-    void setGetURL(GetURLCallback cb) { _getURL = cb; }
-    GetURLCallback getGetURL(void) { return _getURL; }
+    void setGetURL(GetURLCallback cb, void *param = NULL) { _getURL = cb; _urlParam = param; }
+    void callGetURL(MovieClip& movie, bool fscommand, const char *url, const char *target);
 
 	RECT calculateRectangle(uint16_t character, const MATRIX* xf);
 
@@ -188,6 +188,7 @@ private:
     AssetDictionary     moAssets;
     COLOR4f             _bgColor;
     GetURLCallback      _getURL;
+	void*				_urlParam;
 
 	static TagFactoryMap            _tag_factories;
     static LoadAssetCallback        _asset_loader;
