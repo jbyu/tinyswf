@@ -90,14 +90,18 @@ bool MovieClip::createFrames( Reader& reader, SWF& swf, MovieFrames &data )
 
 //-----------------------------------------------------------------------------
 
-MovieClip::MovieClip( SWF* swf,  const MovieFrames& data )
+MovieClip::MovieClip( SWF* swf, MovieClip* parent,  const MovieFrames& data, const PlaceObjectTag *def )
 	:_data(data)
 	,_owner(swf)
+	,_parent(parent)
 	,_transform(NULL)
+	,_definition(def)
 	,_play(true)
-	,_frame(ICharacter::kFRAME_MAXIMUM)
+	,_frame(0)
 {
 	//SWF_TRACE("create MovieClip\n");
+	if (0 < data._frames.size())
+		gotoFrame(0, false);
 }
 
 MovieClip::~MovieClip()
@@ -133,11 +137,11 @@ public:
 
 static nullCharacter soDefaultNullCharacter;
 
-ICharacter *MovieClip::createCharacter(const ITag* tag) {
+ICharacter *MovieClip::createCharacter(const ITag* tag, const PlaceObjectTag* place) {
 	ICharacter *character = NULL;
 	switch ( tag->code() ) {
 	case TAG_DEFINE_SPRITE:
-		character = new MovieClip(_owner, ((DefineSpriteTag*)tag)->getMovieFrames());
+		character = new MovieClip(_owner, this, ((DefineSpriteTag*)tag)->getMovieFrames(), place);
 		_characters.push_back(character);
 		break;
 	case TAG_DEFINE_BUTTON2:
@@ -145,7 +149,7 @@ ICharacter *MovieClip::createCharacter(const ITag* tag) {
 		_characters.push_back(character);
 		break;
 	case TAG_DEFINE_EDIT_TEXT:
-		character = new Text(*(DefineEditTextTag*)tag);
+		character = new Text(*(DefineEditTextTag*)tag, place);
 		_characters.push_back(character);
 		break;
 	case TAG_IMPORT_ASSETS2:
@@ -171,7 +175,7 @@ ICharacter *MovieClip::getInstance(const PlaceObjectTag* placeTag) {
 	if (! tag)
 		return character;
 
-	character = createCharacter(tag);
+	character = createCharacter(tag, placeTag);
 	SWF_ASSERT(character);
 	_cache[placeTag] = character;
 
@@ -185,7 +189,7 @@ ICharacter *MovieClip::getCharacter(const char* name) {
 		TagList::const_iterator it = tags->begin();
 		while (it != tags->end()) {
 			const ITag* tag = (*it);
-			if (tag->code() == TAG_PLACE_OBJECT2) {
+			if (tag->code() == TAG_PLACE_OBJECT2 || tag->code() == TAG_PLACE_OBJECT3) {
 				PlaceObjectTag* placeTag = (PlaceObjectTag*)tag;
 				if (placeTag->name() == name) {
 					ICharacter *ch = getInstance(placeTag);
@@ -369,10 +373,52 @@ ICharacter* MovieClip::getTopMost(float x, float y, bool polygonTest) {
 			m.setInverse( object._transform );
 			m.transform(local, world);
 			pRet = pCharacter->getTopMost(local.x, local.y, polygonTest);
-			if (pRet)
-				break;
+			if (pRet) {
+				switch(pRet->type()) {
+				case ICharacter::TYPE_BUTTON:
+				case ICharacter::TYPE_MOVIE:
+					return pRet;
+				default:
+					return this;
+				}
+			}
 		}
         ++rit;
 	}
-	return pRet;
+	return NULL;
+}
+
+void MovieClip::onEvent(Event::Code code) {
+	int flag = 0;
+	switch(code) {
+	case Event::ROLL_OUT:
+		flag |= ClipAction::EVENT_ROLL_OUT;
+		break;
+	case Event::ROLL_OVER:
+		flag |= ClipAction::EVENT_ROLL_OVER;
+		break;
+	case Event::PRESS:
+		flag |= ClipAction::EVENT_PRESS;
+		break;
+	case Event::RELEASE:
+		flag |= ClipAction::EVENT_RELEASE;
+		break;
+	case Event::RELEASE_OUTSIDE:
+		flag |= ClipAction::EVENT_RELEASE_OUTSIDE;
+		break;
+	default:
+		//else if (id.m_id == event_id::DRAG_OUT) c |= (button_action::OVER_DOWN_TO_OUT_DOWN);
+		//else if (id.m_id == event_id::DRAG_OVER) c |= (button_action::OUT_DOWN_TO_OVER_DOWN);
+		//else if (id.m_id == event_id::RELEASE_OUTSIDE) c |= (button_action::OUT_DOWN_TO_IDLE);
+		break;
+	}
+
+#ifdef SWF_DEBUG
+	const char*strEvent[] = {"N/A","PRESS","RELEASE","RELEASE_OUTSIDE","ROLL_OVER","ROLL_OUT","DRAG_OVER","DRAG_OUT","KEY_PRESS"};
+	SWF_TRACE("event:%s on %x\n",strEvent[code],this);
+#endif
+
+	if (_definition)
+		_definition->trigger(*this, flag);
+
 }

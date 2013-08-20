@@ -116,7 +116,15 @@ public:
 		}
 		return it->second;
 	}
-		
+
+	uint16_t getCharacterID(const char *name) {
+		SymbolDictionary::iterator it = _library.find( name );
+		if (it == _library.end() ) {
+			return 0xffff;
+		}
+		return it->second;
+	}
+
 	// duplicate movieclip for other purpose outside flash
 	// will allocate memory for transform matrix
 	// user need to free the matrix by himself
@@ -138,7 +146,7 @@ public:
 
 	// button: 0 for up, 1 for down
 	bool notifyMouse(int button, float x, float y, bool touchScreen = false);
-	bool notifyDuplicate(int button, float x, float y, bool touchScreen = false);
+	bool notifyDuplicate(MovieClip& movie,int button, float x, float y, bool touchScreen = false);
 	void notifyReset(void);
 
 	// flash information
@@ -171,7 +179,7 @@ private:
     typedef std::map< uint16_t, Asset >             AssetDictionary;
     typedef std::map< std::string, uint16_t >       SymbolDictionary;
 
-	float	_mouseX, _mouseY;
+	//float	_mouseX, _mouseY;
 	int		_mouseButtonStateLast;
 	bool	_mouseInsideEntityLast;
 	ICharacter *_pActiveEntity;

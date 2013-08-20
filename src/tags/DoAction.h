@@ -35,7 +35,7 @@ public:
 	virtual ~DoActionTag();
 
 	//restricted copy constructor
-	DoActionTag( DoActionTag& );
+	DoActionTag( DoActionTag& action );
 
 	virtual bool read( Reader& reader, SWF& swf, MovieFrames& data);
 

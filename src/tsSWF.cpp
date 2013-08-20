@@ -33,9 +33,8 @@ MATRIX3f SWF::_sCurrentMatrix = kMatrix3fIdentity;
 CXFORM SWF::_sCurrentCXForm = kCXFormIdentity;
 
 SWF::SWF()
-    :MovieClip(this, _swf_data)
-	,_mouseX(0)
-	,_mouseY(0)
+    :MovieClip(this, NULL, _swf_data, NULL)
+	//,_mouseX(0),_mouseY(0)
 	,_mouseButtonStateLast(0)
 	,_mouseInsideEntityLast(false)
 	,_pActiveEntity(NULL)
@@ -67,6 +66,7 @@ bool SWF::initialize(LoadAssetCallback func, int memory_pool_size) {
 
 	addFactory( TAG_DEFINE_SPRITE,	DefineSpriteTag::create );
 	addFactory( TAG_PLACE_OBJECT2,	PlaceObjectTag::create );
+	addFactory( TAG_PLACE_OBJECT3,	PlaceObjectTag::create );
 	addFactory( TAG_REMOVE_OBJECT2,	RemoveObjectTag::create );
 	addFactory( TAG_SHOW_FRAME,		ShowFrameTag::create );
 		
@@ -156,7 +156,7 @@ MovieClip *SWF::duplicate(const char *name, bool hasMatrix) {
         ITag *tag = _dictionary[it->second];
 		SWF_ASSERT(TAG_DEFINE_SPRITE == tag->code() || TAG_DEFINE_BUTTON2 == tag->code());
         // create a new instance
-		movie = (MovieClip*)createCharacter(tag);
+		movie = (MovieClip*)createCharacter(tag, NULL);
 		if (hasMatrix)
 			movie->createTransform();
 		_duplicates.push_back(movie);
@@ -286,29 +286,19 @@ bool SWF::notifyMouse(int button, float x, float y, bool touchScreen) {
 	return hit;
 }
 
-bool SWF::notifyDuplicate(int button, float x, float y, bool touchScreen) {
-	ICharacter* pTopMost = NULL;
-	CharacterArray::reverse_iterator rit = _duplicates.rbegin();
-	while( rit != _duplicates.rend() ) {
-		MovieClip *movie = (MovieClip*)(*rit);
-		if (movie) {
-			MATRIX m;
-			POINT local, world = {float(x),float(y)};
-			m.setInverse( *movie->getTransform() );
-			m.transform(local, world);
-			pTopMost = movie->getTopMost(local.x, local.y, false);
-			if (pTopMost)
-				break;
-		}
-        ++rit;
-	}
+bool SWF::notifyDuplicate(MovieClip& movie, int button, float x, float y, bool touchScreen) {
+	MATRIX m;
+	POINT local, world = {float(x),float(y)};
+	m.setInverse( *movie.getTransform() );
+	m.transform(local, world);
+	ICharacter* pTopMost = movie.getTopMost(local.x, local.y, false);
+	bool hit = NULL != pTopMost;
 	notifyEvent(button,  x,  y, pTopMost, touchScreen);
-	return NULL != pTopMost;
+	return hit;
 }
 
 void SWF::notifyEvent(int button, float x, float y, ICharacter *pTopMost, bool touchScreen) {
-	_mouseX = x;
-	_mouseY = y;
+	//_mouseX = x;_mouseY = y;
 	const int previous = _mouseButtonStateLast;
 	_mouseButtonStateLast = button;
 

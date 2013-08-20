@@ -75,7 +75,7 @@ protected:
 
 	void gotoFrame( uint32_t frame, bool skipAction );
 
-	ICharacter *createCharacter(const ITag*);
+	ICharacter *createCharacter(const ITag*, const PlaceObjectTag*);
 	ICharacter* getInstance(const PlaceObjectTag*);
     DisplayList& getDisplayList(void) { return _display_list; }
 
@@ -86,7 +86,7 @@ protected:
 	MovieClip(const MovieClip&);
 
 public:
-	MovieClip( SWF* swf,  const MovieFrames& data );
+	MovieClip(SWF* swf, MovieClip* parent, const MovieFrames& data, const PlaceObjectTag*def );
     virtual ~MovieClip();
 
 	virtual ICharacter* getCharacter(const char *name);
@@ -101,7 +101,7 @@ public:
 	virtual void draw(void);
 	virtual void update(void);
 	virtual ICharacter* getTopMost(float localX, float localY, bool polygonTest);
-	virtual void onEvent(Event::Code) {}
+	virtual void onEvent(Event::Code);
 
 	const static TYPE kType = TYPE_MOVIE;
 	virtual TYPE type() const { return kType; }
@@ -137,7 +137,10 @@ protected:
 
 	const MovieFrames   &_data;
     SWF                 *_owner;
+	MovieClip			*_parent;
     MATRIX              *_transform;
+	const PlaceObjectTag *_definition;
+
     bool        _play;
 	uint32_t	_frame;
 	DisplayList	_display_list;
@@ -183,7 +186,6 @@ private:
 	};
 	typedef std::vector< ButtonState > StateArray;
 
-	MovieClip&			_parent;
 	DefineButton2Tag&	_definition;
 	MovieFrames			_frames;
 	MouseState			_mouseState;
@@ -195,7 +197,7 @@ private:
 
 class Text : public ICharacter {
 public:
-	Text(const DefineEditTextTag&);
+	Text(const DefineEditTextTag&, const PlaceObjectTag*def);
 	virtual ~Text() {}
 
 	// override ICharacter function

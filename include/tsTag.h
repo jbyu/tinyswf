@@ -98,8 +98,7 @@ typedef std::vector<POINT>					VertexArray;
 //-----------------------------------------------------------------------------
 
 // movieclip information
-struct MovieFrames
-{
+struct MovieFrames {
     FrameList _frames;
     LabelList _labels;
     RECT      _rectangle;
@@ -282,7 +281,14 @@ private:
 };
 
 //-----------------------------------------------------------------------------
-	
+
+// optional filter for text rendering
+struct Filter {
+	COLOR4f	color;
+	float	offsetX;
+	float	offsetY;
+};
+
 struct TextStyle {
 	enum ALIGNMENT {
 		ALIGN_LEFT		= 0,
@@ -301,6 +307,7 @@ struct TextStyle {
 	float		font_height;
 	int			font_style;
 	std::string font_name;
+	const Filter *filter;
 };
 
 //-----------------------------------------------------------------------------

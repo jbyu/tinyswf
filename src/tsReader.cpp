@@ -3,12 +3,13 @@ Copyright (c) 2013 jbyu. All rights reserved.
 ******************************************************************************/
 
 #include "tsReader.h"
+#include "tsTag.h"
 
 #define UNUSED(x) (void) (x)
 
 using namespace tinyswf;
 
-void Reader::getFilterList() {
+void Reader::getFilterList(Filter &dropShadow) {
 	// reads FILTERLIST
 	int filters = get<uint8_t>();
 	for (int i = 0; i < filters; i++) {
@@ -16,12 +17,20 @@ void Reader::getFilterList() {
 		switch (filter_id) {
 		// DropShadowFilter
 		case 0:	{
-			RGBA drop_shadow_color;
-			getRGBA(drop_shadow_color);
+			//RGBA drop_shadow_color; getRGBA(drop_shadow_color);
+			dropShadow.color.r = get<uint8_t>() * SWF_INV_COLOR;
+			dropShadow.color.g = get<uint8_t>() * SWF_INV_COLOR;
+			dropShadow.color.b = get<uint8_t>() * SWF_INV_COLOR;
+			dropShadow.color.a = get<uint8_t>() * SWF_INV_COLOR;
+
 			float blur_x = getFIXED();	// Horizontal blur amount
 			float blur_y = getFIXED();	// Vertical blur amount
+
 			float angle = getFIXED();	// Radian angle of the drop shadow
 			float distance = getFIXED();	// Distance of the drop shadow
+			dropShadow.offsetX = cosf(angle) * distance;
+			dropShadow.offsetY = sinf(angle) * distance;
+
 			float strength = get<int16_t>();	// hack, must be FIXED8 Strength of the drop shadow
 			uint8_t flag = get<uint8_t>();
 			int inner_shadow = flag & 0x80;
@@ -30,8 +39,6 @@ void Reader::getFilterList() {
 			int passes = flag & 0x1f;	// Number of blur passes
 			UNUSED(blur_x);
 			UNUSED(blur_y);
-			UNUSED(angle);
-			UNUSED(distance);
 			UNUSED(strength);
 			UNUSED(inner_shadow);
 			UNUSED(knockout);

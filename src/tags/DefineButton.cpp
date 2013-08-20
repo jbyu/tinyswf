@@ -35,7 +35,8 @@ bool ButtonRecord::read( Reader& reader, SWF& , int tag_type ) {
 		reader.getCXForm( _cxform );
 		reader.align();
 		if ( flags & 0x10 ) {
-			reader.getFilterList();
+			Filter dropShadow;
+			reader.getFilterList(dropShadow);
 		}
 		if ( flags & 0x20 ) {
 			_blend_mode = reader.get<uint8_t>();
@@ -146,8 +147,7 @@ void DefineButton2Tag::print() {
 //-----------------------------------------------------------------------------
 
 Button::Button( MovieClip& parent,  DefineButton2Tag& data )
-	:MovieClip( parent.getSWF(), _frames )
-	,_parent(parent)
+	:MovieClip( parent.getSWF(), &parent, _frames, NULL)
 	,_definition(data)
 	,_mouseState(MOUSE_UP)
 {
@@ -178,7 +178,6 @@ Button::Button( MovieClip& parent,  DefineButton2Tag& data )
 		}
 		++it;
 	}
-	clearDisplayList();
 	setupFrame();
 }
 
@@ -273,7 +272,7 @@ void Button::onEvent(Event::Code code) {
 	ButtonActionArray::iterator it = getDefinition()._buttonActions.begin();
 	while( getDefinition()._buttonActions.end() != it ) {
 		if ((*it)->_conditions & flag) {
-			(*it)->_actions.setup(_parent, false);
+			(*it)->_actions.setup(*_parent, false);
 		}
 		++it;
 	}

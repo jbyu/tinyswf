@@ -50,7 +50,7 @@
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>SWF_DEBUG;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\include;..\..\libtess2;..\..\rapidxml;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <ForcedIncludeFiles>stdafx.h</ForcedIncludeFiles>

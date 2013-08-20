@@ -4,6 +4,7 @@ Copyright (c) 2013 jbyu. All rights reserved.
 
 #include "DefineText.h"
 #include "DefineFont.h"
+#include "PlaceObject.h"
 #include "tsSWF.h"
 #include "rapidxml.hpp"
 
@@ -17,25 +18,23 @@ enum TEXT_STYLE {
 	STYLE_HAS_XOFFSET	= 0x01
 };
 
-enum EDITTEXT_INFO1 {
-	INFO_HAS_TEXT		= 0x80,
-	INFO_WORDWRAP		= 0x40,
-	INFO_MULTILINE		= 0x20,
-	INFO_PASSWORD		= 0x10,
-	INFO_READONLY		= 0x08,
-	INFO_HAS_COLOR		= 0x04,
-	INFO_HAS_MAX_LEN	= 0x02,
-	INFO_HAS_FONT		= 0x01,
-};
-enum EDITTEXT_INFO2 {
-	INFO_HAS_FONT_CLASS	= 0x80,
-	INFO_AUTO_SIZE		= 0x40,
-	INFO_HAS_LAYOUT		= 0x20,
-	INFO_NO_SELECT		= 0x10,
-	INFO_BORDER			= 0x08,
-	INFO_WAS_STATIC		= 0x04,
-	INFO_HTML			= 0x02,
-	INFO_USE_OUTLINES	= 0x01,
+enum EDITTEXT_INFO {
+	INFO_HAS_TEXT		= 1<<7,
+	INFO_WORDWRAP		= 1<<6,
+	INFO_MULTILINE		= 1<<5,
+	INFO_PASSWORD		= 1<<4,
+	INFO_READONLY		= 1<<3,
+	INFO_HAS_COLOR		= 1<<2,
+	INFO_HAS_MAX_LEN	= 1<<1,
+	INFO_HAS_FONT		= 1<<0,
+	INFO_HAS_FONT_CLASS	= 1<<15,
+	INFO_AUTO_SIZE		= 1<<14,
+	INFO_HAS_LAYOUT		= 1<<13,
+	INFO_NO_SELECT		= 1<<12,
+	INFO_BORDER			= 1<<11,
+	INFO_WAS_STATIC		= 1<<10,
+	INFO_HTML			= 1<<9,
+	INFO_USE_OUTLINES	= 1<<8,
 };
 
 bool TextRecord::Style::read(Reader& reader, int tag_type, int flag) {
@@ -120,31 +119,30 @@ bool DefineEditTextTag::read( Reader& reader, SWF& swf, MovieFrames& ) {
 	reader.getRectangle(_bound);
 	reader.align();
 
-	int flag1 = reader.get<uint8_t>();
-	int flag2 = reader.get<uint8_t>();
-	if (flag1 & INFO_HAS_FONT) {
+	int flag = reader.get<uint16_t>();
+	if (flag & INFO_HAS_FONT) {
 		_font_id = reader.get<uint16_t>();
 		DefineFontTag* tag = (DefineFontTag*) swf.getCharacter(_font_id);
 		SWF_ASSERT(tag);
 		_style.font_name = tag->getFontName();
 		_style.font_style = tag->getFontStyle();
 	}
-	if (flag2 & INFO_HAS_FONT_CLASS) {
+	if (flag & INFO_HAS_FONT_CLASS) {
 		_font_class.assign( reader.getString() );
 	}
-	if (flag1 & INFO_HAS_FONT) {
+	if (flag & INFO_HAS_FONT) {
 		_style.font_height = reader.get<uint16_t>() * SWF_INV_TWIPS;
 	}
-	if (flag1 & INFO_HAS_COLOR) {
+	if (flag & INFO_HAS_COLOR) {
 		_style.color.r = reader.get<uint8_t>()*SWF_INV_COLOR;
 		_style.color.g = reader.get<uint8_t>()*SWF_INV_COLOR;
 		_style.color.b = reader.get<uint8_t>()*SWF_INV_COLOR;
 		_style.color.a = reader.get<uint8_t>()*SWF_INV_COLOR;
 	}
-	if (flag1 & INFO_HAS_MAX_LEN) {
+	if (flag & INFO_HAS_MAX_LEN) {
 		_max_length = reader.get<uint16_t>();
 	}
-	if (flag2 & INFO_HAS_LAYOUT) {
+	if (flag & INFO_HAS_LAYOUT) {
 		//0 = Left; 1 = Right; 2 = Center; 3 = Justify 
 		_style.alignment = (TextStyle::ALIGNMENT)reader.get<uint8_t>();
 		_style.left_margin = reader.get<uint16_t>() * SWF_INV_TWIPS;
@@ -153,11 +151,11 @@ bool DefineEditTextTag::read( Reader& reader, SWF& swf, MovieFrames& ) {
 		_style.leading = reader.get<int16_t>() * SWF_INV_TWIPS;
 	}
 
-	_html = (flag2 & INFO_HTML) > 0;
-	_style.multiline = (flag1 & INFO_MULTILINE) > 0;
+	_html = (flag & INFO_HTML) > 0;
+	_style.multiline = (flag & INFO_MULTILINE) > 0;
 
 	_variable_name.assign( reader.getString() );
-	if (flag1 & INFO_HAS_TEXT) {
+	if (flag & INFO_HAS_TEXT) {
 		_initial_text.assign( reader.getString() );
 	}
 	
@@ -250,12 +248,18 @@ bool utf8_to_utf16(std::wstring& utf16, const std::string& utf8) {
     return true;
 }
 
-Text::Text(const DefineEditTextTag &tag) 
+Text::Text(const DefineEditTextTag &tag, const PlaceObjectTag*def) 
 	:_reference(tag)
 	,_glyphs(0)
 {
 	_style = tag._style;
 	_bound = tag._bound;
+
+	if (def) {
+		_style.filter = def->getFilter();
+	} else {
+		_style.filter = NULL;
+	}
 
 	if (tag._html) {
 		// parse initial html text

@@ -9,7 +9,9 @@ Copyright (c) 2013 jbyu. All rights reserved.
 #include <string.h>
 
 namespace tinyswf {
-	
+
+struct Filter;
+
 class Reader {
 public:
 	Reader( char* data, int32_t sz )
@@ -166,7 +168,7 @@ public:
         */
 	}
 
-	void getFilterList();
+	void getFilterList(Filter& dropShadow);
 
 	float getFIXED() {
 		int32_t	val = get<int32_t>();

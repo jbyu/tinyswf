@@ -31,12 +31,17 @@ short int endianSwap16(short int val)
 namespace tinyswf {
 	
 bool Header::read( Reader& reader ) {
+	// little endian
+	long int i = 0x12345678;
+	const char *p = (const char*) &i;
+	assert(0x78 == *p);
 	
 	_signature[0] = reader.get<uint8_t>();
 	_signature[1] = reader.get<uint8_t>();
 	_signature[2] = reader.get<uint8_t>();
 		
 	_version = reader.get<uint8_t>();
+	assert(5 < _version);
 		
 	_file_length = reader.get<uint32_t>();
 		
