@@ -216,7 +216,8 @@ public:
 	virtual TYPE type() const { return kType; }
 
 	bool setString(const char* str);
-	
+	TextStyle&	style() { return _style; }
+
 protected:
 	// no copy constructor and assignment operator
 	Text& operator=(const Text&);
