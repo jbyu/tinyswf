@@ -32,17 +32,18 @@ SWF::TagFactoryMap SWF::_tag_factories;
 MATRIX3f SWF::_sCurrentMatrix = kMatrix3fIdentity;
 CXFORM SWF::_sCurrentCXForm = kCXFormIdentity;
 
+const SWF::EventContext kDefaultEventContext = {0,0,false};
+static SWF::EventContext _duplicatEventContext = kDefaultEventContext;
+
 SWF::SWF()
     :MovieClip(this, NULL, _swf_data, NULL)
 	//,_mouseX(0),_mouseY(0)
-	,_mouseButtonStateLast(0)
-	,_mouseInsideEntityLast(false)
-	,_pActiveEntity(NULL)
     ,_elapsedAccumulator(0.0f)
     ,_elapsedAccumulatorDuplicate(0.0f)
     ,_getURL(0)
 {
   //_owner = this;
+	_eventContext = kDefaultEventContext;
 }
 
 SWF::~SWF()
@@ -273,16 +274,20 @@ RECT SWF::calculateRectangle(uint16_t character, const MATRIX* xf) {
 	return rect;
 }
 
-void SWF::notifyReset(void) {
-	_pActiveEntity = NULL;
-	_mouseInsideEntityLast = false;
-	_mouseButtonStateLast = 0;
+void SWF::notifyReset(bool duplicate) {
+	EventContext &ctx = _eventContext;
+	if (duplicate) {
+		ctx = _duplicatEventContext;
+	}
+	ctx = kDefaultEventContext;
 }
 
 bool SWF::notifyMouse(int button, float x, float y, bool touchScreen) {
 	ICharacter *pTopMost = this->getTopMost( x, y, false);
+	if (this == pTopMost)
+		return false;
 	bool hit = NULL != pTopMost;
-	notifyEvent(button,  x,  y, pTopMost, touchScreen);
+	notifyEvent(_eventContext, button,  x,  y, pTopMost, touchScreen);
 	return hit;
 }
 
@@ -293,14 +298,14 @@ bool SWF::notifyDuplicate(MovieClip& movie, int button, float x, float y, bool t
 	m.transform(local, world);
 	ICharacter* pTopMost = movie.getTopMost(local.x, local.y, false);
 	bool hit = NULL != pTopMost;
-	notifyEvent(button,  x,  y, pTopMost, touchScreen);
+	notifyEvent(_duplicatEventContext, button,  x,  y, pTopMost, touchScreen);
 	return hit;
 }
 
-void SWF::notifyEvent(int button, float x, float y, ICharacter *pTopMost, bool touchScreen) {
+void SWF::notifyEvent(EventContext& ctx, int button, float x, float y, ICharacter *pTopMost, bool touchScreen) {
 	//_mouseX = x;_mouseY = y;
-	const int previous = _mouseButtonStateLast;
-	_mouseButtonStateLast = button;
+	const int previous = ctx.lastButtonState;
+	ctx.lastButtonState = button;
 
 	if (0 < previous) {
 		// Mouse button was down.
@@ -336,9 +341,9 @@ void SWF::notifyEvent(int button, float x, float y, ICharacter *pTopMost, bool t
 		if (0 == button) {
 			// Mouse button is up.
 			//m_mouse_listener.notify(event_id::MOUSE_UP);
-			ICharacter *target = _pActiveEntity;
+			ICharacter *target = ctx.activeEntity;
 			if (touchScreen) {
-				_pActiveEntity = NULL;
+				ctx.activeEntity = NULL;
 				//_mouseInsideEntityLast = false;
 			}
 			if (pTopMost != target) {
@@ -348,7 +353,7 @@ void SWF::notifyEvent(int button, float x, float y, ICharacter *pTopMost, bool t
 				}
 			} else {
 				// onRelease
-				if (target && _mouseInsideEntityLast) {
+				if (target && ctx.lastInsideEntity) {
 					target->onEvent( Event::RELEASE );
 				}
 			}
@@ -358,18 +363,19 @@ void SWF::notifyEvent(int button, float x, float y, ICharacter *pTopMost, bool t
 		if (0 == button) {
 			// Mouse button is up.
 			// New active entity is whatever is below the mouse right now.
-			if (pTopMost != _pActiveEntity) {
+			ICharacter *target = ctx.activeEntity;
+			if (pTopMost != target) {
 				// onRollOut
-				if (_pActiveEntity && _mouseInsideEntityLast) {
-					_pActiveEntity->onEvent( Event::ROLL_OUT );
-					_mouseInsideEntityLast = false;
+				if (target && ctx.lastInsideEntity) {
+					target->onEvent( Event::ROLL_OUT );
+					ctx.lastInsideEntity = false;
 				}
 				// onRollOver
 				if (pTopMost) {
 					pTopMost->onEvent( Event::ROLL_OVER );
-					_mouseInsideEntityLast = true;
+					ctx.lastInsideEntity = true;
 				}
-				_pActiveEntity = pTopMost;
+				ctx.activeEntity = pTopMost;
 			}
 		} else {
 			// Mouse button is down.
@@ -392,12 +398,13 @@ void SWF::notifyEvent(int button, float x, float y, ICharacter *pTopMost, bool t
 			}
 #endif
 			if (touchScreen) {
-				_pActiveEntity = pTopMost;
-				_mouseInsideEntityLast = true;
+				ctx.activeEntity = pTopMost;
+				ctx.lastInsideEntity = true;
 			}
+			ICharacter *target = ctx.activeEntity;
 			// onPress
-			if (_pActiveEntity && _mouseInsideEntityLast) {
-				_pActiveEntity->onEvent(Event::PRESS);
+			if (target && ctx.lastInsideEntity) {
+				target->onEvent(Event::PRESS);
 			}
 		}
 	}

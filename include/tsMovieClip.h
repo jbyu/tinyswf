@@ -40,7 +40,8 @@ public:
 
 	void update(void) {
 		SWF_ASSERT (_character);
-		_character->update();
+		if (_character->visible())
+			_character->update();
 	}
 	/*
     void play(bool enable) {

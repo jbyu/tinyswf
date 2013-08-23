@@ -146,8 +146,8 @@ public:
 
 	// button: 0 for up, 1 for down
 	bool notifyMouse(int button, float x, float y, bool touchScreen = false);
+	void notifyReset(bool duplicate = false);
 	bool notifyDuplicate(MovieClip& movie,int button, float x, float y, bool touchScreen = false);
-	void notifyReset(void);
 
 	// flash information
 	float getFrameWidth() const     { return _header.getFrameWidth(); }
@@ -171,8 +171,14 @@ public:
 
 	RECT calculateRectangle(uint16_t character, const MATRIX* xf);
 
+	struct EventContext {
+		ICharacter *activeEntity;
+		int		lastButtonState;
+		bool	lastInsideEntity;
+	};
+
 private:
-	void notifyEvent(int button, float x, float y, ICharacter* target, bool touchScreen);
+	void notifyEvent(EventContext&, int button, float x, float y, ICharacter* target, bool touchScreen);
 
 	typedef std::map< uint32_t, TagFactoryFunc >    TagFactoryMap;
 	typedef std::map< uint16_t, ITag* >             CharacterDictionary;
@@ -180,9 +186,7 @@ private:
     typedef std::map< std::string, uint16_t >       SymbolDictionary;
 
 	//float	_mouseX, _mouseY;
-	int		_mouseButtonStateLast;
-	bool	_mouseInsideEntityLast;
-	ICharacter *_pActiveEntity;
+	EventContext _eventContext;
 
 	float               _elapsedAccumulator;
 	float               _elapsedAccumulatorDuplicate;

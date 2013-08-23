@@ -260,6 +260,8 @@ void MovieClip::gotoAndPlay( uint32_t frame )
 	if (frame < _frame) {
 		gotoFrame(ICharacter::kFRAME_MAXIMUM, true);
 	}
+	if (frame == _frame)
+		return;
     while (frame > _frame + 1) {
         step(1, true); // skip actions
     }
@@ -367,7 +369,7 @@ ICharacter* MovieClip::getTopMost(float x, float y, bool polygonTest) {
 	while( rit != _display_list.rend() ) {
 		MovieObject &object = rit->second;
 		ICharacter* pCharacter = object._character;
-		if (pCharacter) {
+		if (pCharacter && pCharacter->visible()) {
 			MATRIX m;
 			POINT local, world = {x,y};
 			m.setInverse( object._transform );
