@@ -312,5 +312,6 @@ void PlaceObjectTag::setup(MovieClip& movie, bool skipAction)
 		object._character = movie.getInstance(this);
 		break;
 	}
+	SWF_ASSERT(object._character);
 }
 

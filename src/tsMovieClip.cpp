@@ -78,7 +78,7 @@ bool MovieClip::createFrames( Reader& reader, SWF& swf, MovieFrames &data )
 
         // create a new frame
         if ( TAG_SHOW_FRAME == code ) {
-			SWF_TRACE("[%d]\n", data._frames.size());
+			SWF_TRACE("[%d] has %d tags\n", data._frames.size(), frame_tags->size());
 			data._frames.push_back( frame_tags );
 			frame_tags = new TagList;
 			sbCalculateRectangle = false;
@@ -257,7 +257,7 @@ void MovieClip::gotoLabel( const char* label)
 
 void MovieClip::gotoAndPlay( uint32_t frame )
 {
-	if (frame < _frame) {
+	if (frame < _frame || frame > _data._frames.size()) {
 		gotoFrame(ICharacter::kFRAME_MAXIMUM, true);
 	}
 	if (frame == _frame)
@@ -352,11 +352,9 @@ void MovieClip::draw(void)
 	}
 }
 
-void MovieClip::setupFrame(const TagList& tags, bool skipAction)
-{
-    TagList::const_iterator it = tags.begin();
-	while( it != tags.end() )
-    {
+void MovieClip::setupFrame(const TagList& tags, bool skipAction) {
+    TagList::const_reverse_iterator it = tags.rbegin();
+	while( it != tags.rend() ) {
         ITag* tag = *it;
 		tag->setup(*this, skipAction);
         ++it;
