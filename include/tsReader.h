@@ -170,15 +170,9 @@ public:
 
 	void getFilterList(Filter& dropShadow);
 
-	float getFIXED() {
-		int32_t	val = get<int32_t>();
-		return (float) val / 65536.0f;
-	}
+	float getFIXED();
 
-	float getFIXED8() {
-		int16_t	val = get<int16_t>();
-		return (float) val / 256.0f;
-	}
+	float getFIXED8();
 
 	const char *getData() const { return _data + _cur; }
 

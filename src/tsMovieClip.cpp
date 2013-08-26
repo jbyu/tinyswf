@@ -97,11 +97,10 @@ MovieClip::MovieClip( SWF* swf, MovieClip* parent,  const MovieFrames& data, con
 	,_transform(NULL)
 	,_definition(def)
 	,_play(true)
-	,_frame(0)
+	,_frame(0xffffffff)
 {
 	//SWF_TRACE("create MovieClip\n");
-	if (0 < data._frames.size())
-		gotoFrame(0, false);
+	//if (0 < data._frames.size()) gotoFrame(0, false);
 }
 
 MovieClip::~MovieClip()
@@ -142,6 +141,7 @@ ICharacter *MovieClip::createCharacter(const ITag* tag, const PlaceObjectTag* pl
 	switch ( tag->code() ) {
 	case TAG_DEFINE_SPRITE:
 		character = new MovieClip(_owner, this, ((DefineSpriteTag*)tag)->getMovieFrames(), place);
+		character->update();
 		_characters.push_back(character);
 		break;
 	case TAG_DEFINE_BUTTON2:

@@ -4,10 +4,28 @@ Copyright (c) 2013 jbyu. All rights reserved.
 
 #include "tsReader.h"
 #include "tsTag.h"
+#include <math.h>
 
 #define UNUSED(x) (void) (x)
 
 using namespace tinyswf;
+
+float Reader::getFIXED() {
+	int32_t val = get<int32_t>();
+	//EXC_ARM_DA_ALIGN on ARMv7
+	int i = val >> 16;
+	int r = val & 0x0000FFFF;
+	float v = float(r)/65536.f;
+	return i+v;
+}
+
+float Reader::getFIXED8() {
+	int16_t	val = get<int16_t>();
+	int i = val >> 8;
+	int r = val & 0x00FF;
+	float v = float(r)/256.f;
+	return i+v;
+}
 
 void Reader::getFilterList(Filter &dropShadow) {
 	// reads FILTERLIST
@@ -22,7 +40,7 @@ void Reader::getFilterList(Filter &dropShadow) {
 			dropShadow.color.g = get<uint8_t>() * SWF_INV_COLOR;
 			dropShadow.color.b = get<uint8_t>() * SWF_INV_COLOR;
 			dropShadow.color.a = get<uint8_t>() * SWF_INV_COLOR;
-
+		
 			float blur_x = getFIXED();	// Horizontal blur amount
 			float blur_y = getFIXED();	// Vertical blur amount
 
