@@ -275,17 +275,17 @@ RECT SWF::calculateRectangle(uint16_t character, const MATRIX* xf) {
 }
 
 void SWF::notifyReset(bool duplicate) {
-	EventContext &ctx = _eventContext;
 	if (duplicate) {
-		ctx = _duplicatEventContext;
+		_duplicatEventContext = kDefaultEventContext;
+ 	} else {
+		_eventContext = kDefaultEventContext;
 	}
-	ctx = kDefaultEventContext;
 }
 
 bool SWF::notifyMouse(int button, float x, float y, bool touchScreen) {
 	ICharacter *pTopMost = this->getTopMost( x, y, false);
 	if (this == pTopMost)
-		return false;
+		return true;
 	bool hit = NULL != pTopMost;
 	notifyEvent(_eventContext, button,  x,  y, pTopMost, touchScreen);
 	return hit;

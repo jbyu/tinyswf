@@ -45,6 +45,7 @@ bool MovieClip::createFrames( Reader& reader, SWF& swf, MovieFrames &data )
     TagHeader header;
 	ITag* tag = NULL;
 	TagList* frame_tags = new TagList;
+	TagList actionTags;
 	do {
 		header.read( reader );
         const uint32_t code = header.code();
@@ -71,7 +72,12 @@ bool MovieClip::createFrames( Reader& reader, SWF& swf, MovieFrames &data )
 		}
 
         if (keepTag) {
-            frame_tags->push_back( tag );
+			// collect action tags
+			if (tag->code() == TAG_DO_ACTION) {
+				actionTags.push_back(tag);
+			} else {
+				frame_tags->push_back( tag );
+			}
         } else {
             delete tag;
         }
@@ -79,6 +85,15 @@ bool MovieClip::createFrames( Reader& reader, SWF& swf, MovieFrames &data )
         // create a new frame
         if ( TAG_SHOW_FRAME == code ) {
 			SWF_TRACE("[%d] has %d tags\n", data._frames.size(), frame_tags->size());
+
+			// put action tags at the end of list in order to avoid callback error
+			TagList::iterator it = actionTags.begin();
+			while (it != actionTags.end()) {
+				frame_tags->push_back( *it );
+				++it;
+			}
+			actionTags.clear();
+
 			data._frames.push_back( frame_tags );
 			frame_tags = new TagList;
 			sbCalculateRectangle = false;
@@ -353,8 +368,8 @@ void MovieClip::draw(void)
 }
 
 void MovieClip::setupFrame(const TagList& tags, bool skipAction) {
-    TagList::const_reverse_iterator it = tags.rbegin();
-	while( it != tags.rend() ) {
+    TagList::const_iterator it = tags.begin();
+	while( it != tags.end() ) {
         ITag* tag = *it;
 		tag->setup(*this, skipAction);
         ++it;
