@@ -150,6 +150,8 @@ ICharacter* SWF::addAsset(uint16_t id, const char *name, const char* url) {
     return NULL;
 }
 
+static MATRIX soDefaultMatrix = kMatrixIdentity;
+
 MovieClip *SWF::duplicate(const char *name, bool hasMatrix) {
     MovieClip *movie = NULL;
     SymbolDictionary::const_iterator it = _library.find(name);
@@ -158,8 +160,11 @@ MovieClip *SWF::duplicate(const char *name, bool hasMatrix) {
 		SWF_ASSERT(TAG_DEFINE_SPRITE == tag->code() || TAG_DEFINE_BUTTON2 == tag->code());
         // create a new instance
 		movie = (MovieClip*)createCharacter(tag, NULL);
-		if (hasMatrix)
+		if (hasMatrix) {
 			movie->createTransform();
+		} else {
+			movie->_transform = &soDefaultMatrix;
+		}
 		_duplicates.push_back(movie);
     }
     return movie;

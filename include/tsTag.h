@@ -177,7 +177,9 @@ struct Event {
 
 // character interface for display list
 class ICharacter {
-	bool _visible;
+protected:
+	bool	_visible;
+    MATRIX	*_transform;
 
 public:
 	enum TYPE {
@@ -198,10 +200,16 @@ public:
 
 	virtual TYPE type() const = 0;
 
+	void setTransform(MATRIX& mtx) { _transform = &mtx; }
+	MATRIX* getTransform(void) { return _transform; }
+
 	bool visible(void) const { return _visible; }
 	void setVisible(bool b) { _visible = b; }
 
-	ICharacter() : _visible(true) {}
+	ICharacter()
+		:_visible(true)
+		,_transform(NULL)
+	{}
 	virtual ~ICharacter() { 
 		//SWF_TRACE("delete ICharacter[%x]\n",this);
 	}

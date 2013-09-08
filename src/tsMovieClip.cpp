@@ -109,7 +109,6 @@ MovieClip::MovieClip( SWF* swf, MovieClip* parent,  const MovieFrames& data, con
 	:_data(data)
 	,_owner(swf)
 	,_parent(parent)
-	,_transform(NULL)
 	,_definition(def)
 	,_play(true)
 	,_frame(0xffffffff)
@@ -121,8 +120,6 @@ MovieClip::MovieClip( SWF* swf, MovieClip* parent,  const MovieFrames& data, con
 MovieClip::~MovieClip()
 {
 	//SWF_TRACE("delete MovieClip[%x]\n",this);
-	//delete _transform;
-	_transform = NULL;
 
 	// clean up
 	CharacterArray::iterator it = _characters.begin();
@@ -208,22 +205,7 @@ ICharacter *MovieClip::getCharacter(const char* name) {
 				PlaceObjectTag* placeTag = (PlaceObjectTag*)tag;
 				if (placeTag->name() == name) {
 					ICharacter *ch = getInstance(placeTag);
-					switch(ch->type()) {
-					case ICharacter::TYPE_MOVIE:
-						{
-							MovieClip *mv = (MovieClip*)ch;
-							mv->_transform = &placeTag->transform();
-						}
-						break;
-					case ICharacter::TYPE_BUTTON:
-						{
-							Button *mv = (Button*)ch;
-							mv->_transform = &placeTag->transform();
-						}
-						break;
-					default:
-						break;
-					}
+					ch->setTransform( placeTag->transform() );
 					return ch;
 				}
 			}

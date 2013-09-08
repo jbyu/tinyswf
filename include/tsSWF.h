@@ -128,7 +128,7 @@ public:
 	// duplicate movieclip for other purpose outside flash
 	// will allocate memory for transform matrix
 	// user need to free the matrix by himself
-    MovieClip *duplicate(const char *name, bool allocateMatrix = true);
+    MovieClip *duplicate(const char *name, bool allocateMatrix = false);
 	// update all duplicated movieclips
     void updateDuplicate(float delta);
 	// draw all duplicated movieclips

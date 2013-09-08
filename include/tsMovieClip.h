@@ -70,8 +70,9 @@ protected:
     void clearDisplayList(void);
 
     void createTransform(void) {
-        _transform = new MATRIX;
-        *_transform = kMatrixIdentity;
+        MATRIX *mtx = new MATRIX;
+        *mtx = kMatrixIdentity;
+		_transform = mtx;
     }
 
 	void gotoFrame( uint32_t frame, bool skipAction );
@@ -91,8 +92,6 @@ public:
     virtual ~MovieClip();
 
 	virtual ICharacter* getCharacter(const char *name);
-
-    MATRIX* getTransform(void) { return _transform; }
 
     void gotoLabel( const char* label );
     void gotoAndPlay( uint32_t frame );
@@ -139,7 +138,6 @@ protected:
 	const MovieFrames   &_data;
     SWF                 *_owner;
 	MovieClip			*_parent;
-    MATRIX              *_transform;
 	const PlaceObjectTag *_definition;
 
     bool        _play;
