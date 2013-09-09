@@ -22,6 +22,7 @@ bool DefineFontTag::read( Reader& reader, SWF& swf, MovieFrames& ) {
 	_character_id = reader.get<uint16_t>();
 	int flag = reader.get<uint8_t>();
 	int langcode = reader.get<uint8_t>();
+	SWF_UNUSED_PARAM(langcode);
 
 	int name_length = reader.get<uint8_t>();
 	_font_name.assign(reader.getData(), name_length);
@@ -66,9 +67,15 @@ bool DefineFontTag::read( Reader& reader, SWF& swf, MovieFrames& ) {
 		float ascent = reader.get<uint16_t>() * SWF_INV_TWIPS;
 		float descent = reader.get<uint16_t>() * SWF_INV_TWIPS;
 		float leading = reader.get<int16_t>() * SWF_INV_TWIPS;
+		
+		SWF_UNUSED_PARAM(ascent);
+		SWF_UNUSED_PARAM(descent);
+		SWF_UNUSED_PARAM(leading);
+
 		// advance table
 		for (int i = 0; i < glyph_count; ++i) {
 			float advance = reader.get<int16_t>() * SWF_INV_TWIPS;
+			SWF_UNUSED_PARAM(advance);
 		}
 		// bound table
 		RECT bound;
@@ -83,12 +90,18 @@ bool DefineFontTag::read( Reader& reader, SWF& swf, MovieFrames& ) {
 				uint16_t code1 = reader.get<uint16_t>();
 				uint16_t code2 = reader.get<uint16_t>();
 				int16_t adjust = reader.get<int16_t>();
+				SWF_UNUSED_PARAM(code1);
+				SWF_UNUSED_PARAM(code2);
+				SWF_UNUSED_PARAM(adjust);
 			}
 		} else {
 			for (int i = 0; i < kerning_count; ++i) {
 				uint16_t code1 = reader.get<uint8_t>();
 				uint16_t code2 = reader.get<uint8_t>();
 				int16_t adjust = reader.get<int16_t>();
+				SWF_UNUSED_PARAM(code1);
+				SWF_UNUSED_PARAM(code2);
+				SWF_UNUSED_PARAM(adjust);
 			}
 		}
 	}

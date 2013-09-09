@@ -12,8 +12,11 @@ using namespace tinyswf;
 bool ClipAction::read( Reader& reader, SWF& swf, MovieFrames& frames, uint32_t flag ) {
 	_conditions = flag;
 	uint32_t size = reader.get<uint32_t>();
-	if (flag & EVENT_KEY_PRESS)
+	SWF_UNUSED_PARAM(size);
+	if (flag & EVENT_KEY_PRESS) {
 		uint8_t keycode = reader.get<uint8_t>();
+		SWF_UNUSED_PARAM(keycode);
+	}
 	// Read actions.
 	return _actions.read(reader, swf, frames);
 }
@@ -115,6 +118,8 @@ bool PlaceObjectTag::read( Reader& reader, SWF& swf, MovieFrames& data ) {
 		// TOOD: support clip actions 
 		//assert( 0 );
 		uint16_t reserved = reader.get<uint16_t>();
+		SWF_UNUSED_PARAM(reserved);
+
 		_all_event_flags = reader.get<uint32_t>();
 		while (1) {
 			uint32_t event_flags = reader.get<uint32_t>();
@@ -159,6 +164,8 @@ bool PlaceObjectTag::readPlaceObject3( Reader& reader, SWF& swf, MovieFrames& da
 	uint32_t _has_move = reader.getbits( 1 );
 
 	uint32_t reserved = reader.getbits( 1 );
+	SWF_UNUSED_PARAM(reserved);
+	
 	uint32_t opaqueBG = reader.getbits( 1 );
 	uint32_t has_visible = reader.getbits( 1 );
 	uint32_t has_image = reader.getbits( 1 );
@@ -208,12 +215,15 @@ bool PlaceObjectTag::readPlaceObject3( Reader& reader, SWF& swf, MovieFrames& da
 	}
 	if (has_blend_mode) {
 		uint8_t blend = reader.get<uint8_t>();
+		SWF_UNUSED_PARAM(blend);
 	}
 	if (has_cache_as_bitmap) {
 		uint8_t blend = reader.get<uint8_t>();
+		SWF_UNUSED_PARAM(blend);
 	}
 	if (has_visible) {
 		uint8_t blend = reader.get<uint8_t>();
+		SWF_UNUSED_PARAM(blend);
 	}
 	if (opaqueBG) {
 		RGBA _color;
@@ -224,6 +234,8 @@ bool PlaceObjectTag::readPlaceObject3( Reader& reader, SWF& swf, MovieFrames& da
 		// TOOD: support clip actions 
 		//assert( 0 );
 		uint16_t reserved = reader.get<uint16_t>();
+		SWF_UNUSED_PARAM(reserved);
+
 		_all_event_flags = reader.get<uint32_t>();
 		while (1) {
 			uint32_t event_flags = reader.get<uint32_t>();

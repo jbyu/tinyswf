@@ -64,6 +64,9 @@ public:
         _loop               = reader.getbits(1)!=0;
         uint32_t hasOutPoint= reader.getbits(1);
         uint32_t hasInPoint = reader.getbits(1);
+		SWF_UNUSED_PARAM(hasEnvelope);
+		SWF_UNUSED_PARAM(hasOutPoint);
+		SWF_UNUSED_PARAM(hasInPoint);
 
         reader.skip( length()-3 );
 

@@ -111,9 +111,20 @@ bool LineStyle::read( Reader* reader, bool lineStyle2, bool support_32bit_color 
 	uint32_t reserved	= reader->getbits(5);
 	bool noClose		= reader->getbit() > 0;
 	uint32_t endCapStyle		= reader->getbits(2);
-
+	
+	SWF_UNUSED_PARAM(endCapStyle);
+	SWF_UNUSED_PARAM(noClose);
+	SWF_UNUSED_PARAM(reserved);
+	SWF_UNUSED_PARAM(pixelHint);
+	SWF_UNUSED_PARAM(noVScale);
+	SWF_UNUSED_PARAM(noHScale);
+	SWF_UNUSED_PARAM(hasFill);
+	SWF_UNUSED_PARAM(joinStyle);
+	SWF_UNUSED_PARAM(startCapStyle);
+	
 	if (2 == joinStyle) {
 		uint16_t flag = reader->get<uint16_t>();
+		SWF_UNUSED_PARAM(flag);
 	}
 
 	if (hasFill) {
@@ -154,8 +165,10 @@ bool FillStyle::read( Reader* reader, bool support_32bit_color ) {
 		reader->getMatrix( _gradient_matrix );
 		reader->align();
 		_gradient.read( reader, support_32bit_color );
-		if (TYPE_FOCAL_GRADIENT==_type)
-			float focalPoint = reader->getFIXED8();
+			if (TYPE_FOCAL_GRADIENT==_type) {
+				float focalPoint = reader->getFIXED8();
+				SWF_UNUSED_PARAM(focalPoint);
+			}
 		}
         break;
 
@@ -466,6 +479,7 @@ bool DefineShapeTag::read( Reader& reader, SWF& swf, MovieFrames&  )
 		reader.getRectangle( edgeBound );
 		reader.align();
 		uint8_t flag = reader.get<uint8_t>();
+		SWF_UNUSED_PARAM(flag);
 	}
 	_shape_with_style.read( reader, swf, this );
 
