@@ -205,7 +205,7 @@ ICharacter *MovieClip::getCharacter(const char* name) {
 				PlaceObjectTag* placeTag = (PlaceObjectTag*)tag;
 				if (placeTag->name() == name) {
 					ICharacter *ch = getInstance(placeTag);
-					ch->setTransform( placeTag->transform() );
+					//ch->setTransform( placeTag->transform() );
 					return ch;
 				}
 			}

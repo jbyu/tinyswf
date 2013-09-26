@@ -307,23 +307,28 @@ void PlaceObjectTag::setup(MovieClip& movie, bool skipAction)
 		// A new character (with ID of CharacterId) is placed on the display list at the specified
 		// depth. Other fields set the attributes of this new character.
 		// copy over the previous matrix if the new character doesn't have one
-		this->copyAttributes(object);
+		//this->copyAttributes(object);
 		object._character = movie.getInstance(this);
+		object._character->setTransform(object._transform);
+		//object._character->setCXform(object._cxform);
 		break;
 
 	case MOVE:
 		// The character at the specified depth is modified. Other fields modify the attributes of this
 		// character. Because any given depth can have only one character, no CharacterId is required.
-		this->copyAttributes(object);
+		//this->copyAttributes(object);
 		break;
 
 	case REPLACE:
 		// The character at the specified Depth is removed, and a new character (with ID of CharacterId) 
 		// is placed at that depth. Other fields set the attributes of this new character.
-		this->copyAttributes(object);
+		//this->copyAttributes(object);
 		object._character = movie.getInstance(this);
+		object._character->setTransform(object._transform);
+		//object._character->setCXform(object._cxform);
 		break;
 	}
+	this->copyAttributes(object);
 	SWF_ASSERT(object._character);
 }
 
