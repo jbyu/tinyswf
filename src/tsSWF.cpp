@@ -289,8 +289,7 @@ void SWF::notifyReset(bool duplicate) {
 
 bool SWF::notifyMouse(int button, float x, float y, bool touchScreen) {
 	ICharacter *pTopMost = this->getTopMost( x, y, false);
-	if (this == pTopMost)
-		return true;
+	//if (this == pTopMost) return true;
 	bool hit = NULL != pTopMost;
 	notifyEvent(_eventContext, button,  x,  y, pTopMost, touchScreen);
 	return hit;
