@@ -254,7 +254,12 @@ void MovieClip::gotoLabel( const char* label)
 
 void MovieClip::gotoAndPlay( uint32_t frame )
 {
-	if (frame < _frame || frame > _data._frames.size()) {
+	if (getFrameCount() <= frame) {
+		// goto end of frame
+		frame = getFrameCount() - 1;
+	}
+	if (frame < _frame) {
+		// reset to frame 0
 		gotoFrame(ICharacter::kFRAME_MAXIMUM, true);
 	}
 	if (frame == _frame)
