@@ -178,8 +178,9 @@ struct Event {
 // character interface for display list
 class ICharacter {
 protected:
-	bool	_visible;
-    MATRIX	*_transform;
+	bool   _visible;
+    MATRIX *_transform;
+    CXFORM *_cxform;		
 
 public:
 	enum TYPE {
@@ -202,6 +203,9 @@ public:
 
 	void setTransform(MATRIX& mtx) { _transform = &mtx; }
 	MATRIX* getTransform(void) { return _transform; }
+
+	void setCXForm(CXFORM& mtx) { _cxform = &mtx; }
+	CXFORM* getCXForm(void) { return _cxform; }
 
 	bool visible(void) const { return _visible; }
 	void setVisible(bool b) { _visible = b; }

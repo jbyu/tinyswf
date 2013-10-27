@@ -310,7 +310,7 @@ void PlaceObjectTag::setup(MovieClip& movie, bool skipAction)
 		//this->copyAttributes(object);
 		object._character = movie.getInstance(this);
 		object._character->setTransform(object._transform);
-		//object._character->setCXform(object._cxform);
+		object._character->setCXForm(object._cxform);
 		break;
 
 	case MOVE:
@@ -325,7 +325,7 @@ void PlaceObjectTag::setup(MovieClip& movie, bool skipAction)
 		//this->copyAttributes(object);
 		object._character = movie.getInstance(this);
 		object._character->setTransform(object._transform);
-		//object._character->setCXform(object._cxform);
+		object._character->setCXForm(object._cxform);
 		break;
 	}
 	this->copyAttributes(object);
