@@ -185,6 +185,7 @@ void traverse(xml_node<> *node, std::string& output) {
 	case node_data:
 		SWF_TRACE("value:%s\n", node->value());
 		output += node->value();
+		output += "\n";
 	default:
 		break;
 	}

@@ -32,7 +32,7 @@ static GLuint suDefaultTexture = 0;
 static int siLastButtonStatus = 0;
 
 
-#define USE_FMOD
+//#define USE_FMOD
 #ifdef  USE_FMOD
 // use FMOD studio low level api to perform sound playback
 #include "fmod.hpp"
