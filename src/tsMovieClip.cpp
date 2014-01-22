@@ -134,7 +134,7 @@ class nullCharacter : public ICharacter {
 	RECT _bound;
 public:
 	virtual const RECT& getRectangle(void) const { return _bound; }
-	virtual void draw(void) {}
+	virtual void draw(SWF* owner) {}
 	virtual void update(void) {}
 	virtual ICharacter* getTopMost(float localX, float localY, bool polygonTest) {
 		SWF_UNUSED_PARAM(localX);
@@ -283,18 +283,18 @@ void MovieClip::update(void)
 	}
 }
 
-void MovieObject::draw() {
+void MovieObject::draw(SWF *owner) {
 	SWF_ASSERT (_character);
 	if (! _character->visible())
 		return;
 
     //concatenate matrix
-	MATRIX3f& currMTX = SWF::getCurrentMatrix();
+	MATRIX3f& currMTX = owner->getCurrentMatrix();
     MATRIX3f origMTX = currMTX, mtx;
     MATRIX3fSet(mtx, _transform); // convert matrix format
     MATRIX3fMultiply(currMTX, mtx, currMTX);
 
-	CXFORM& currCXF = SWF::getCurrentCXForm();
+	CXFORM& currCXF = owner->getCurrentCXForm();
     CXFORM origCXF = currCXF;
     CXFORMMultiply(currCXF, _cxform, currCXF);
 
@@ -307,19 +307,20 @@ void MovieObject::draw() {
     // 2nd pass TexEnv(GL_MODULATE) with glBlendFunc(GL_SRC_ALPHA, GL_ONE)
     //      dest + Cp * Ct
     // let Mult as Cc and Add as Cp, then we get the result
-	_character->draw();
+	_character->draw(owner);
 
 	// restore old matrix
     currMTX = origMTX;
     currCXF = origCXF;
 }
 	
-void MovieClip::draw(void)
+void MovieClip::draw(SWF *owner)
 {
     MovieObject *mask = NULL;
 	uint16_t highest_masked_layer = 0;
 	// draw the display list
 	DisplayList::iterator iter = _display_list.begin();
+
 	while ( _display_list.end() != iter )
 	{
 		MovieObject &object = iter->second;
@@ -328,19 +329,19 @@ void MovieClip::draw(void)
 		if (mask && depth > highest_masked_layer) {
             // restore stencil
             Renderer::getInstance()->maskOffBegin();
-            mask->draw(); 
+			mask->draw( owner ); 
             Renderer::getInstance()->maskOffEnd();
     		mask = NULL;
 		}
 		if (0 < clip) {
             // draw mask
     		Renderer::getInstance()->maskBegin();
-            object.draw(); 
+            object.draw( owner ); 
     		Renderer::getInstance()->maskEnd();
 	    	highest_masked_layer = clip;
 			mask = &object;
 		} else {
-            object.draw(); 
+            object.draw( owner ); 
         }
 		++iter;
 	}
@@ -348,7 +349,7 @@ void MovieClip::draw(void)
 		// If a mask masks the scene all the way up to the highest layer, 
         // it will not be disabled at the end of drawing the display list, so disable it manually.
         Renderer::getInstance()->maskOffBegin();
-        mask->draw(); 
+        mask->draw( owner ); 
         Renderer::getInstance()->maskOffEnd();
     	mask = NULL;
 	}

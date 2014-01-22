@@ -194,7 +194,7 @@ public:
 	const static uint32_t kFRAME_MAXIMUM = 0xffffffff;
 
     virtual const RECT& getRectangle(void) const = 0;
-	virtual void draw(void) = 0;
+	virtual void draw( SWF* owner ) = 0;
 	virtual void update(void) = 0;
 	virtual ICharacter* getTopMost(float localX, float localY, bool polygonTest) = 0;
 	virtual void onEvent(Event::Code) = 0;

@@ -275,9 +275,9 @@ Text::Text(const DefineEditTextTag &tag, const PlaceObjectTag*def)
 	}
 }
 
-void Text::draw(void) {
+void Text::draw(SWF* owner) {
 	SWF_ASSERT( FontHandler::getInstance() );
-	FontHandler::getInstance()->drawText(_vertices, _glyphs, SWF::getCurrentCXForm(), _style);
+	FontHandler::getInstance()->drawText(_vertices, _glyphs, owner->getCurrentCXForm(), _style);
 }
 
 bool Text::setString(const char* str) {

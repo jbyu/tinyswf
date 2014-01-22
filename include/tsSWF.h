@@ -136,9 +136,9 @@ public:
 
 	static void drawMovieClip(MovieClip *movie, float alpha=1.f);
 
-	static MATRIX3f& getCurrentMatrix(void) { return _sCurrentMatrix; }
+	MATRIX3f& getCurrentMatrix(void) { return _currentMatrix; }
 
-	static CXFORM& getCurrentCXForm(void) { return _sCurrentCXForm; }
+	CXFORM& getCurrentCXForm(void) { return _currentCXForm; }
 
 	// animate flash
     void update(float delta);
@@ -202,10 +202,11 @@ private:
     GetURLCallback      _getURL;
 	void*				_urlParam;
 
+	MATRIX3f	_currentMatrix;
+	CXFORM		_currentCXForm;
+
 	static TagFactoryMap            _tag_factories;
     static LoadAssetCallback        _asset_loader;
-	static MATRIX3f					_sCurrentMatrix;
-	static CXFORM					_sCurrentCXForm;
 };
 
 //-----------------------------------------------------------------------------

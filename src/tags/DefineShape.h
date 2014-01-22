@@ -124,7 +124,7 @@ public:
 
 	bool read( Reader& reader, SWF&, DefineShapeTag* define_shape_tag );
 	
-	void draw();
+	void draw(SWF *owner);
 
 	void addMesh(size_t fill_idx) {
 		SWF_ASSERT(0 <= fill_idx && _fill_styles.size() > fill_idx);
@@ -204,7 +204,7 @@ public:
 		
 	// override ICharacter function
     virtual const RECT& getRectangle(void) const { return _bound; }
-	virtual void draw(void);
+	virtual void draw(SWF *owner);
 	virtual void update(void) {}
 	virtual ICharacter* getTopMost(float localX, float localY, bool polygonTest);
 	virtual void onEvent(Event::Code) {}

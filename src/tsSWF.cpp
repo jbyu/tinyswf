@@ -29,8 +29,8 @@ FontHandler *FontHandler::spHandler = NULL;
 SWF::LoadAssetCallback SWF::_asset_loader = NULL;
 SWF::TagFactoryMap SWF::_tag_factories;
 
-MATRIX3f SWF::_sCurrentMatrix = kMatrix3fIdentity;
-CXFORM SWF::_sCurrentCXForm = kCXFormIdentity;
+//MATRIX3f SWF::_sCurrentMatrix = kMatrix3fIdentity;
+//CXFORM SWF::_sCurrentCXForm = kCXFormIdentity;
 
 const SWF::EventContext kDefaultEventContext = {0,0,false};
 static SWF::EventContext _duplicatEventContext = kDefaultEventContext;
@@ -41,6 +41,8 @@ SWF::SWF()
     ,_elapsedAccumulator(0.0f)
     ,_elapsedAccumulatorDuplicate(0.0f)
     ,_getURL(0)
+	,_currentMatrix(kMatrix3fIdentity)
+	,_currentCXForm(kCXFormIdentity)
 {
   //_owner = this;
 	_eventContext = kDefaultEventContext;
@@ -192,13 +194,13 @@ void SWF::drawDuplicate(void) {
 		MovieClip *movie = (MovieClip*)(*it);
         MATRIX *xform = movie->getTransform();
         SWF_ASSERT(xform);
-		MATRIX3f origMTX = _sCurrentMatrix, mtx;
+		MATRIX3f origMTX = getCurrentMatrix(), mtx;
         MATRIX3fSet(mtx, *xform); // convert matrix format
-        MATRIX3fMultiply(_sCurrentMatrix, mtx, _sCurrentMatrix);
-        movie->draw();
+        MATRIX3fMultiply(getCurrentMatrix(), mtx, getCurrentMatrix());
+        movie->draw( this );
         ++it;
     	// restore old matrix
-        _sCurrentMatrix = origMTX;
+        getCurrentMatrix() = origMTX;
     }
     Renderer::getInstance()->drawEnd();
 }
@@ -207,22 +209,22 @@ void SWF::drawMovieClip(MovieClip *movie, float alpha)
 {
 	if (movie == NULL)
 		return;
-
+	SWF *owner = movie->getSWF();
     MATRIX *xform = movie->getTransform();
     SWF_ASSERT(xform);
-    MATRIX3f origMTX = _sCurrentMatrix, mtx;
+    MATRIX3f origMTX = owner->getCurrentMatrix(), mtx;
     MATRIX3fSet(mtx, *xform); // convert matrix format
-    MATRIX3fMultiply(_sCurrentMatrix, mtx, _sCurrentMatrix);
-    float origAlpha = _sCurrentCXForm.mult.a;
-    _sCurrentCXForm.mult.a = alpha;
+    MATRIX3fMultiply(owner->getCurrentMatrix(), mtx, owner->getCurrentMatrix());
+	float origAlpha = owner->getCurrentCXForm().mult.a;
+    owner->getCurrentCXForm().mult.a = alpha;
 
 	Renderer::getInstance()->drawBegin();
-    movie->draw();
+    movie->draw(owner);
     Renderer::getInstance()->drawEnd();
 
     // restore old matrix
-    _sCurrentMatrix = origMTX;
-    _sCurrentCXForm.mult.a = origAlpha;
+    owner->getCurrentMatrix() = origMTX;
+    owner->getCurrentCXForm().mult.a = origAlpha;
 }
 
 void SWF::update( float delta )
@@ -238,7 +240,7 @@ void SWF::update( float delta )
     
 void SWF::draw(void) {
     Renderer::getInstance()->drawBegin();
-	MovieClip::draw();
+	MovieClip::draw(this);
     Renderer::getInstance()->drawEnd();
 }
 

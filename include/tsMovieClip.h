@@ -36,7 +36,7 @@ public:
 	{
 	}
 
-	void draw(void);
+	void draw(SWF *owner);
 
 	void update(void) {
 		SWF_ASSERT (_character);
@@ -98,7 +98,7 @@ public:
 
 	// override ICharacter function
     virtual const RECT& getRectangle(void) const { return _data._rectangle; }
-	virtual void draw(void);
+	virtual void draw(SWF* owner);
 	virtual void update(void);
 	virtual ICharacter* getTopMost(float localX, float localY, bool polygonTest);
 	virtual void onEvent(Event::Code);
@@ -201,7 +201,7 @@ public:
 
 	// override ICharacter function
     virtual const RECT& getRectangle(void) const { return _bound; }
-	virtual void draw(void);
+	virtual void draw(SWF* owner);
 	virtual void update(void) {}
 	virtual ICharacter* getTopMost(float localX, float localY, bool polygonTest) { 
 		SWF_UNUSED_PARAM(localX);
