@@ -20,6 +20,8 @@ class CCFlash : public cocos2d::LayerRGBA {
 	tinyswf::SWF *_swf;
 	std::string _directory;
 
+	void updateColor();
+
 public:
 	CCFlash(bool useAtlas)
 		:_useTextureAtlas(useAtlas)
@@ -35,10 +37,10 @@ public:
 
 	tinyswf::SWF* getSWF(void) { return _swf; }
 
-    virtual bool ccTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event) override;
-    virtual void ccTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event) override;
-    virtual void ccTouchCancelled(cocos2d::Touch *touch, cocos2d::Event* event) override;
-    virtual void ccTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event) override;
+    virtual bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event) override;
+    virtual void onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event) override;
+    virtual void onTouchCancelled(cocos2d::Touch *touch, cocos2d::Event* event) override;
+    virtual void onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event) override;
 
     virtual void setColor(const cocos2d::Color3B &color) override;
     virtual void setOpacity(GLubyte opacity) override;

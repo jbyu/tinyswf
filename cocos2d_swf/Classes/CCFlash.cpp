@@ -52,7 +52,7 @@ CCFlashRenderer::CCFlashRenderer()
 	// flash texture shader
     _textureShader = new GLProgram();
 	_textureShader->initWithVertexShaderByteArray(textureShader_vert, textureShader_frag);
-	_textureShader->addAttribute(kAttributeNamePosition, kVertexAttrib_Position);
+	_textureShader->addAttribute(GLProgram::ATTRIBUTE_NAME_POSITION, GLProgram::VERTEX_ATTRIB_POSITION);
     _textureShader->link();
     _textureShader->updateUniforms();
 	_addColorLocation = glGetUniformLocation( _textureShader->getProgram(), "u_AddColor");
@@ -61,7 +61,7 @@ CCFlashRenderer::CCFlashRenderer()
     CHECK_GL_ERROR_DEBUG();
 
 	// default color only shader
-	_defaultShader = ShaderCache::getInstance()->programForKey(kShader_Position_uColor);
+	_defaultShader = ShaderCache::getInstance()->getProgram(GLProgram::SHADER_NAME_POSITION_U_COLOR);
 	_defaultShader->retain();
 	_defaultColorLocation = glGetUniformLocation( _defaultShader->getProgram(), "u_color");
     CHECK_GL_ERROR_DEBUG();
@@ -145,11 +145,11 @@ void CCFlashRenderer::drawLineStrip(const tinyswf::VertexArray& vertices, const 
 	color += cxform.add;
 	glLineWidth(style.getWidth());
 
-	ccGLEnableVertexAttribs( kVertexAttribFlag_Position );
+	GL::enableVertexAttribs(GL::VERTEX_ATTRIB_FLAG_POSITION);
     _defaultShader->use();
 	_defaultShader->setUniformsForBuiltins();
 	_defaultShader->setUniformLocationWith4fv(_defaultColorLocation, (GLfloat*) &color.r, 1);
-	glVertexAttribPointer(kVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, 0, &vertices.front().x);
+	glVertexAttribPointer(GLProgram::VERTEX_ATTRIB_POSITION, 2, GL_FLOAT, GL_FALSE, 0, &vertices.front().x);
 	glDrawArrays(GL_LINE_STRIP, 0, vertices.size());
     CC_INCREMENT_GL_DRAWS(1);
 }
@@ -158,7 +158,7 @@ void CCFlashRenderer::drawTriangles(const tinyswf::VertexArray& vertices, const 
 #define PRIMITIVE_MODE	GL_TRIANGLES
 //#define PRIMITIVE_MODE	GL_POINTS
 
-	ccGLEnableVertexAttribs( kVertexAttribFlag_Position );
+	GL::enableVertexAttribs(GL::VERTEX_ATTRIB_FLAG_POSITION);
 	if (0 == asset.handle) {
 		tinyswf::COLOR4f color = cxform.mult * style.getColor();
 		color += cxform.add;
@@ -167,7 +167,7 @@ void CCFlashRenderer::drawTriangles(const tinyswf::VertexArray& vertices, const 
 		_defaultShader->setUniformsForBuiltins();
 		_defaultShader->setUniformLocationWith4fv(_defaultColorLocation, (GLfloat*) &color.r, 1);
 
-		glVertexAttribPointer(kVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, 0, &vertices.front().x);
+		glVertexAttribPointer(GLProgram::VERTEX_ATTRIB_POSITION, 2, GL_FLOAT, GL_FALSE, 0, &vertices.front().x);
 		glDrawArrays(PRIMITIVE_MODE, 0, vertices.size());
 	    CC_INCREMENT_GL_DRAWS(1);
 		return;
@@ -183,7 +183,7 @@ void CCFlashRenderer::drawTriangles(const tinyswf::VertexArray& vertices, const 
 	_textureShader->setUniformLocationWith4fv(_addColorLocation, (GLfloat*) &cxform.add.r, 1);
 
 	Texture2D *texture = (Texture2D *)asset.handle;
-	ccGLBindTexture2D( texture->getName() );
+	GL::bindTexture2D( texture->getName() );
 	if (style.type() & 0x1) {
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
@@ -192,7 +192,7 @@ void CCFlashRenderer::drawTriangles(const tinyswf::VertexArray& vertices, const 
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
 	}
 
-	glVertexAttribPointer(kVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, 0, &vertices.front().x);
+	glVertexAttribPointer(GLProgram::VERTEX_ATTRIB_POSITION, 2, GL_FLOAT, GL_FALSE, 0, &vertices.front().x);
 	glDrawArrays(PRIMITIVE_MODE, 0, vertices.size());
     CC_INCREMENT_GL_DRAWS(1);
 }
@@ -231,7 +231,7 @@ void CCFlashRenderer::drawBegin(void) {
 	kmGLPushMatrix();
 	kmGLGetMatrix(KM_GL_MODELVIEW, &_matrixMV);
 	
-	ccGLBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	GL::blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void CCFlashRenderer::drawEnd(void) {
@@ -378,7 +378,7 @@ bool CCFlash::initWithFile(const char* filename, tinyswf::SWF::GetURLCallback fs
 	_swf->setGetURL( fscommand );
 	spCurrentSWF = NULL;
 
-	this->setTouchMode(kTouchesOneByOne);
+	this->setTouchMode(Touch::DispatchMode::ONE_BY_ONE);
 	this->setTouchEnabled(true);
 
 #if 0
@@ -424,30 +424,43 @@ void CCFlash::setColor(const Color3B &color)
 void CCFlash::setOpacity(GLubyte opacity)
 {
     LayerRGBA::setOpacity(opacity);
-    //updateColor();
+    updateColor();
 }
 
-bool CCFlash::ccTouchBegan(Touch* touch, cocos2d::Event* event)
+void CCFlash::updateColor() {
+	 //const Color3B& color = getColor();
+	 GLubyte alpha = getOpacity();
+	 _swf->getCurrentCXForm().mult.a = alpha * SWF_INV_COLOR;
+}
+
+bool CCFlash::onTouchBegan(Touch* touch, cocos2d::Event* event)
 {
+	if (! this->isTouchEnabled())
+		return false;
+	
     CC_UNUSED_PARAM(event);
 	//Point pt = touch->getLocationInView();
 	Point pt = this->convertTouchToNodeSpace(touch);
-	return _swf->notifyMouse(1, pt.x, CCFlashRenderer::kDesignScreenHeight - pt.y, true); 
+	bool ret = _swf->notifyMouse(1, pt.x, CCFlashRenderer::kDesignScreenHeight - pt.y, true); 
+	if (! ret) {
+		_swf->notifyReset();
+	}
+	return ret;
 }
 
-void CCFlash::ccTouchEnded(Touch *touch, cocos2d::Event* event)
+void CCFlash::onTouchEnded(Touch *touch, cocos2d::Event* event)
 {
     CC_UNUSED_PARAM(event);
 	Point pt = this->convertTouchToNodeSpace(touch);
-	_swf->notifyMouse(0, pt.x, CCFlashRenderer::kDesignScreenHeight - pt.y, true); 
+	(void)_swf->notifyMouse(0, pt.x, CCFlashRenderer::kDesignScreenHeight - pt.y, true); 
 }
 
-void CCFlash::ccTouchCancelled(Touch *touch, cocos2d::Event* event)
+void CCFlash::onTouchCancelled(Touch *touch, cocos2d::Event* event)
 {
-	ccTouchEnded(touch, event);
+	onTouchEnded(touch, event);
 }
 
-void CCFlash::ccTouchMoved(Touch* touch, cocos2d::Event* event)
+void CCFlash::onTouchMoved(Touch* touch, cocos2d::Event* event)
 {
     CC_UNUSED_PARAM(event);
 	Point pt = this->convertTouchToNodeSpace(touch);

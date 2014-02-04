@@ -7,7 +7,7 @@ Copyright (c) 2013 jbyu. All rights reserved.
 #include "tinyswf.h"
 #include "lru_cache.h"
 
-const int kGLYPH_WIDTH  = 32;
+const int kGLYPH_WIDTH  = 36;
 
 namespace cocos2d {
 	class Texture2D;
@@ -32,6 +32,7 @@ class OSFont {
 	GlyphCache *_cache;
 	cocos2d::Texture2D *_bitmap;
 	Handle _font;
+	float _size;
 
 public:
 	OSFont(const char *font_name, float fontsize, int style);
@@ -39,6 +40,7 @@ public:
 
 	GlyphInfo* getGlyph(wchar_t code);
 	float getLineHeight(void) { return getLineHeight(_font); }
+	float getSize(void) const { return _size;}
 
 protected:
 	// platform-dependent
@@ -58,10 +60,18 @@ class CCFlashFontHandler : public tinyswf::FontHandler {
 
 	CacheData _font_cache;
 	OSFont* _selectedFont;
+	float _scale;
+	float _areaHeight;
 
 	cocos2d::GLProgram *_fontShader;
 	int _uvScaleLocation;
 	int _colorLocation;
+
+	cocos2d::GLProgram *_fontShader_Shadow;
+	int _uvScale_Shadow;
+	int _uvOffset_Shadow;
+	int _fonstColor_Shadow;
+	int _shadowColor_Shadow;
 
 	OSFont* selectFont(const char *font_name, float fontsize, int style);
 
@@ -69,6 +79,8 @@ public:
 	CCFlashFontHandler();
 
 	virtual ~CCFlashFontHandler();
+
+	float getAreaHeight(void) { return _areaHeight; }
 
 	void drawText(const tinyswf::VertexArray& vertices, uint32_t glyphs, const tinyswf::CXFORM& cxform, const tinyswf::TextStyle& style);
 

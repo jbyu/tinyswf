@@ -4,19 +4,22 @@
 using namespace cocos2d;
 using namespace tinyswf;
 
-const int kTEXTURE_SIZE = 512;
+const int kTEXTURE_SIZE = 2048;
 const int kNUMBER_GLYPH_PER_ROW	= kTEXTURE_SIZE / kGLYPH_WIDTH; 
 // number of glyph per row in the texture
 
 OSFont::OSFont(const char *font_name, float fontsize, int style) {
 	_font = create(font_name, fontsize, style);
+	_size = fontsize;
 	SWF_ASSERT(_font);
 	_cache = new GlyphCache(kNUMBER_GLYPH_PER_ROW * kNUMBER_GLYPH_PER_ROW);
 	_bitmap = new Texture2D;
 	const float tex_width = kTEXTURE_SIZE;
-	_bitmap->initWithData(0, kCCTexture2DPixelFormat_A8, kTEXTURE_SIZE, kTEXTURE_SIZE, Size(tex_width,tex_width));
-    //glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-    //glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+	_bitmap->initWithData(0, 0, Texture2D::PixelFormat::A8, kTEXTURE_SIZE, kTEXTURE_SIZE, Size(tex_width,tex_width));
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
 }
 
 OSFont::~OSFont() {
@@ -55,15 +58,16 @@ GlyphInfo* OSFont::getGlyph(wchar_t code) {
 	int nOffsetX = nIndex - (nOffsetY * kNUMBER_GLYPH_PER_ROW);	// calculate x index
 	nOffsetY *= kGLYPH_WIDTH;      // translate to pixels offset
 	nOffsetX *= kGLYPH_WIDTH;      // translate to pixels offset
-	ccGLBindTexture2D( _bitmap->getName() );
-  	glTexSubImage2D(GL_TEXTURE_2D, 0, nOffsetX, nOffsetY, kGLYPH_WIDTH, kGLYPH_WIDTH, GL_ALPHA, GL_UNSIGNED_BYTE, getGlyphBitmap());
+	GL::bindTexture2D( _bitmap->getName() );
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, nOffsetX, nOffsetY, kGLYPH_WIDTH, kGLYPH_WIDTH, GL_ALPHA, GL_UNSIGNED_BYTE, getGlyphBitmap());
 
 	return &feed;
 }
 
 //-----------------------------------------------------------------------------
 
-const char fontShader_vert[] = "	\n\
+const char fontShader_vert[] =		"\n\
 attribute vec4 a_position;			\n\
 attribute vec2 a_texCoord;			\n\
 uniform float u_uvScale;			\n\
@@ -80,7 +84,7 @@ void main()							\n\
 	v_texCoord = a_texCoord * u_uvScale;		\n\
 }									\n\
 ";
-const char fontShader_frag[] =		"   \n\
+const char fontShader_frag[] =			"\n\
 #ifdef GL_ES							\n\
 precision lowp float;					\n\
 #endif									\n\
@@ -96,17 +100,49 @@ void main()								\n\
 }										\n\
 ";
 
+const char fontShader_fragShadow[] =	"\n\
+#ifdef GL_ES							\n\
+precision mediump float;					\n\
+#endif									\n\
+										\n\
+varying vec2 v_texCoord;				\n\
+uniform sampler2D CC_Texture0;			\n\
+uniform	vec4 u_color;					\n\
+uniform	vec4 u_shadow;					\n\
+uniform	vec2 u_offset;					\n\
+										\n\
+void main()								\n\
+{										\n\
+	float sAlpha = texture2D(CC_Texture0, v_texCoord + u_offset ).a; \n\
+	float alpha = texture2D(CC_Texture0, v_texCoord).a; \n\
+	vec4 shadow = u_shadow * sAlpha;	\n\
+	gl_FragColor = mix(shadow, u_color, alpha);	\n\
+}										\n\
+";
+
 CCFlashFontHandler::CCFlashFontHandler() {
 	OSFont::initialize();
 	// font shader
     _fontShader = new GLProgram();
 	_fontShader->initWithVertexShaderByteArray(fontShader_vert, fontShader_frag);
-	_fontShader->addAttribute(kAttributeNamePosition, kVertexAttrib_Position);
-    _fontShader->addAttribute(kAttributeNameTexCoord, kVertexAttrib_TexCoords);
+	_fontShader->addAttribute(GLProgram::ATTRIBUTE_NAME_POSITION, GLProgram::VERTEX_ATTRIB_POSITION);
+	_fontShader->addAttribute(GLProgram::ATTRIBUTE_NAME_TEX_COORD, GLProgram::VERTEX_ATTRIB_TEX_COORDS);
     _fontShader->link();
     _fontShader->updateUniforms();
 	_uvScaleLocation = glGetUniformLocation( _fontShader->getProgram(), "u_uvScale");
 	_colorLocation = glGetUniformLocation( _fontShader->getProgram(), "u_color");
+    CHECK_GL_ERROR_DEBUG();
+	// font shadow shader
+    _fontShader_Shadow = new GLProgram();
+	_fontShader_Shadow->initWithVertexShaderByteArray(fontShader_vert, fontShader_fragShadow);
+	_fontShader_Shadow->addAttribute(GLProgram::ATTRIBUTE_NAME_POSITION, GLProgram::VERTEX_ATTRIB_POSITION);
+	_fontShader_Shadow->addAttribute(GLProgram::ATTRIBUTE_NAME_TEX_COORD, GLProgram::VERTEX_ATTRIB_TEX_COORDS);
+    _fontShader_Shadow->link();
+    _fontShader_Shadow->updateUniforms();
+	_uvScale_Shadow = glGetUniformLocation( _fontShader_Shadow->getProgram(), "u_uvScale");
+	_uvOffset_Shadow = glGetUniformLocation( _fontShader_Shadow->getProgram(), "u_offset");
+	_fonstColor_Shadow = glGetUniformLocation( _fontShader_Shadow->getProgram(), "u_color");
+	_shadowColor_Shadow = glGetUniformLocation( _fontShader_Shadow->getProgram(), "u_shadow");
     CHECK_GL_ERROR_DEBUG();
 }
 
@@ -118,16 +154,19 @@ CCFlashFontHandler::~CCFlashFontHandler() {
 	}
 	OSFont::terminate();
 	CC_SAFE_RELEASE_NULL(_fontShader);
+	CC_SAFE_RELEASE_NULL(_fontShader_Shadow);
 }
 
 OSFont* CCFlashFontHandler::selectFont(const char *font_name, float fontsize, int style) {
 	CacheData::iterator it = _font_cache.find(font_name);
 	if (it != _font_cache.end()) {
 		_selectedFont = (it->second);
+		_scale = fontsize / _selectedFont->getSize();
 		return _selectedFont;
 	}
 	_selectedFont = new OSFont(font_name, fontsize, style);
 	_font_cache[font_name] = _selectedFont;
+	_scale = 1.f;
 	return _selectedFont;
 }
 
@@ -170,8 +209,9 @@ uint32_t format(FormatText& out,
 				const tinyswf::RECT& rect,
 				const TextStyle& style,
 				const std::wstring& text,
-				CCFlashFontHandler *handler) {
-	const float line_height = handler->getLineHeight();
+				CCFlashFontHandler *handler, float scale)
+{
+	const float line_height = handler->getLineHeight() * scale;
 	const float width = rect.xmax - rect.xmin - style.right_margin - style.left_margin;
 
 	std::wstring::const_iterator start = text.begin();
@@ -183,17 +223,24 @@ uint32_t format(FormatText& out,
 		GlyphInfo *glyph = handler->getGlyph(*it);
 		if (! glyph) continue;
 		//wchar_t ch = *it;
-		float result = data.length + glyph->advance;
-		if (result > width) {
+		const float advance = glyph->advance * scale;
+		const float result = data.length + advance;
+		const bool newline = (('\n' == *it)||('\r' == *it));
+		if (result > width || newline) {
 			if (! style.multiline) break;
 
 			align(out, style, data);
 			out.back().text.assign(start, it);
 			numGlyphs += out.back().text.size();
 
-			data.positionY += line_height + style.leading;
-			data.length = glyph->advance;
-			start = it;
+			data.positionY += line_height + style.leading*1.25f;
+			if (newline) {
+				data.length = 0;
+				start = it+1;
+			} else {
+				data.length = advance;
+				start = it;
+			}
 		} else {
 			data.length = result;
 		}
@@ -215,7 +262,7 @@ uint32_t CCFlashFontHandler::formatText(VertexArray& vertices,
 	this->selectFont(style.font_name.c_str(), style.font_height, style.font_style);
 
 	FormatText lines;
-	uint32_t numGlyphs = format(lines, rect, style, text, this);
+	uint32_t numGlyphs = format(lines, rect, style, text, this, _scale);
 
 	vertices.resize( numGlyphs * kVERTICES_PER_GLYPH * 2 );
 	VertexArray::iterator it = vertices.begin();
@@ -230,14 +277,16 @@ uint32_t CCFlashFontHandler::formatText(VertexArray& vertices,
 			int gx = glyph->index - (gy * kNUMBER_GLYPH_PER_ROW);	// calculate x index
 			float uvX = float(gx * kGLYPH_WIDTH);
 			float uvY = float(gy * kGLYPH_WIDTH);
-			float x = lx + glyph->offsetX;
-			float y = ly + glyph->offsetY;
+			float x = lx + glyph->offsetX *_scale;
+			float y = ly + glyph->offsetY *_scale;
+			float w = glyph->width *_scale;
+			float h = glyph->height *_scale;
 
 			tinyswf::POINT xy[4], uv[4];
 			xy[0].x = x; xy[0].y = y;
-			xy[1].x = x; xy[1].y = y + glyph->height;
-			xy[2].x = x + glyph->width; xy[2].y = y;
-			xy[3].x = x + glyph->width; xy[3].y = y + glyph->height;
+			xy[1].x = x; xy[1].y = y + h;
+			xy[2].x = x + w; xy[2].y = y;
+			xy[3].x = x + w; xy[3].y = y + h;
 
 			uv[0].x = uvX; uv[0].y = uvY;
 			uv[1].x = uvX; uv[1].y = uvY + glyph->height;
@@ -251,30 +300,49 @@ uint32_t CCFlashFontHandler::formatText(VertexArray& vertices,
 			*it++ = xy[2]; *it++ = uv[2];
 			*it++ = xy[3]; *it++ = uv[3];
 
-			lx += glyph->advance;
+			lx += glyph->advance*_scale;
 		}
 	}
+	_areaHeight = lines.back().line_gap;
+
 	return numGlyphs * kVERTICES_PER_GLYPH;
 }
 
 void CCFlashFontHandler::drawText(const VertexArray& vertices, uint32_t count, const CXFORM& cxform, const TextStyle& style) {
+	if (0 == count)
+		return;
+
 	const float uv_scale = 1.f / kTEXTURE_SIZE;
-	ccGLEnableVertexAttribs(kVertexAttribFlag_Position | kVertexAttribFlag_TexCoords);
+	GL::enableVertexAttribs(GL::VERTEX_ATTRIB_FLAG_POSITION | GL::VERTEX_ATTRIB_FLAG_TEX_COORDS);
 
-	tinyswf::COLOR4f color = cxform.mult * style.color;
-	color += cxform.add;
-
-    _fontShader->use();
-	_fontShader->setUniformsForBuiltins();
-	_fontShader->setUniformLocationWith1f(_uvScaleLocation, uv_scale);
-	_fontShader->setUniformLocationWith4fv(_colorLocation, (GLfloat*) &color.r, 1);
+	if (style.filter) {
+		float offsetx = style.filter->offsetX * uv_scale;
+		float offsety = style.filter->offsetY * uv_scale;
+		COLOR4f color = style.color;
+		COLOR4f shadow = style.filter->color;
+		color *= cxform.mult;
+		shadow.a *= cxform.mult.a;
+		_fontShader_Shadow->use();
+		_fontShader_Shadow->setUniformsForBuiltins();
+		_fontShader_Shadow->setUniformLocationWith1f(_uvScale_Shadow, uv_scale);
+		_fontShader_Shadow->setUniformLocationWith2f(_uvOffset_Shadow, -offsetx, -offsety);
+		_fontShader_Shadow->setUniformLocationWith4fv(_fonstColor_Shadow, (GLfloat*) &color.r, 1);
+		_fontShader_Shadow->setUniformLocationWith4fv(_shadowColor_Shadow, (GLfloat*) &shadow.r, 1);
+	} else {
+		tinyswf::COLOR4f color = cxform.mult * style.color;
+		color += cxform.add;
+		_fontShader->use();
+		_fontShader->setUniformsForBuiltins();
+		_fontShader->setUniformLocationWith1f(_uvScaleLocation, uv_scale);
+		_fontShader->setUniformLocationWith4fv(_colorLocation, (GLfloat*) &color.r, 1);
+	}
 
 	OSFont *font = selectFont(style.font_name.c_str(), style.font_height, style.font_style);
-	ccGLBindTexture2D(font->_bitmap->getName());
+	GL::bindTexture2D(font->_bitmap->getName());
 	
 	float *data = (float*)&(vertices.front().x);
-	glVertexAttribPointer(kVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, sizeof(float)*4, data);
-	glVertexAttribPointer(kVertexAttrib_TexCoords, 2, GL_FLOAT, GL_FALSE, sizeof(float)*4, data+2);
+	glVertexAttribPointer(GLProgram::VERTEX_ATTRIB_POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(float)*4, data);
+	glVertexAttribPointer(GLProgram::VERTEX_ATTRIB_TEX_COORDS, 2, GL_FLOAT, GL_FALSE, sizeof(float)*4, data+2);
 	glDrawArrays(GL_TRIANGLES, 0, count);
     CC_INCREMENT_GL_DRAWS(1);
 }

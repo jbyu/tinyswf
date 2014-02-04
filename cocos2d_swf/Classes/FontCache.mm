@@ -8,18 +8,19 @@
 #import <string>
 #import "FontCache.h"
 
-static bool isValidFontName(const char *fontName) {
+bool isValidFontName(const char *fontName) {
     bool ret = false;
     
     NSString *fontNameNS = [NSString stringWithUTF8String:fontName];
-    
     for (NSString *familiName in [UIFont familyNames]) {
+		//NSLog(@"font-family:%@", familiName);
         if ([familiName isEqualToString:fontNameNS]) {
             ret = true;
             goto out;
-        }
+		}
         
         for (NSString *font in [UIFont fontNamesForFamilyName: familiName]) {
+			//NSLog(@"font:%@", font);
             if ([font isEqualToString: fontNameNS]) {
                 ret = true;
                 goto out;
@@ -53,9 +54,10 @@ bool OSFont::initialize(void) {
     return false;
 }
 
-OSFont::Handle OSFont::create(const char *font_name, float fontsize) {
+OSFont::Handle OSFont::create(const char *font_name, float fontsize, int style) {
+	CCLOG("create OS Font: %s", font_name);
 	if (! isValidFontName(font_name)) {
-		font_name = "Heiti TC";
+		font_name = "HiraKakuProN-W6";
 	}
     //CGFontRef cgfont = CGFontCreateWithFontName (CFSTR("Helvetica"));
     //CTFontRef ctFont = CTFontCreateWithGraphicsFont(cgfont, 24,NULL);
@@ -69,6 +71,7 @@ OSFont::Handle OSFont::create(const char *font_name, float fontsize) {
 	    font->ascent = CTFontGetAscent(hFont);
 		font->descent = CTFontGetDescent(hFont);
 		font->line_height = font->ascent + font->descent + CTFontGetLeading(hFont);
+	    font->ascent += CTFontGetLeading(hFont) * 0.5f;
         return font;
     }
     return NULL;
@@ -111,8 +114,8 @@ bool OSFont::makeGlyph(const Handle& handle, wchar_t codepoint, GlyphInfo& entry
     entry.offsetX = (rects->origin.x);
 	entry.offsetY = (font->ascent - rects->size.height) - rects->origin.y;
 	
-    entry.width = (char)ceilf(rects->size.width)+1;
-    entry.height = (char)ceilf(rects->size.height)+1;
+    entry.width = (char)ceilf(rects->size.width)+4;
+    entry.height = (char)ceilf(rects->size.height)+4;
 	//entry.height = kGLYPH_WIDTH;
 	
     //CGContextTranslateCTM(spContext, 0.0f, kCHAR_GRID_MAX);

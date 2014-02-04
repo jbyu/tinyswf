@@ -162,7 +162,7 @@ bool HelloWorld::init()
     tinyswf::SWF::initialize(CCFlashLoadAsset, 256*1024); // 256kB buffer for libtess2
 	tinyswf::Renderer::setInstance(new CCFlashRenderer);
 	tinyswf::FontHandler::setInstance(new CCFlashFontHandler);
-    CCFlash* pFlash = CCFlash::create("test2.swf");
+    CCFlash* pFlash = CCFlash::create("test.swf");
 	pFlash->scheduleUpdate();
 	this->addChild(pFlash,1);
 
