@@ -1,5 +1,5 @@
-#TinySWF - Tiny SWF player
-![TinySWF - Tiny SWF player](https://dl.dropboxusercontent.com/u/2907407/tinyswf.png)
+#TinySWF - Tiny SWF Player
+![TinySWF - Tiny SWF Player](https://dl.dropboxusercontent.com/u/2907407/tinyswf.png)
 
 **TinySWF is a simple SWF (Adobe Flash) player which can play FLASH contents in cocos2d-x and OpenGL environment.**
 
@@ -73,7 +73,7 @@ Please read [bitmap guide][6].
 
 ----------
 
-[1]: http://github.com/jbyu/tinyswf
+[1]: https://github.com/jbyu/tinyswf.git
 [2]: http://freeglut.sourceforge.net
 [3]: http://www.lonesock.net/soil.html
 [4]: http://www.fmod.org/
