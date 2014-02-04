@@ -86,7 +86,6 @@
 		43A28AA1179FD1F5001033A8 /* libtinyswf.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libtinyswf.xcodeproj; path = ../../projects/proj.ios/libtinyswf.xcodeproj; sourceTree = "<group>"; };
 		43A28AA7179FD610001033A8 /* AppMacros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppMacros.h; path = ../Classes/AppMacros.h; sourceTree = "<group>"; };
 		43A28AA8179FD933001033A8 /* libcocos2dx iOS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libcocos2dx iOS.a"; path = "../../../cocos2d-x/lib/Debug-iphonesimulator/libcocos2dx iOS.a"; sourceTree = "<group>"; };
-		43A28AAA179FDA0E001033A8 /* libcocos2dx-extensions iOS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libcocos2dx-extensions iOS.a"; path = "../../../cocos2d-x/lib/Debug-iphonesimulator/libcocos2dx-extensions iOS.a"; sourceTree = "<group>"; };
 		43A28AAF17A01B31001033A8 /* FontCache.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = FontCache.mm; path = ../Classes/FontCache.mm; sourceTree = "<group>"; };
 		43A28AB117A01DA1001033A8 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		43A28AB317A01DF7001033A8 /* orangerec.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = orangerec.png; sourceTree = "<group>"; };
@@ -192,7 +191,6 @@
 			isa = PBXGroup;
 			children = (
 				43A28AA8179FD933001033A8 /* libcocos2dx iOS.a */,
-				43A28AAA179FDA0E001033A8 /* libcocos2dx-extensions iOS.a */,
 				BF170DB212928DE900B8313A /* libxml2.dylib */,
 				BF170DB412928DE900B8313A /* libz.dylib */,
 				43A28AB117A01DA1001033A8 /* CoreText.framework */,
@@ -393,12 +391,8 @@
 					"$(SRCROOT)/../../../cocos2d-x/lib/",
 				);
 				OTHER_CFLAGS = "-O2";
-				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
-					"\"$(SRCROOT)/../../../cocos2d-x/lib/Debug-iphoneos/libcocos2dx iOS.a\"",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
-					"\"$(SRCROOT)/../../../cocos2d-x/lib/Debug-iphonesimulator/libcocos2dx iOS.a\"",
-				);
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = "\"$(SRCROOT)/../../../cocos2d-x/lib/Debug-iphoneos/libcocos2dx iOS.a\"";
+				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = "\"$(SRCROOT)/../../../cocos2d-x/lib/Debug-iphonesimulator/libcocos2dx iOS.a\"";
 				PRODUCT_NAME = HelloCpp;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -445,12 +439,8 @@
 					"\"$(SRCROOT)/../../../cocos2d-x/external/libwebsockets/ios/lib\"",
 					"$(SRCROOT)/../../../cocos2d-x/lib/",
 				);
-				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
-					"\"$(SRCROOT)/../../../cocos2d-x/lib/Release-iphoneos/libcocos2dx iOS.a\"",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
-					"\"$(SRCROOT)/../../../cocos2d-x/lib/Release-iphonesimulator/libcocos2dx iOS.a\"",
-				);
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = "\"$(SRCROOT)/../../../cocos2d-x/lib/Release-iphoneos/libcocos2dx iOS.a\"";
+				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = "\"$(SRCROOT)/../../../cocos2d-x/lib/Release-iphonesimulator/libcocos2dx iOS.a\"";
 				PRODUCT_NAME = HelloCpp;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";

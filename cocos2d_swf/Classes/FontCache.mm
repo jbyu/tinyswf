@@ -55,7 +55,7 @@ bool OSFont::initialize(void) {
 }
 
 OSFont::Handle OSFont::create(const char *font_name, float fontsize, int style) {
-	CCLOG("create OS Font: %s", font_name);
+	//CCLOG("create OS Font: %s", font_name);
 	if (! isValidFontName(font_name)) {
 		font_name = "HiraKakuProN-W6";
 	}
