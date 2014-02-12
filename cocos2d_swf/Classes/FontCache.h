@@ -84,8 +84,8 @@ public:
 
 	void drawText(const tinyswf::VertexArray& vertices, uint32_t glyphs, const tinyswf::CXFORM& cxform, const tinyswf::TextStyle& style);
 
-	uint32_t formatText(tinyswf::VertexArray& vertices, const tinyswf::RECT& rect, 
-		const tinyswf::TextStyle& style, const std::wstring& text);
+	uint32_t formatText(tinyswf::VertexArray& vertices, float &lastX, float &lastY,
+		const tinyswf::RECT& rect, const tinyswf::TextStyle& style, const std::wstring& text);
 
 	GlyphInfo* getGlyph(wchar_t codepoint) {
 		return _selectedFont->getGlyph(codepoint);

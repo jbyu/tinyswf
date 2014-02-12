@@ -174,25 +174,57 @@ void DefineEditTextTag::print() {
 
 //-----------------------------------------------------------------------------
 
-void traverse(xml_node<> *node, std::string& output) {
+void traverse(xml_node<> *node, std::string& output, Text::ColorText& texts, TextStyle& style) {
+	bool newline = false;
+	bool colorbreak = false;
+	const COLOR4f old_color = style.color;
 	switch (node->type()) {
 	case node_element:
 		SWF_TRACE("name:%s\n", node->name());
+		newline = (0 == strcmp("p", node->name()));
 		for (xml_attribute<> *attr = node->first_attribute(); attr; attr = attr->next_attribute()) {
 			SWF_TRACE("attr:%s = %s\n", attr->name(), attr->value());
+			colorbreak = (0 == strcmp("color", attr->name()));
+			if (colorbreak) {
+				if (! output.empty()) {
+					size_t count = texts.size();
+					texts.resize(count+1);
+					Text::ColorString& content = texts.back();
+					content.color = style.color;
+					content.string = output;
+					output.clear();
+				}
+				unsigned long value = strtoul(attr->value()+1, NULL, 16);
+				style.color.r = ((value & 0xff0000) >> 16) * SWF_INV_COLOR;
+				style.color.g = ((value & 0xff00) >> 8) * SWF_INV_COLOR;
+				style.color.b = ((value & 0xff)) * SWF_INV_COLOR;
+			}
 		}
 		break;
 	case node_data:
 		SWF_TRACE("value:%s\n", node->value());
 		output += node->value();
-		output += "\n";
 	default:
 		break;
 	}
+
 	for (xml_node<> *child = node->first_node(); child; child = child->next_sibling()) {
-		traverse(child, output);
+		traverse(child, output, texts, style);
 	}
 
+	if (colorbreak) {
+		size_t count = texts.size();
+		texts.resize(count+1);
+		Text::ColorString& content = texts.back();
+		content.color = style.color;
+		content.string = output;
+		output.clear();
+		style.color = old_color;
+	}
+
+	if (newline) {
+		output += "\n";
+	}
 }
 
 bool utf8_to_utf16(std::wstring& utf16, const std::string& utf8) {
@@ -251,7 +283,6 @@ bool utf8_to_utf16(std::wstring& utf16, const std::string& utf8) {
 
 Text::Text(const DefineEditTextTag &tag, const PlaceObjectTag*def) 
 	:_reference(tag)
-	,_glyphs(0)
 {
 	_style = tag._style;
 	_bound = tag._bound;
@@ -261,33 +292,62 @@ Text::Text(const DefineEditTextTag &tag, const PlaceObjectTag*def)
 	} else {
 		_style.filter = NULL;
 	}
-
-	if (tag._html) {
-		// parse initial html text
-		char *in = (char*)tag._initial_text.c_str();
-		xml_document<> doc;	// character type defaults to char
-		doc.parse<0>(in);	// 0 means default parse flags
-		std::string text;
-		traverse(&doc, text);
-		setString(text.c_str());
-	} else {
-		setString(tag._initial_text.c_str());
-	}
+	setString(tag._initial_text.c_str());
 }
 
 void Text::draw(SWF* owner) {
-	SWF_ASSERT( FontHandler::getInstance() );
-	FontHandler::getInstance()->drawText(_vertices, _glyphs, owner->getCurrentCXForm(), _style);
+	//FontHandler::getInstance()->drawText(_vertices, _glyphs, owner->getCurrentCXForm(), _style);
+	FontHandler *handler = FontHandler::getInstance();
+	SWF_ASSERT( handler );
+	TextStyle style = _style;
+	ColorText::iterator it = _colorTexts.begin();
+	while (it != _colorTexts.end()) {
+		style.color = it->color;
+		handler->drawText(it->vertices, it->glyphs, owner->getCurrentCXForm(), style);
+		++it;
+	}
 }
 
 bool Text::setString(const char* str) {
-	bool ret = utf8_to_utf16(_text, str);
 	FontHandler *handler = FontHandler::getInstance();
-	if (handler && ret) {
-		_glyphs = handler->formatText(_vertices, _bound, _style, _text);
-		return true;
+	if (! handler)
+		return false;
+
+	TextStyle style = _style;
+	// check html tag
+	if (strstr(str,"<p")) {
+		_colorTexts.clear();
+		std::string input = str;
+		xml_document<> doc;	// character type defaults to char
+		doc.parse<0>(&input.front()); // 0 means default parse flags
+		std::string output;
+		traverse(&doc, output, _colorTexts, style);
+		if (! output.empty()) {
+			size_t count = _colorTexts.size();
+			_colorTexts.resize(count+1);
+			Text::ColorString& content = _colorTexts.back();
+			content.color = style.color;
+			content.string = output;
+		}
+	} else {
+		_colorTexts.resize(1);
+		Text::ColorString& content = _colorTexts.back();
+		content.color = style.color;
+		content.string = str;
 	}
-	return false;
+
+	float x = 0, y = 0;
+	ColorText::iterator it = _colorTexts.begin();
+	while (it != _colorTexts.end()) {
+		std::wstring utf16;
+		if (utf8_to_utf16(utf16, it->string.c_str())) {
+			it->glyphs = handler->formatText(it->vertices, x, y, _bound, _style, utf16);
+		} else {
+			return false;
+		}
+		++it;
+	}
+	return true;
 }
 
 // HTML content

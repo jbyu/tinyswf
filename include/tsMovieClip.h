@@ -217,17 +217,28 @@ public:
 	bool setString(const char* str);
 	TextStyle&	style() { return _style; }
 
+public:
+	struct ColorString {
+		COLOR4f		color;
+		uint32_t	glyphs;
+		std::string string;
+		VertexArray vertices;
+	};
+	typedef std::vector<ColorString> ColorText;
+
 protected:
 	// no copy constructor and assignment operator
 	Text& operator=(const Text&);
 	Text(const Text&);
 
 	const DefineEditTextTag& _reference;
-	uint32_t	_glyphs;
 	RECT		_bound;
 	TextStyle	_style;
-	VertexArray _vertices;
-	std::wstring _text;
+	//uint32_t	_glyphs;
+	//VertexArray _vertices;
+	//std::wstring _text;
+
+	ColorText _colorTexts;
 };
 
 //-----------------------------------------------------------------------------

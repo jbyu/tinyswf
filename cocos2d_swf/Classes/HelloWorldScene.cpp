@@ -166,7 +166,8 @@ bool HelloWorld::init()
 	pFlash->scheduleUpdate();
 	this->addChild(pFlash,1);
 
-	//pFlash->setString("t2","12345");
+	pFlash->getSWF()->get<tinyswf::Text>("_text")->setString(
+		"<p>test<font color='#ff0000'>1234</font>hello world</p><p>font <font color='#00ffff'>color</font> test</p>");
 
 #ifdef USE_HTTP
 	CCHttpRequest* request = new CCHttpRequest();

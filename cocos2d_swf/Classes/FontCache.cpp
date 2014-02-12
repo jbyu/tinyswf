@@ -205,7 +205,7 @@ void align(FormatText& out, const TextStyle& style, const AlignData& data) {
 	out.back().line_gap = data.positionY;
 }
 
-uint32_t format(FormatText& out,
+uint32_t format(FormatText& out, float &lastX, float &lastY,
 				const tinyswf::RECT& rect,
 				const TextStyle& style,
 				const std::wstring& text,
@@ -218,7 +218,7 @@ uint32_t format(FormatText& out,
 	std::wstring::const_iterator it;
 
 	uint32_t numGlyphs = 0;
-	AlignData data = {rect.ymin, rect.xmin + style.left_margin, width, style.indent};
+	AlignData data = {rect.ymin + lastY, rect.xmin + style.left_margin + lastX, width, style.indent};
 	for (it = start; it != text.end(); ++it) {
 		GlyphInfo *glyph = handler->getGlyph(*it);
 		if (! glyph) continue;
@@ -226,25 +226,30 @@ uint32_t format(FormatText& out,
 		const float advance = glyph->advance * scale;
 		const float result = data.length + advance;
 		const bool newline = (('\n' == *it)||('\r' == *it));
-		if (result > width || newline) {
+		if (result + lastX > width || newline) {
 			if (! style.multiline) break;
 
 			align(out, style, data);
 			out.back().text.assign(start, it);
 			numGlyphs += out.back().text.size();
 
+			lastX = 0;
+			data.positionX = rect.xmin + style.left_margin;
 			data.positionY += line_height + style.leading*1.25f;
 			if (newline) {
-				data.length = 0;
+				data.length = style.indent;
 				start = it+1;
 			} else {
-				data.length = advance;
+				data.length = style.indent + advance;
 				start = it;
 			}
 		} else {
 			data.length = result;
 		}
 	}
+	lastX += data.length;
+	lastY = data.positionY - rect.ymin;
+
 	align(out, style, data);
 	out.back().text.assign(start, it);
 	numGlyphs += out.back().text.size();
@@ -254,7 +259,7 @@ uint32_t format(FormatText& out,
 
 const int kVERTICES_PER_GLYPH = 6; // (xy,uv) * 6 per glyph
 
-uint32_t CCFlashFontHandler::formatText(VertexArray& vertices, 
+uint32_t CCFlashFontHandler::formatText(VertexArray& vertices, float &lastX, float &lastY,
 										const tinyswf::RECT& rect,
 										const TextStyle& style,
 										const std::wstring& text) {
@@ -262,7 +267,7 @@ uint32_t CCFlashFontHandler::formatText(VertexArray& vertices,
 	this->selectFont(style.font_name.c_str(), style.font_height, style.font_style);
 
 	FormatText lines;
-	uint32_t numGlyphs = format(lines, rect, style, text, this, _scale);
+	uint32_t numGlyphs = format(lines, lastX, lastY, rect, style, text, this, _scale);
 
 	vertices.resize( numGlyphs * kVERTICES_PER_GLYPH * 2 );
 	VertexArray::iterator it = vertices.begin();

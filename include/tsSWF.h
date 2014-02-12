@@ -63,7 +63,8 @@ public:
 
 	virtual void drawText(const VertexArray& vertices, uint32_t glyphs, const CXFORM& cxform, const TextStyle& style) = 0;
 
-    virtual uint32_t formatText(VertexArray& vertices, const RECT& rect, const TextStyle& style, const std::wstring& text) = 0;
+    virtual uint32_t formatText(VertexArray& vertices, float &lastX, float &lastY,
+		const RECT& rect, const TextStyle& style, const std::wstring& text) = 0;
 
     static FontHandler* getInstance(void) { return spHandler; }
     static void setInstance(FontHandler *r) { spHandler = r; }
