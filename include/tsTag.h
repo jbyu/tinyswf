@@ -318,8 +318,9 @@ struct TextStyle {
 	float		leading;
 	float		font_height;
 	int			font_style;
-	std::string font_name;
+	int			glyphs;
 	const Filter *filter;
+	std::string font_name;
 };
 
 //-----------------------------------------------------------------------------

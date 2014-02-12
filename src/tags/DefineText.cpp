@@ -302,8 +302,14 @@ void Text::draw(SWF* owner) {
 	TextStyle style = _style;
 	ColorText::iterator it = _colorTexts.begin();
 	while (it != _colorTexts.end()) {
+		if (0 >= style.glyphs)
+			return;
+		int count = it->glyphs;
+		if (count > style.glyphs)
+			count = style.glyphs;
+		style.glyphs -= count;
 		style.color = it->color;
-		handler->drawText(it->vertices, it->glyphs, owner->getCurrentCXForm(), style);
+		handler->drawText(it->vertices, count, owner->getCurrentCXForm(), style);
 		++it;
 	}
 }
@@ -312,6 +318,9 @@ bool Text::setString(const char* str) {
 	FontHandler *handler = FontHandler::getInstance();
 	if (! handler)
 		return false;
+
+	// draw all glyphs in str
+	_style.glyphs = INT32_MAX;
 
 	TextStyle style = _style;
 	// check html tag
