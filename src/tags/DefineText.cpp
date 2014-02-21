@@ -316,7 +316,7 @@ void Text::draw(SWF* owner) {
 
 bool Text::setString(const char* str) {
 	FontHandler *handler = FontHandler::getInstance();
-	if (! handler)
+	if (! handler || ! str)
 		return false;
 
 	// draw all glyphs in str
