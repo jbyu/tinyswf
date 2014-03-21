@@ -6,6 +6,13 @@ Copyright (c) 2013 jbyu. All rights reserved.
 #include "DefineFont.h"
 #include "PlaceObject.h"
 #include "tsSWF.h"
+
+/*
+#define RAPIDXML_NO_EXCEPTIONS
+void rapidxml::parse_error_handler(const char *what, void *where) {
+	SWF_TRACE("xml error: %s", what);
+}
+*/
 #include "rapidxml.hpp"
 
 using namespace tinyswf;
@@ -320,13 +327,14 @@ bool Text::setString(const char* str) {
 		return false;
 
 	// draw all glyphs in str
-	_style.glyphs = INT32_MAX;
+	_style.glyphs =  0x7fffffff;
 
 	TextStyle style = _style;
 	// check html tag
 	if (strstr(str,"<p")) {
 		_colorTexts.clear();
 		std::string input = str;
+#ifdef RAPIDXML_NO_EXCEPTIONS
 		xml_document<> doc;	// character type defaults to char
 		doc.parse<0>(&input.front()); // 0 means default parse flags
 		std::string output;
@@ -338,6 +346,26 @@ bool Text::setString(const char* str) {
 			content.color = style.color;
 			content.string = output;
 		}
+#else
+		try {
+			xml_document<> doc;	// character type defaults to char
+			doc.parse<0>(&input.front()); // 0 means default parse flags
+			std::string output;
+			traverse(&doc, output, _colorTexts, style);
+			if (! output.empty()) {
+				size_t count = _colorTexts.size();
+				_colorTexts.resize(count+1);
+				Text::ColorString& content = _colorTexts.back();
+				content.color = style.color;
+				content.string = output;
+			}
+		} catch(std::exception e) {
+			_colorTexts.resize(1);
+			Text::ColorString& content = _colorTexts.back();
+			content.color = style.color;
+			content.string = str;
+		}
+#endif
 	} else {
 		_colorTexts.resize(1);
 		Text::ColorString& content = _colorTexts.back();
