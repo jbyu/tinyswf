@@ -259,7 +259,7 @@ bool ShapeWithStyle::readStyles( Reader* reader, bool lineStyle2, bool support_3
 	// get the line styles
 	uint16_t num_line_styles = reader->get<uint8_t>();
 	if ( num_line_styles == 0xff ) {
-		num_fill_styles = reader->get<uint16_t>();
+		num_line_styles = reader->get<uint16_t>();
 	}
 	for ( int i = 0; i < num_line_styles; i++ ) {
 		LineStyle line;
