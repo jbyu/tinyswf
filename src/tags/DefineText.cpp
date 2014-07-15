@@ -358,6 +358,7 @@ bool Text::setString(const char* str) {
 				Text::ColorString& content = _colorTexts.back();
 				content.color = style.color;
 				content.string = output;
+				style.alignment = TextStyle::ALIGN_LEFT;
 			}
 		} catch(std::exception e) {
 			_colorTexts.resize(1);
@@ -378,7 +379,7 @@ bool Text::setString(const char* str) {
 	while (it != _colorTexts.end()) {
 		std::wstring utf16;
 		if (utf8_to_utf16(utf16, it->string.c_str())) {
-			it->glyphs = handler->formatText(it->vertices, x, y, _bound, _style, utf16);
+			it->glyphs = handler->formatText(it->vertices, x, y, _bound, style, utf16);
 		} else {
 			return false;
 		}
