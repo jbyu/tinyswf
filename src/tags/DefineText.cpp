@@ -358,7 +358,6 @@ bool Text::setString(const char* str) {
 				Text::ColorString& content = _colorTexts.back();
 				content.color = style.color;
 				content.string = output;
-				style.alignment = TextStyle::ALIGN_LEFT;
 			}
 		} catch(std::exception e) {
 			_colorTexts.resize(1);
@@ -372,6 +371,11 @@ bool Text::setString(const char* str) {
 		Text::ColorString& content = _colorTexts.back();
 		content.color = style.color;
 		content.string = str;
+	}
+
+	// workaround for error alignment of color texts
+	if (1 < _colorTexts.size()) {
+		style.alignment = TextStyle::ALIGN_LEFT;
 	}
 
 	float x = 0, y = 0;
