@@ -213,6 +213,7 @@ public:
 	ICharacter()
 		:_visible(true)
 		,_transform(NULL)
+		,_cxform(NULL)
 	{}
 	virtual ~ICharacter() { 
 		//SWF_TRACE("delete ICharacter[%x]\n",this);

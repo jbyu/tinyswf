@@ -205,7 +205,7 @@ void SWF::drawDuplicate(void) {
     Renderer::getInstance()->drawEnd();
 }
 
-void SWF::drawMovieClip(MovieClip *movie, float alpha)
+void SWF::drawMovieClip(MovieClip *movie)
 {
 	if (movie == NULL)
 		return;
@@ -215,8 +215,14 @@ void SWF::drawMovieClip(MovieClip *movie, float alpha)
     MATRIX3f origMTX = owner->getCurrentMatrix(), mtx;
     MATRIX3fSet(mtx, *xform); // convert matrix format
     MATRIX3fMultiply(owner->getCurrentMatrix(), mtx, owner->getCurrentMatrix());
-	float origAlpha = owner->getCurrentCXForm().mult.a;
-    owner->getCurrentCXForm().mult.a = alpha;
+
+	//float origAlpha = owner->getCurrentCXForm().mult.a;
+    //owner->getCurrentCXForm().mult.a = alpha;
+    CXFORM origCXF = owner->getCurrentCXForm();
+	CXFORM *cx = movie->getCXForm();
+	if (cx) {
+		CXFORMMultiply(owner->getCurrentCXForm(), *cx, origCXF);
+	}
 
 	Renderer::getInstance()->drawBegin();
     movie->draw(owner);
@@ -224,7 +230,7 @@ void SWF::drawMovieClip(MovieClip *movie, float alpha)
 
     // restore old matrix
     owner->getCurrentMatrix() = origMTX;
-    owner->getCurrentCXForm().mult.a = origAlpha;
+    owner->getCurrentCXForm() = origCXF;
 }
 
 void SWF::update( float delta )

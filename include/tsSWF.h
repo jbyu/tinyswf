@@ -135,7 +135,7 @@ public:
 	// draw all duplicated movieclips
     void drawDuplicate(void);
 
-	static void drawMovieClip(MovieClip *movie, float alpha=1.f);
+	static void drawMovieClip(MovieClip *movie);
 
 	MATRIX3f& getCurrentMatrix(void) { return _currentMatrix; }
 
