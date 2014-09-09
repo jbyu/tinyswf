@@ -166,7 +166,7 @@ public:
 	virtual void update(void);
 	virtual ICharacter* getTopMost(float localX, float localY, bool polygonTest);
 	virtual void onEvent(Event::Code);
-
+	virtual void reset();
 	const static TYPE kType = TYPE_BUTTON;
 	virtual TYPE type() const { return kType; }
 

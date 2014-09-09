@@ -198,7 +198,7 @@ public:
 	virtual void update(void) = 0;
 	virtual ICharacter* getTopMost(float localX, float localY, bool polygonTest) = 0;
 	virtual void onEvent(Event::Code) = 0;
-
+	virtual void reset() {}
 	virtual TYPE type() const = 0;
 
 	void setTransform(MATRIX& mtx) { _transform = &mtx; }

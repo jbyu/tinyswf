@@ -231,6 +231,11 @@ void Button::setupFrame(void) {
 	}
 }
 
+void Button::reset() {
+	_mouseState = MOUSE_UP;
+	setupFrame();
+}
+
 void Button::onEvent(Event::Code code) {
 	int flag = 0;
 	switch(code) {
