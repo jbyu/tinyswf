@@ -217,6 +217,11 @@ public:
 	bool setString(const char* str);
 	TextStyle&	style() { return _style; }
 
+	const char* getString() { 
+		if (_colorTexts.empty()) return NULL; 
+		return _colorTexts.front().string.c_str();
+	}
+
 public:
 	struct ColorString {
 		COLOR4f		color;
