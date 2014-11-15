@@ -114,7 +114,7 @@ struct Asset {
 		TYPE_IMPORT = 2,	// import unknown data from outside.
 	};
     Type        type;
-    uint32_t    handle;
+    long    handle;
 	// for texture coordinate transformation
 	// sw: 20.f / width of texture
 	// sh: 20.f / height of texture

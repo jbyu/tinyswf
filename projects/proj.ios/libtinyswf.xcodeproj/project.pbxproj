@@ -273,7 +273,7 @@
 		43D8C142179FB28900CB2EF9 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0610;
 				ORGANIZATIONNAME = jbyu;
 			};
 			buildConfigurationList = 43D8C145179FB28900CB2EF9 /* Build configuration list for PBXProject "libtinyswf" */;
@@ -348,7 +348,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
-				ONLY_ACTIVE_ARCH = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
