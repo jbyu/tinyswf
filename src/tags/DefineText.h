@@ -88,6 +88,8 @@ public:
 		
 	virtual void print();
 
+	const RECT& getRectangle(void) const { return _bound; }
+
 	std::string& getName(void) { return _variable_name; }
 
 	static ITag* create( TagHeader& header ) {

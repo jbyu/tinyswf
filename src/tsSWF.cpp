@@ -257,6 +257,14 @@ RECT SWF::calculateRectangle(uint16_t character, const MATRIX* xf) {
 		return rect;
 
     switch( tag->code()) {
+#if 1
+	case TAG_DEFINE_EDIT_TEXT:
+		{
+			DefineEditTextTag *txt = (DefineEditTextTag*)tag;
+			rect = txt->getRectangle();
+		}
+		break;
+#endif
 	case TAG_DEFINE_BUTTON2:
 		{
 			DefineButton2Tag *btn = (DefineButton2Tag*)tag;
